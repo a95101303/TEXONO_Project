@@ -33,7 +33,7 @@ void Overlap_Plot_TEXONO_Ge_Spectrum()
     double CPKKD_EXCLUSION[Number];
     double Mass=1;//2.34
     int Take_Plot=0;
-    string Type_of_Model="BR"; int Type_of_Model_INT=2;
+    string Type_of_Model="NU"; int Type_of_Model_INT=0;
     cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
         
     int Point_Number=0;
@@ -42,7 +42,7 @@ void Overlap_Plot_TEXONO_Ge_Spectrum()
     Sigma_SI_Array[Point_Number] = 1e-36;
     TH1F *Flux_HIST_Random; TH1F *Flux_HIST_Aft_Collision_Earth; TH1F *Flux_HIST_Aft_Collision_EARTH;
 
-    TFile *fin = TFile::Open("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/1_CDEX_Flux/1GeV/2.root");
+    TFile *fin = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/1_CDEX_Flux/1GeV/2.root");
     Flux_HIST_Random=(TH1F*)fin->Get("Flux_HIST_Random");
     Flux_HIST_Aft_Collision_EARTH=(TH1F*)fin->Get("Flux_HIST_Aft_Collision_EARTH");
 
@@ -93,7 +93,7 @@ void Overlap_Plot_TEXONO_Ge_Spectrum()
     ER_Spectrum_Bef->Draw();
     
     char fout_name[100];
-    sprintf(fout_name,Form("Thesis_Plot/Spectrum_Ex/%s.root",Type_of_Model.c_str()));
+    sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Thesis_Plot/Spectrum_Ex/%s.root",Type_of_Model.c_str()));
     TFile *fout=new TFile(fout_name,"recreate");
     ER_Spectrum_Bef->Write();
 

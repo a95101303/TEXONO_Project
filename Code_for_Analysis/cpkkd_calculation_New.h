@@ -158,7 +158,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     }
     std::cout<<"-----------start-------------"<<std::endl;
     //======================For the migdal Effect======================//
-    const int interp = 2;
+    const int interp = 20;
     const int n_point1 = 251*interp;
     const int dotnumber = 1e5;
 
@@ -303,7 +303,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     
     double WIMP_max_T =0;
     if(Model_of_Interaction==0 and Conventional_or_not==0){//Nuclear Recoil
-        WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.001;} //keV
+        WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.2;} //keV
         //WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.2;} //keV for KS case
 
     if(Model_of_Interaction==1 and Conventional_or_not==0){//Migdal Effect
@@ -312,6 +312,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         WIMP_max_T = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Model_of_Interaction==3 and Conventional_or_not==0){//Migdal Effect: MPA
         WIMP_max_T = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.2;} //keV
+    
     if(Conventional_or_not==1){//Conventional Distribution
         WIMP_max_T = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Conventional_or_not==2){//Conventional Distribution
@@ -321,7 +322,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
 
     //Fuck!!!!!Please remember to initiate
-    cout << "(WIMP_max_T_NU): " << (1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, 20)) << endl;
+    cout << "(WIMP_max_T_NU): " << (1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, AGe)) << endl;
     cout << "WIMP_max_T_EM: " << max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, AGe) << endl;
 
     /*
@@ -635,11 +636,12 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
 
     for(int i=0; i<reso_T; i++)
     {
-        /*
-            cout << "T[i]: " << T[i] << endl;
-            cout << "RecoilX: " << recoilX[i] << endl;
-            cout << "Factor1: " << Factor1[i] << endl;
-         */
+        
+           // cout << "T[i]: " << T[i] << endl;
+           // cout << "T_QF[i]: " << T_QF[i] << endl;
+           // cout << "RecoilX: " << recoilX[i] << endl;
+           // cout << "Factor1: " << Factor1[i] << endl;
+         
     }
     //cout << "Velocity_Min: " << Velocity_Min << endl;
     cout << "================================================" << endl;
