@@ -16,9 +16,9 @@ void Overlap_Plot_Flux()
     
     for(int Exp=1; Exp<2; Exp++)
     {
-        for(int Mass_INT=9; Mass_INT<10; Mass_INT++)
+        for(int Mass_INT=10; Mass_INT<11; Mass_INT++)
         {
-            for(int FILE=1; FILE<40; FILE++)
+            for(int FILE=1; FILE<2; FILE++)
             {
                 TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
                 TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
@@ -27,6 +27,11 @@ void Overlap_Plot_Flux()
                 T1_TREE->GetEntry(0);
 
                 //====================Input=====================//
+            TGraph *SetFrame;
+            SetFrame->GetXaxis()->SetLimits(0,800);
+            SetFrame->GetYaxis()->SetUserRange(0,0.007);
+
+
             TH1F *Bef_Flux;TH1F *Aft_Flux;
             Bef_Flux=(TH1F*)ROOT_FILE->Get("Flux_HIST_Random");
             Bef_Flux->SetLineColor(3);
@@ -35,7 +40,7 @@ void Overlap_Plot_Flux()
             Bef_Flux->SetLineWidth(3);
             Bef_Flux->SetTitle("");
             Bef_Flux->GetXaxis()->SetLimits(0,800);
-            Bef_Flux->GetYaxis()->SetLimits(0,2);
+            Bef_Flux->GetYaxis()->SetUserRange(0,0.007);
             Bef_Flux->Scale(1./2500.);
             
             Aft_Flux=(TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
@@ -45,7 +50,7 @@ void Overlap_Plot_Flux()
             Aft_Flux->SetLineWidth(2);
             Aft_Flux->SetTitle("");
             Aft_Flux->GetXaxis()->SetLimits(0,800);
-                Aft_Flux->GetYaxis()->SetLimits(0,2);
+            Aft_Flux->GetYaxis()->SetLimits(0,2);
             Aft_Flux->Scale(1./2500.);
 
             TCanvas *c3 = new TCanvas("c3");
@@ -68,12 +73,13 @@ void Overlap_Plot_Flux()
             leg->AddEntry(Aft_Flux,"Earth Effect Case","l");
             leg->AddEntry(MD_Line_STFlux,"Threshold","l");
 
+            SetFrame->Draw("A");
             Bef_Flux->Draw("HIST");
             Aft_Flux->Draw("HISTsame");
             MD_Line_STFlux->Draw("Lsame");
             leg->Draw();
                 
-            c3->Print(Form("%i_Used.pdf",FILE));
+            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Thesis_Plot/The_Basic_Flux/%i_Used.pdf",FILE));
             }
         }
     }
