@@ -5,8 +5,8 @@
 #include "TGraphErrors.h"
 #include "TH1.h"
 #include "TLine.h"
-#include "/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/Hist_SetLimit_Plot_v2_Extract_Peak.h"
-#include "/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/dsigma_dT2.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/Hist_SetLimit_Plot_v2_Extract_Peak.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/dsigma_dT2.h"
 
 void Overlap_Plot_MD_BR()
 {
@@ -17,49 +17,49 @@ void Overlap_Plot_MD_BR()
     {
         for(int Mass_INT=9; Mass_INT<10; Mass_INT++)
         {
-            for(int FILE=1; FILE<2; FILE++)
+            for(int FILE=1; FILE<27; FILE++)
             {
-                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
+                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
                 TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
                 Double_t mx,sigma_si;
                 T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
                 T1_TREE->GetEntry(0);
 
-    string path = Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
+    string path = Form("/Users/yehchihhsiang/Desktop//GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
                 ifstream fin(path);
-    string path1 = Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/%s/%sGeV/Recoil_Spectrum/BR_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
+    string path1 = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/BR_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
                 ifstream fin1(path1);
 
             if(fin.is_open() and fin1.is_open()){//Open
 
                 //====================Input=====================//
             TGraphErrors *Data;TGraph *MD_B;TGraph *MD_A;TGraph *BR_B;TGraph *BR_A;
-    TFile *finMD = TFile::Open(Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE));
+    TFile *finMD = TFile::Open(Form("/Users/yehchihhsiang/Desktop//GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE));
             MD_B=(TGraph*)finMD->Get("ER_Spectrum_Bef");
             MD_B->SetLineColor(2);
             MD_B->SetMarkerColor(2);
             MD_B->SetLineStyle(1);
-            MD_B->SetLineWidth(4);
+            MD_B->SetLineWidth(8);
                 MD_B->GetXaxis()->SetRangeUser(0,2);
             //MD_B->GetXaxis()->SetLimits(0,2.4);
             MD_B->GetYaxis()->SetRangeUser(1e-8,1e+15);
 
             MD_A=(TGraph*)finMD->Get("ER_Spectrum_Aft");
-            MD_A->SetLineColor(4);
-            MD_A->SetMarkerColor(4);
+            MD_A->SetLineColor(3);
+            MD_A->SetMarkerColor(3);
             MD_A->SetLineStyle(1);
             MD_A->SetLineWidth(4);
                 
-    TFile *finBR = TFile::Open(Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/%s/%sGeV/Recoil_Spectrum/BR_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE));
+    TFile *finBR = TFile::Open(Form("/Users/yehchihhsiang/Desktop//GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/BR_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE));
             BR_B=(TGraph*)finBR->Get("ER_Spectrum_Bef");
             BR_B->SetLineColor(2);
             BR_B->SetMarkerColor(2);
             BR_B->SetLineStyle(2);
-            BR_B->SetLineWidth(4);
+            BR_B->SetLineWidth(8);
 
             BR_A=(TGraph*)finBR->Get("ER_Spectrum_Aft");
-            BR_A->SetLineColor(4);
-            BR_A->SetMarkerColor(4);
+            BR_A->SetLineColor(3);
+            BR_A->SetMarkerColor(3);
             BR_A->SetLineStyle(2);
             BR_A->SetLineWidth(5);
 
@@ -88,10 +88,10 @@ void Overlap_Plot_MD_BR()
             leg->SetBorderSize(0);
             leg->SetTextFont(22);
             leg->AddEntry("",Form("#sigma_{SI}:%.2f #times 10^{-%.f}, M_{#chi}=%.2fGeV",CNFNV(0,sigma_si),CNFNV(1,sigma_si),mx),"");
-            //leg->AddEntry(MD_B,"Migdal Effect before the attenuation","l");
-            //leg->AddEntry(MD_A,"Migdal Effect after the attenuation","l");
-            //leg->AddEntry(BR_B,"Brem before the attenuation","l");
-            //leg->AddEntry(BR_A,"Brem after the attenuation","l");
+            //leg->AddEntry(MD_B,"MD for vacuum case","l");
+            //leg->AddEntry(MD_A,"MD for earth effect case","l");
+            //leg->AddEntry(BR_B,"BR for vacuum case","l");
+            //leg->AddEntry(BR_A,"BR for earth effect case","l");
 
                 c3->SetLogy();
                 c3->SetLogx();
@@ -100,12 +100,12 @@ void Overlap_Plot_MD_BR()
                 MD_B->GetYaxis()->SetTitle("Count (kg^{-1} keV^{-1} day^{-1})");
             MD_B->Draw("ALP");
             MD_A->Draw("LPsame");
-            BR_B->Draw("LPsame");
-            BR_A->Draw("LPsame");
+            //BR_B->Draw("LPsame");
+            //BR_A->Draw("LPsame");
             TEXONOData->Draw("LPsame");
 
             leg->Draw();
-            c3->Print(Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/Thesis_Plot/Recoil_Spectrum/0P2GeV_MD_BR_%i.pdf",FILE));
+            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Thesis_Plot/Recoil_Spectrum/0P2GeV_MD_BR_%i.pdf",FILE));
             }
             }
         }
