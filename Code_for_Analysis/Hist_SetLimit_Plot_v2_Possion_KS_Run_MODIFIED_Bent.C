@@ -108,7 +108,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated
     int kkk=0; int jjj=0;
     //for(int kkk=0 ; kkk<Simulated_Event_Number ; kkk++)
     //{
-    int Bent_or_not_to_be_Bent=1;
+    int Bent_or_not_to_be_Bent=0;
     TTree *t1 = new TTree("t1","Information");
     double sigma_si,mx, Velocity_of_Particle;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
     double Oringal_Length_Air,Path_Length_Air,Oringal_Length_Earth,Path_Length_Earth;
