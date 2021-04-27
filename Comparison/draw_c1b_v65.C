@@ -153,7 +153,7 @@ void draw_c1b_v65()
     tex1->Draw();
     */
     
-    TFile *f=new TFile("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/Set_Limits_Plot_for_ALL.root");
+    TFile *f=new TFile("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/Set_Limits_Plot_for_ALL.root");
     
     //CDEX-1a
     TGraph *CDEX_1a=(TGraph*)f->Get("CDEX-1a");
