@@ -63,7 +63,7 @@ void draw_c1b_v65()
   pad1->SetTicky(1);
 
 //  TH2F *frame = new TH2F("frame","",100,3.0,200,100,5e-43,1e-39);
-  TH2F *frame = new TH2F("frame","",100,0.05,20,100,4e-43,1e-25);
+  TH2F *frame = new TH2F("frame","",100,0.05,15,100,4e-47,1e-22);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
   //frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
@@ -76,17 +76,77 @@ void draw_c1b_v65()
   gPad->SetLogx();
   gPad->SetLogy();
 
+//=================================================================================================
   TGraph *gCMB = new TGraph(); gCMB->SetName("gCMB"); 
-  gCMB->SetPoint(0, 0.05, 2.2e-26);
-  for(int i=0;i<4;i++)
-  { gCMB->SetPoint((i+1), pow(10.0,CMB_chiN[i][0]), pow(10.0,CMB_chiN[i][1])); }
-  //gCMB->Draw("l");
+  for(int i=0;i<8;i++)
+  { gCMB->SetPoint((i), pow(10.0,CMB_chiN[i][0]), pow(10.0,CMB_chiN[i][1]));
+      cout << "pow(10.0,CMB_chiN[i][0]): " << pow(10.0,CMB_chiN[i][0]) <<  endl;
+      cout << "pow(10.0,CMB_chiN[i][1])): " << pow(10.0,CMB_chiN[i][1]) << endl;
+  }
+    gCMB->SetFillColor(kAzure+6);
+    gCMB->SetFillStyle(3114);
+    gCMB->Draw("f");
 
+    TLatex *CMB_Text = new TLatex(0.055,2.5e-26,"CMB");
+    CMB_Text->SetTextFont(42);
+    CMB_Text->SetTextSize(0.04);
+    CMB_Text->SetLineWidth(2);
+    CMB_Text->SetTextColor(1);
+    CMB_Text->SetTextAngle(5);
+    CMB_Text->Draw();
+//=================================================================================================
   TGraph *gXQC = new TGraph(); gXQC->SetName("gXQC");
-  for(int i=0;i<13;i++)
-  { gXQC->SetPoint((i), pow(10.0,XQC_chiN[i][0]), pow(10.0,XQC_chiN[i][1])); }
-  //gXQC->Draw("l");
+  for(int i=0;i<15;i++)
+  { gXQC->SetPoint((i), pow(10.0,XQC_chiN[i][0]), pow(10.0,XQC_chiN[i][1]));
+    cout << "pow(10.0,XQC_chiN[i][0]):  " << pow(10.0,XQC_chiN[i][0]) << endl;
+    cout << "pow(10.0,XQC_chiN[i][1]):  " << pow(10.0,XQC_chiN[i][1]) << endl;
+  }
+    gXQC->SetFillColor(kYellow-7);
+    gXQC->SetFillStyle(3114);
+    gXQC->Draw("f");
 
+    TLatex *XQC_Text = new TLatex(0.15,6e-25,"XQC");
+    XQC_Text->SetTextFont(42);
+    XQC_Text->SetTextSize(0.04);
+    XQC_Text->SetLineWidth(2);
+    XQC_Text->SetTextColor(1);
+    XQC_Text->SetTextAngle(-40);
+    XQC_Text->Draw();
+//==================================================================================================
+    TGraph *gcresst_surf = new TGraph(); gcresst_surf->SetName("gcresst_surf");
+    for(int i=0;i<34;i++)
+    { gcresst_surf->SetPoint((i), pow(10.0,cresst_surf_chiN[i][0]), pow(10.0,cresst_surf_chiN[i][1])); }
+      gcresst_surf->SetPoint((34), pow(10.0,cresst_surf_chiN[0][0]), pow(10.0,cresst_surf_chiN[0][1]));
+      gcresst_surf->SetName("CDEX-1a");
+      gcresst_surf->SetFillColor(kRed-7);
+      gcresst_surf->SetFillStyle(3144);
+      gcresst_surf->Draw("f");
+
+      TLatex *CRESST_Surface_text = new TLatex(0.15,3e-28,"CRESST(2017) Surface");
+      CRESST_Surface_text->SetTextFont(42);
+      CRESST_Surface_text->SetTextSize(0.04);
+      CRESST_Surface_text->SetLineWidth(2);
+      CRESST_Surface_text->SetTextColor(1);
+      CRESST_Surface_text->SetTextAngle(-2);
+      CRESST_Surface_text->Draw();
+//==================================================================================================
+    TGraph *gcresstII = new TGraph(); gcresstII->SetName("gcresstII");
+    for(int i=0;i<37;i++)
+    { gcresstII->SetPoint((i), pow(10.0,cresstII_chiN[i][0]), pow(10.0,cresstII_chiN[i][1])); }
+      gcresstII->SetPoint((37), pow(10.0,cresstII_chiN[0][0]), pow(10.0,cresstII_chiN[0][1]));
+      gcresstII->SetName("CDEX-1a");
+      gcresstII->SetFillColor(kGreen-4);
+      gcresstII->SetFillStyle(3144);
+      gcresstII->Draw("f");
+
+      TLatex *CRESST_2_text = new TLatex(0.58,1e-36,"CRESST II");
+      CRESST_2_text->SetTextFont(42);
+      CRESST_2_text->SetTextSize(0.04);
+      CRESST_2_text->SetLineWidth(2);
+      CRESST_2_text->SetTextColor(1);
+      CRESST_2_text->SetTextAngle(-30);
+      CRESST_2_text->Draw();
+//==================================================================================================
     /*
     TGraph *gcresst_surf_Ours = new TGraph(); gcresst_surf_Ours->SetName("gcresst_surf_Ours");
     for(int i=0;i<16;i++)
@@ -99,39 +159,7 @@ void draw_c1b_v65()
      */
 
     
-  TGraph *gcresst_surf = new TGraph(); gcresst_surf->SetName("gcresst_surf");
-  for(int i=0;i<34;i++)
-  { gcresst_surf->SetPoint((i), pow(10.0,cresst_surf_chiN[i][0]), pow(10.0,cresst_surf_chiN[i][1])); }
-    gcresst_surf->SetPoint((34), pow(10.0,cresst_surf_chiN[0][0]), pow(10.0,cresst_surf_chiN[0][1]));
-    gcresst_surf->SetName("CDEX-1a");
-    gcresst_surf->SetFillColor(kRed-7);
-    gcresst_surf->SetFillStyle(3144);
-    //gcresst_surf->Draw("f");
 
-
-    
-    TLatex *tex2 = new TLatex(0.2,1e-26,"CRESST(2017) Surface");
-    tex2->SetTextFont(42);
-    tex2->SetTextSize(0.04);
-    tex2->SetLineWidth(2);
-    tex2->SetTextColor(2);
-    //tex2->Draw();
-
-  TGraph *gcresstII = new TGraph(); gcresstII->SetName("gcresstII");
-  for(int i=0;i<37;i++)
-  { gcresstII->SetPoint((i), pow(10.0,cresstII_chiN[i][0]), pow(10.0,cresstII_chiN[i][1])); }
-    gcresstII->SetPoint((37), pow(10.0,cresstII_chiN[0][0]), pow(10.0,cresstII_chiN[0][1]));
-  gcresstII->SetName("CDEX-1a");
-  gcresstII->SetFillColor(kGreen-4);
-  gcresstII->SetFillStyle(3144);
-  //gcresstII->Draw("f");
-
-    TLatex *tex3 = new TLatex(0.3,1e-38,"CRESST II");
-    tex3->SetTextFont(42);
-    tex3->SetTextSize(0.04);
-    tex3->SetLineWidth(2);
-    tex3->SetTextColor(3);
-    //tex3->Draw();
      
     
     /*
@@ -160,7 +188,7 @@ void draw_c1b_v65()
     CDEX_1a->SetName("CDEX-1a");
     CDEX_1a->SetFillColor(kOrange+7);
     CDEX_1a->SetFillStyle(3144);
-    CDEX_1a->Draw("f");
+    //CDEX_1a->Draw("f");
 
     double x1, y1;
 
