@@ -30,45 +30,50 @@
 //1.009keV        ==> 201.183(km/s)
 void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_SURF()
 {
-    /*
-    const int Event_Number=16;
-    double Threshold_of_Detector=0.08; //for CRESST surface
-    double WIMP_Mass_Array[Event_Number]={0.5,0.7,0.9,1,2,3,4,5,7,9,11,13,15,17,19,20};//16 for CRESST
-     */
-    //double WIMP_Mass_Array[Event_Number]={0.5,0.7,0.9,1};//4 for CRESST
-
-    //double WIMP_Mass_Array[Event_Number]={1};//23 for CRESST
     
+    const int Event_Number=16;
+    double Threshold_of_Detector=0.02; //for CRESST surface
+    double WIMP_Mass_Array[Event_Number]={0.5,0.7,0.9,1,2,3,4,5,7,9,11,13,15,17,19,20};//16 for CRESST
+     
+    /*
+    double WIMP_Mass_Array[Event_Number]={0.5,0.7,0.9,1};//4 for CRESST
+    double WIMP_Mass_Array[Event_Number]={1};//23 for CRESST
+    */
+    
+    /*
     const int Event_Number=1;
     double Threshold_of_Detector = 1;//Without attenuating
+     */
     //double WIMP_Mass_Array[Event_Number]={2.34,2,3,4,5,7,9,11,13,15,17,19,20};//19 for TEXONO
-     double WIMP_Mass_Array[Event_Number]={1e11};
-   // double Critical_Point[11] = {779.135000,788.344,777.158,776.366,773.944,768.457,752.241,709.923,621.726,468.272,201.183};
-    double Critical_Point[12] = {779.135000,750,700,650,600,550,500,450,400,350,278.036};
-    double Sigma_SI_Array[Event_Number];
+    
+    // double WIMP_Mass_Array[Event_Number]={1e11};
+    // double Critical_Point[11] = {779.135000,788.344,777.158,776.366,773.944,768.457,752.241,709.923,621.726,468.272,201.183};
+    //double Critical_Point[12] = {779.135000,750,700,650,600,550,500,450,400,350,278.036};
     //Check
     double Threshold_Criteria_Test=(1000.0*max_recoil_A(2.34,779.135000*1000.0/2.99792458e8, AGe));
     cout << "Threshold_Criteria_Test: " << Threshold_Criteria_Test << endl;
     double Threshold_Criteria_Test_2=(1000.0*max_recoil_A(0.14,779.135000*1000.0/2.99792458e8, 16));//O:0.0174361 Al:0.0104113
     cout << "Threshold_Criteria_Test_2: " << Threshold_Criteria_Test_2 << endl;
 
-for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
+    double Sigma_SI_Array[Event_Number];
+
+for(int WIMP_Event=0; WIMP_Event<1; WIMP_Event++)
 {
    //if(WIMP_Event>=0) continue;
     double WIMP_Mass=WIMP_Mass_Array[WIMP_Event];
     for(int lll=0; lll<7; lll++)
     {
-        for(int zzz=10; zzz<11; zzz++)//Z<10
+        for(int zzz=1; zzz<99; zzz++)//Z<10
         {
             for(int ppp=0; ppp<1; ppp++ )
             {
                 int Count=0;
                 cout << "Sigma_SI_Array[WIMP_Event]: " << Sigma_SI_Array[WIMP_Event] << endl;
                 if(Sigma_SI_Array[WIMP_Event]>1e-45) continue;
-                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-27) * TMath::Power(10,(7-lll));
+                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-29) * TMath::Power(10,(lll));
                 cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
                 
-                int Simulated_Event_Number=1;
+                int Simulated_Event_Number=5;
                 double Velocity[Simulated_Event_Number];double Velocity_Z[Simulated_Event_Number];
                 double Collision_Expectation_ATM[Simulated_Event_Number];double Collision_Expectation_EARTH[Simulated_Event_Number];
                 double Collision_Expectation_Earth[Simulated_Event_Number];

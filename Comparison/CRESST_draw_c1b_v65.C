@@ -24,7 +24,7 @@
 #include "TEXONO_real_Brem_Upper.h"
 #include "TEXONO_real_Migdal_Lower_All_Bins.h"
 
-void draw_c1b_v65()
+void CRESST_draw_c1b_v65()
 {
   int Number_of_Candidates=20;
   gStyle->SetOptStat(0);
@@ -63,7 +63,7 @@ void draw_c1b_v65()
   pad1->SetTicky(1);
 
 //  TH2F *frame = new TH2F("frame","",100,3.0,200,100,5e-43,1e-39);
-  TH2F *frame = new TH2F("frame","",100,0.05,15,100,4e-47,1e-22);
+  TH2F *frame = new TH2F("frame","",100,0.05,15,100,4e-38,1e-24);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
   //frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
@@ -85,7 +85,7 @@ void draw_c1b_v65()
   }
     gCMB->SetFillColor(kAzure+6);
     gCMB->SetFillStyle(3114);
-    gCMB->Draw("f");
+    //gCMB->Draw("f");
 
     TLatex *CMB_Text = new TLatex(0.055,2.5e-26,"CMB");
     CMB_Text->SetTextFont(42);
@@ -93,7 +93,7 @@ void draw_c1b_v65()
     CMB_Text->SetLineWidth(2);
     CMB_Text->SetTextColor(1);
     CMB_Text->SetTextAngle(5);
-    CMB_Text->Draw();
+    //CMB_Text->Draw();
 //=================================================================================================
   TGraph *gXQC = new TGraph(); gXQC->SetName("gXQC");
   for(int i=0;i<15;i++)
@@ -103,7 +103,7 @@ void draw_c1b_v65()
   }
     gXQC->SetFillColor(kYellow-7);
     gXQC->SetFillStyle(3114);
-    gXQC->Draw("f");
+    //gXQC->Draw("f");
 
     TLatex *XQC_Text = new TLatex(0.15,6e-25,"XQC");
     XQC_Text->SetTextFont(42);
@@ -111,7 +111,7 @@ void draw_c1b_v65()
     XQC_Text->SetLineWidth(2);
     XQC_Text->SetTextColor(1);
     XQC_Text->SetTextAngle(-40);
-    XQC_Text->Draw();
+    //XQC_Text->Draw();
 //==================================================================================================
     TGraph *gcresst_surf = new TGraph(); gcresst_surf->SetName("gcresst_surf");
     for(int i=0;i<34;i++)
@@ -137,24 +137,24 @@ void draw_c1b_v65()
       gcresstII->SetName("CDEX-1a");
       gcresstII->SetFillColor(kGreen-4);
       gcresstII->SetFillStyle(3144);
-      gcresstII->Draw("f");
+      //gcresstII->Draw("f");
 
-      TLatex *CRESST_2_text = new TLatex(0.58,1e-36,"CRESST II");
-      CRESST_2_text->SetTextFont(42);
-      CRESST_2_text->SetTextSize(0.04);
-      CRESST_2_text->SetLineWidth(2);
-      CRESST_2_text->SetTextColor(1);
-      CRESST_2_text->SetTextAngle(-30);
-      CRESST_2_text->Draw();
 //==================================================================================================
     TGraph *gcresst_surf_Ours = new TGraph(); gcresst_surf_Ours->SetName("gcresst_surf_Ours");
     for(int i=0;i<16;i++)
     { gcresst_surf_Ours->SetPoint((i), cresst_surf_chiN_Ours[i][0], cresst_surf_chiN_Ours[i][1]); }
-    gcresst_surf_Ours->SetLineColor(2);
-    gcresst_surf_Ours->SetLineWidth(8);
+    gcresst_surf_Ours->SetLineColor(3);
+    gcresst_surf_Ours->SetLineWidth(7);
     gcresst_surf_Ours->SetLineStyle(4);
-
     gcresst_surf_Ours->Draw("l");
+    
+    TLatex *gcresst_surf_Ours_text = new TLatex(5,5e-28,"Our result");
+    gcresst_surf_Ours_text->SetTextFont(42);
+    gcresst_surf_Ours_text->SetTextSize(0.04);
+    gcresst_surf_Ours_text->SetLineWidth(2);
+    gcresst_surf_Ours_text->SetTextColor(3);
+    gcresst_surf_Ours_text->Draw();
+
 //============================
      
 
@@ -223,7 +223,7 @@ void draw_c1b_v65()
     cdex_real->SetName("cdex_real");
     cdex_real->SetFillColor(kOrange+7);
     cdex_real->SetFillStyle(3144);
-    cdex_real->Draw("f");
+    //cdex_real->Draw("f");
 
     TLatex *tex10 = new TLatex(0.8,1e-39,"CDEX-1b(NU)");
     tex10->SetTextFont(42);
@@ -319,7 +319,7 @@ void draw_c1b_v65()
     cdex_real_Migdal->SetFillColor(kRed+3);
     cdex_real_Migdal->SetLineColor(1);
     cdex_real_Migdal->SetLineWidth(5);
-    cdex_real_Migdal->Draw("fsame");
+    //cdex_real_Migdal->Draw("fsame");
     cdex_real_Migdal->SetFillStyle(3144);
 
     TLatex *tex5;
@@ -991,4 +991,5 @@ c1b_migdal_adjust->SetLineWidth(5);
  }
  atm_project->Draw("l");
 */
+    plot->Print("CRESST_LIMITS.pdf");
 }
