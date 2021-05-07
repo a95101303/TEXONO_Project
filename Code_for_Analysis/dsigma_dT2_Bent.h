@@ -39,6 +39,7 @@ double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double Theta)
 {
     double tanPhi = TMath::Sin(Theta*Degree_to_Radian)/(TMath::Cos(Theta*Degree_to_Radian)* Mass_to_Nucleon(DM_mx,Earth_or_Air));
     double Phi = TMath::ATan(tanPhi)/Degree_to_Radian;
+    cout << "Phi: " << Phi << endl;
     return Phi;
 }
 

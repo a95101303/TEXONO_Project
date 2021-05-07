@@ -308,7 +308,7 @@ double *Aft_scatterd_Direction(int Earth_or_Air, double DM_mx, double DM_Velocit
     TF1 *Angle_CM = new TF1("f1","1",0,180);
     double Angle_CM_Used = Angle_CM->GetRandom();
     double Angle_Lab     = Phi_Rest_Frame(Earth_or_Air,DM_mx,Angle_CM_Used);
-
+    cout << "Angle_CM_Used: " << Angle_CM_Used << endl;
     cout << "Angle_Lab: " << Angle_Lab << endl;
     
     double MDV = DM_Velocity_Aft_Colliding*TMath::Cos(Angle_Lab*Degree_to_Radian);//  Mother_direction_Value
@@ -2368,9 +2368,8 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
      RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;RETURN_VALUE[2]=Collision_Time;
      RETURN_VALUE[3]=Track_Point[0];RETURN_VALUE[4]=Track_Point[1];RETURN_VALUE[5]=Track_Point[2];RETURN_VALUE[6]=Arrival_or_not;
      RETURN_VALUE[7]=Direction[0];RETURN_VALUE[8]=Direction[1];RETURN_VALUE[9]=Direction[2];
-     RETURN_VALUE[10]=Path_Original;RETURN_VALUE[11]=Temp_Length;
+     RETURN_VALUE[10]=Path_Original;RETURN_VALUE[11]=Temp_Length;RETURN_VALUE[12]=Collision_Time;
      }
-     cout << "Collision_Time: " << Collision_Time << endl;
 
      if(Check_Threshold!=0)
      {
@@ -2656,7 +2655,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
         else{RETURN_VALUE[1]=0;}
     RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;RETURN_VALUE[2]=Collision_Time;
     RETURN_VALUE[3]=Arrival_or_not;
-    RETURN_VALUE[4]=Path_Original;RETURN_VALUE[5]=Temp_Length;
+    RETURN_VALUE[4]=Path_Original;RETURN_VALUE[5]=Temp_Length;RETURN_VALUE[6]=Collision_Time;
     }
     
     if(Check_Threshold!=0)
