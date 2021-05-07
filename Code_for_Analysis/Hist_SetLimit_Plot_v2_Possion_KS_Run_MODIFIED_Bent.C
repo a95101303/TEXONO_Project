@@ -29,7 +29,7 @@
 
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
-void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Index, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
 {
     cout << "Sigma_SI: " << Sigma_SI << endl;
     //==============================Second step==============================
@@ -90,10 +90,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated
     TH1F   *Flux_HIST_Aft_Collision_Air_I   = new TH1F("Flux_HIST_Aft_Collision_Air_I","Flux_HIST_Aft_Collision_Air_I",2000,0,791);
     TH1F   *Flux_HIST_Aft_Collision_Earth_I = new TH1F("Flux_HIST_Aft_Collision_Earth_I","Flux_HIST_Aft_Collision_Earth",2000,0,791);
 
-    TH1F   *Original_Bent_Comparison_Ratio_Air   = new TH1F("Original_Bent_Comparison_Ratio_Air","Original_Bent_Comparison_Ratio_Air",200000,0,100);
-    TH1F   *Original_Bent_Comparison_Ratio_Earth = new TH1F("Original_Bent_Comparison_Ratio_Earth","Original_Bent_Comparison_Ratio_Earth",200000,0,100);
-
-    TH1F   *Energy_Loss_Percentage_Hist   = new TH1F("Energy_Loss_Percentage_Hist","Energy_Loss_Percentage_Hist",1e5,0,1);
+    TH1F   *Energy_Loss_Percentage_Hist   = new TH1F("Energy_Loss_Percentage_Hist","Energy_Loss_Percentage_Hist",1e3,0,1);
 
     double Scaling_Factor=0;double Scaling_Factor_1=0;
     TH1F   *Collision_Time_Hist_Earth = new TH1F("Collision_Time_Hist_Earth","Collision_Time_Hist_Earth",300,0,300);
@@ -106,16 +103,22 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated
     int kkk=0; int jjj=0; int MMM=0;
     //for(int kkk=0 ; kkk<Simulated_Event_Number ; kkk++)
     //{
-    int Bent_or_not_to_be_Bent=1;
+    int Bent_or_not_to_be_Bent=Bent_or_not;
     TTree *t1 = new TTree("t1","Information");
-    double sigma_si,mx, Velocity_of_Particle;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
+    double sigma_si,mx ;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
+    double V_Int_A, V_End_A, V_Int_E, V_End_E;
     double Oringal_Length_Air,Path_Length_Air,Oringal_Length_Earth,Path_Length_Earth;
     double Collision_Time_Earth,Collision_Time_Air;
     double Original_Bent_Comparison_Ratio_Air_P,Original_Bent_Comparison_Ratio_Earth_P;
     double Energy_Loss_Percentage_lf;
+    
     t1->Branch("sigma_si",&sigma_si,"sigma_si/D");
     t1->Branch("mx",&mx,"mx/D");
-    t1->Branch("Velocity_of_Particle",&Velocity_of_Particle,"Velocity_of_Particle/D");
+    t1->Branch("V_Int_A",&V_Int_A,"V_Int_A/D");
+    t1->Branch("V_End_A",&V_End_A,"V_End_A/D");
+    t1->Branch("V_Int_E",&V_Int_E,"V_Int_E/D");
+    t1->Branch("V_End_E",&V_End_E,"V_End_E/D");
+
     t1->Branch("ev",&ev,"ev/I");
     t1->Branch("Arrival_air",&Arrival_air,"Arrival_air/I");
     t1->Branch("Arrival_earth",&Arrival_earth,"Arrival_earth/I");
@@ -129,15 +132,12 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated
     t1->Branch("Collision_Time_Earth",&Collision_Time_Earth,"Collision_Time_Earth/D");
     t1->Branch("Collision_Time_Air",&Collision_Time_Air,"Collision_Time_Air/D");
 
-    t1->Branch("Original_Bent_Comparison_Ratio_Air_P",&Original_Bent_Comparison_Ratio_Air_P,"Original_Bent_Comparison_Ratio_Air_P/D");
-    t1->Branch("Original_Bent_Comparison_Ratio_Earth_P",&Original_Bent_Comparison_Ratio_Earth_P,"Original_Bent_Comparison_Ratio_Earth_P/D");
-
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
     //while(kkk<500 or jjj<3000)
-    //while(jjj<3000)
-    while(MMM<3000)
+    //while(jjj<500)
+    while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
         
         cout << "===================================" << endl;
@@ -153,7 +153,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Index, int Simulated
         gRandom->SetSeed(0);
         double Random_Velocity = 0;
         Random_Velocity = Flux_HIST->GetRandom();
-        Velocity_of_Particle = Random_Velocity;
+        V_Int_A = Random_Velocity;
         //Random_Velocity = 799.135;
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
@@ -207,15 +207,19 @@ double *ATM_Value = KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to
             kkk = kkk + 1;
             Collision_Time_Hist_Air->Fill(ATM_Value[2]);
             Collision_Time_Air = ATM_Value[2];
-            Original_Bent_Comparison_Ratio_Air->Fill(ATM_Value[1]);
-            Original_Bent_Comparison_Ratio_Air_P = ATM_Value[1];
+            //Original_Bent_Comparison_Ratio_Air->Fill(ATM_Value[1]);
             Flux_HIST_Aft_Collision_EARTH->Fill(ATM_Value[0]);
-            Flux_HIST_Aft_Collision_Air_I->Fill(ATM_Value[0]);
+            V_End_A = ATM_Value[0];
         }
         else{
+            Arrival_earth = 0;
+            Oringal_Length_Earth = 0; Path_Length_Earth = 0;
+            Collision_Time_Earth = 0;
+            Collision_Time_Air = ATM_Value[2];
+            cout << "Arrival_earth: " << Arrival_earth << endl;
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            Collision_Time_Air = 0;
-            Original_Bent_Comparison_Ratio_Air_P = 0;
+            V_End_E = 0;
+            V_End_A = 0;
         }
         cout << "Arrival_air: " << Arrival_air << endl;
         double IP[3]={ATM_Value[3],ATM_Value[4],ATM_Value[5]};//Intermediate_Position
@@ -224,6 +228,7 @@ double *ATM_Value = KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to
         //Earth_Value
         
         if(Arrival_air==1){//Arrival_air_Open
+            V_Int_E = ATM_Value[0];
     double *Earth_Value = KS_Collision_Time_Earth_Aft_velocity_with_angle(Bent_or_not_to_be_Bent,kkk,Index_Sigma,Sigma_SI,ATM_Value[0],DM_mx,ID,IP);
         Arrival_earth = Earth_Value[3];
         
@@ -233,37 +238,30 @@ double *ATM_Value = KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to
         if(Arrival_earth==1)
         {
             cout << "===============YAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYA==============================" << endl;
+            cout << "MMM: " << MMM  << endl;
             double E_Loss            = Energy_DM(DM_mx,Random_Velocity*1e3/3e8) - Energy_DM(DM_mx,Earth_Value[0]*1e3/3e8);
             double E_Loss_Percentage = (E_Loss) / ( Energy_DM(DM_mx,Random_Velocity*1e3/3e8) ) ;
             cout << "E_Loss_Percentage: " << E_Loss_Percentage << endl;
             Energy_Loss_Percentage_Hist->Fill(E_Loss_Percentage);
-            Energy_Loss_Percentage_lf = E_Loss_Percentage;
             MMM = MMM + 1;
-            Collision_Time_Earth = Earth_Value[2];
-            Original_Bent_Comparison_Ratio_Earth->Fill(Earth_Value[1]);
-            Original_Bent_Comparison_Ratio_Earth_P = Earth_Value[1];
+            //Original_Bent_Comparison_Ratio_Earth->Fill(Earth_Value[1]);
             Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
-            Flux_HIST_Aft_Collision_Earth_I->Fill(Earth_Value[0]);
+            Energy_Loss_Percentage_lf = E_Loss_Percentage;
+            Collision_Time_Earth = Earth_Value[2];
+            V_End_E = Earth_Value[0];
         }
         else
         {
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            Collision_Time_Earth = 0;
-            Original_Bent_Comparison_Ratio_Earth_P = 0;
+            Energy_Loss_Percentage_lf = 1;
+            Collision_Time_Earth = Earth_Value[2];
+            V_End_E = 0;
         }
         
         cout << "Earth_Value[0]: " << Earth_Value[0] << endl;
         cout << "Arrival_earth: " << Arrival_earth << endl;
         }//Arrival_air_Close
         
-        else{
-            Arrival_earth = 0;
-            Oringal_Length_Earth = 0; Path_Length_Earth = 0;
-            Collision_Time_Earth = 0;
-            Original_Bent_Comparison_Ratio_Earth_P = 0;
-            cout << "Arrival_earth: " << Arrival_earth << endl;
-            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-        }
         //Final_Length
         
         jjj = jjj + 1;
@@ -309,7 +307,7 @@ double *ATM_Value = KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to
     Flux_HIST_Aft_Collision_Earth_I->Write();
     Energy_Loss_Percentage_Hist->Write();
     //Original_Bent_Comparison_Ratio_Earth->Write();
-    Original_Bent_Comparison_Ratio_Air->Write();
+    //Original_Bent_Comparison_Ratio_Air->Write();
     t1->Write();
     fout->Close();
     cout << "fout_name: " << fout_name << endl;
