@@ -58,7 +58,8 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
 
                 TH1F   *Energy_Diff = new TH1F("Energy_Diff","Energy_Diff",100,0,1);
                 TH1F   *Earth_Survive = new TH1F("Earth_Survive","Earth_Survive",3,0,3);
-                TH1F   *Earth_Collision_Time = new TH1F("Earth_Collision_Time","Earth_Collision_Time",3,0,3);
+                TH1F   *Y_Earth_Collision_Time = new TH1F("Y_Earth_Collision_Time","Y_Earth_Collision_Time",100,0,500);
+                TH1F   *N_Earth_Collision_Time = new TH1F("N_Earth_Collision_Time","N_Earth_Collision_Time",100,0,500);
                 TH2F   *Y_Air_Length_to_Energy_Loss= new TH2F("Y_Air_Length_to_Energy_Loss","Y_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
                 TH2F   *N_Air_Length_to_Energy_Loss= new TH2F("N_Air_Length_to_Energy_Loss","N_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
                 
@@ -71,14 +72,15 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
                     Earth_Survive->Fill(Arrival_earth);
                     if(Arrival_earth==0 and Arrival_air==1)
                     {
+                    N_Earth_Collision_Time->Fill(Collision_Time_Earth);
                     N_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
-                        cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
-                        cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
-
+                    cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
+                    cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
                     }
                     if(Arrival_earth==1 and Arrival_air==1)
                     {
                     Energy_Diff->Fill(Energy_Loss_Percentage_lf);
+                    Y_Earth_Collision_Time->Fill(Collision_Time_Earth);
                     Y_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
                     }
                 }//for(int Entry=0; Entry<T1_TREE->GetEntries(); Entry++)
@@ -89,6 +91,8 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
                 Earth_Survive->Write();
                 Y_Air_Length_to_Energy_Loss->Write();
                 N_Air_Length_to_Energy_Loss->Write();
+                Y_Earth_Collision_Time->Write();
+                N_Earth_Collision_Time->Write();
                 cout << "Yes  " << endl;
                 fout->Close();
             }//fin.is_open()
