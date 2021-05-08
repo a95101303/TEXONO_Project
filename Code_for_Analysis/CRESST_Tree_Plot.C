@@ -3,6 +3,7 @@
 #include "TMath.h"
 #include "TGraph.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "Hist_SetLimit_Plot_v2_Extract_Peak.h"
 //#include "B_L_Henke_data_PE_f1_f2.h"
 #include "dsigma_dT2.h"
@@ -15,6 +16,8 @@ void CRESST_Tree_Plot()//
     int Bent_or_Not=0;
     string Type[2]={"_Comparison",""};
 
+for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
+    {
     for(int Mass_INT=0; Mass_INT<3; Mass_INT++)
     {
         for(int FILE=1; FILE<2; FILE++)
@@ -55,14 +58,28 @@ void CRESST_Tree_Plot()//
 
                 TH1F   *Energy_Diff = new TH1F("Energy_Diff","Energy_Diff",100,0,1);
                 TH1F   *Earth_Survive = new TH1F("Earth_Survive","Earth_Survive",3,0,3);
+                TH1F   *Earth_Collision_Time = new TH1F("Earth_Collision_Time","Earth_Collision_Time",3,0,3);
+                TH2F   *Y_Air_Length_to_Energy_Loss= new TH2F("Y_Air_Length_to_Energy_Loss","Y_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
+                TH2F   *N_Air_Length_to_Energy_Loss= new TH2F("N_Air_Length_to_Energy_Loss","N_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
+                
+                Y_Air_Length_to_Energy_Loss->SetLineColor(2);
+                N_Air_Length_to_Energy_Loss->SetLineColor(3);
 
                 for(int Entry=0; Entry<T1_TREE->GetEntries(); Entry++)
                 {
                     T1_TREE->GetEntry(Entry);
                     Earth_Survive->Fill(Arrival_earth);
-                    if(Arrival_earth==1)
+                    if(Arrival_earth==0 and Arrival_air==1)
+                    {
+                    N_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
+                        cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
+                        cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
+
+                    }
+                    if(Arrival_earth==1 and Arrival_air==1)
                     {
                     Energy_Diff->Fill(Energy_Loss_Percentage_lf);
+                    Y_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
                     }
                 }//for(int Entry=0; Entry<T1_TREE->GetEntries(); Entry++)
                 char fout_name[100];
@@ -70,12 +87,15 @@ void CRESST_Tree_Plot()//
                 TFile *fout=new TFile(fout_name,"recreate");
                 Energy_Diff->Write();
                 Earth_Survive->Write();
+                Y_Air_Length_to_Energy_Loss->Write();
+                N_Air_Length_to_Energy_Loss->Write();
                 cout << "Yes  " << endl;
                 fout->Close();
             }//fin.is_open()
         }//for(int FILE=0; FILE<4; FILE++)
     }//for(int Mass_INT=0; Mass_INT<4; Mass_INT++)
     //==============Mass==============//
+    }
 }
     
 
