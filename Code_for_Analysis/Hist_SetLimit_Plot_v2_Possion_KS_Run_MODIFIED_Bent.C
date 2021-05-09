@@ -135,9 +135,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    //while(kkk<500 or jjj<3000)
-    //while(jjj<500)
-    while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
+    while(jjj<2500)
+    //while(jjj<50)
+    //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
         
         cout << "===================================" << endl;
@@ -155,9 +155,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
         Random_Velocity = Flux_HIST->GetRandom();
         V_Int_A = Random_Velocity;
         //Random_Velocity = 799.135;
-        //Two times
-        Flux_HIST_Random->Fill(Random_Velocity);
-        Flux_HIST_Random->Fill(Random_Velocity);
 
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
@@ -168,8 +165,19 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
         double Velocity_X =    (par[0]/Random_Velocity);
         double Velocity_Y =    (par[1]/Random_Velocity);
         double Velocity_Z = abs(par[2]/Random_Velocity);
-         
+        double Velocity_Matrix[3] = {Velocity_X,Velocity_Y,Velocity_Z};
+        double Check_Place[3] = {0,0,-6371-80};
+                
+        if( Scale_for_scattering_process(1,6371,Check_Place,Velocity_Matrix) ==0 )
+        {
+            cout << "A piece of Junk!!" << endl;
+            continue;
+        }
         
+        //Two times
+        Flux_HIST_Random->Fill(Random_Velocity);
+        Flux_HIST_Random->Fill(Random_Velocity);
+
         /*
         double Velocity_X = 1e-50;
         double Velocity_Y = 1e-50;

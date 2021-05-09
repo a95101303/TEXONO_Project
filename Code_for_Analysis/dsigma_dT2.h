@@ -6,7 +6,7 @@
 //#include "B_L_Henke_data_PE_f1_f2.h"
 #include "dsigma_dT2_Bent.h"
 #include <iomanip>      // std::setprecision
-#include "B_L_Henke_data_PE_f1_f2.h"
+ #include "B_L_Henke_data_PE_f1_f2.h"
 
 #endif
 
@@ -305,7 +305,7 @@ double *Aft_scatterd_Direction(int Earth_or_Air, double DM_mx, double DM_Velocit
 {
     static double Direction[3];double Direction_VT[3];
     
-    TF1 *Angle_CM = new TF1("f1","1",0,180);
+    TF1 *Angle_CM = new TF1("f1","1",0,360);
     double Angle_CM_Used = Angle_CM->GetRandom();
     double Angle_Lab     = Phi_Rest_Frame(Earth_or_Air,DM_mx,Angle_CM_Used);
     cout << "Angle_CM_Used: " << Angle_CM_Used << endl;
