@@ -21,7 +21,7 @@
 #include "TCut.h"
 #include "TCanvas.h"
 #include "TAxis.h"
-#include "B_L_Henke_data_PE_f1_f2.h"
+//#include "B_L_Henke_data_PE_f1_f2.h"
 
 //Point_Number
 
@@ -289,7 +289,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
 
 
     //==============Constant_for_calculation==================
-    double A = AGe;//Only for CRESST
+    //double A = AGe;//Only for CRESST
+    double A = 20;
     
     static double T[reso_T];static double T_QF[reso_T];double recoil[reso_T];
     double v;double  MaxV=0;
@@ -323,8 +324,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
 
     //Fuck!!!!!Please remember to initiate
-    cout << "(WIMP_max_T_NU): " << (1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, AGe)) << endl;
-    cout << "WIMP_max_T_EM: " << max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, AGe) << endl;
+    cout << "(WIMP_max_T_NU): " << (1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A)) << endl;
+    cout << "WIMP_max_T_EM: " << max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A) << endl;
 
     /*
     cout << "(max_recoil_A_keV(WIMP_mx, v, A)): " << (max_recoil_A_keV(WIMP_mx, MaxV*kms1_to_c, A)) << endl;
@@ -350,8 +351,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         for(int i=0;i<reso_T;i++)
         {
             T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
-            T_QF[i] = TQF(T[i]); //Normal Case for Ge
-            //T_QF[i] = (T[i]);//CRESST CASE QF=1
+            //T_QF[i] = TQF(T[i]); //Normal Case for Ge
+            T_QF[i] = (T[i]);//CRESST CASE QF=1
             recoilX[i] = 0.0;
             //cout << "T[i]: " << T[i] << endl;
             for(int j=0;j<2000;j++)
@@ -362,8 +363,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                     if((max_recoil_A_keV(WIMP_mx, v, A))>T[i] and Model_of_Interaction==0)
                     {
                         //cout << "T_QF[i]: " << T_QF[i] << endl;
-                        //if(Conventional_or_not==0)recoilX[i] = recoilX[i] + (T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/1000;//Only for CRESST
-                        if(Conventional_or_not==0)recoilX[i] = recoilX[i] + rate_scale_QF(T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/1000;
+                        if(Conventional_or_not==0)recoilX[i] = recoilX[i] + (T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/5000;//Only for CRESST
+                        //if(Conventional_or_not==0)recoilX[i] = recoilX[i] + rate_scale_QF(T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/5000;
                         if(Conventional_or_not==1)recoilX[i] = recoilX[i] + rate_scale_QF(T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];
                         //if(Conventional_or_not==2)recoilX[i] = recoilX[i] + 365*rate_scale_QF(T[i])*AAAA_keV(WIMP_mx, Sigma_SI, v, 131, T[i])*N_atom_Xe_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];//For Heavy DM
                         if(Conventional_or_not==2)recoilX[i] = recoilX[i] + 365*rate_scale_QF(T[i])*AAAA_keV(WIMP_mx, Sigma_SI, v, 72.64, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];//For Heavy DM

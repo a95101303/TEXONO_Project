@@ -13,7 +13,7 @@ void CRESST_Tree_Plot()//
 
     string Mass_Point[3]={"20","2","0P2"};
     double Mass[3]={20,2,0.2};
-    int Bent_or_Not=0;
+    int Bent_or_Not=1;
     string Type[2]={"_Comparison",""};
 
 for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)

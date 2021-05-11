@@ -19,13 +19,13 @@ void Overlap_Plot_TEXONO_Ge3_CRESST()//CDEX:Threshold=160eV, TEXONO:Threshold=20
     int Experiment_Type=0;double Threshold[2]={0.2,0.3};//0 for CDEX and 1 for TEXONO, (keV)
     int Type_of_Model_INT=0;string Type_of_Model[4]={"NU","MD","BR","MDMPA"};
     //==============Mass==============//
-for(int kkk=0;kkk<1;kkk++)
+for(int kkk=1;kkk<6;kkk++)
     {
         int Mass_INT=kkk;
         //string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
         //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
         //string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-        string Mass_Point[3]={"20","2","0P2"};
+        string Mass_Point[3]={"20","10","2","0P2"};
         //================================//
         double Sigma_SI_Array[Number];
         double Sigma_SI_With_Threshold_M1[Number];//>200eV
