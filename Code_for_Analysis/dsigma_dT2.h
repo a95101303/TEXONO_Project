@@ -301,14 +301,12 @@ double *Vertical_vector_Function(double *Vector_Norm)//
     cout << "Vector_Norm" << Vx*Normalized_vector[0]+Vy*Normalized_vector[1]+Vz*Normalized_vector[2] << endl;
      */
 }
-double *Aft_scatterd_Direction(int Earth_or_Air, double DM_mx, double DM_Velocity_Aft_Colliding, double *Direction_Bef)
+double *Aft_scatterd_Direction(int Earth_or_Air, double DM_mx, double DM_Velocity_Aft_Colliding, double *Direction_Bef, double Ratio_of_Energy_Loss_to_Atom)
 {
     static double Direction[3];double Direction_VT[3];
     
     TF1 *Angle_CM = new TF1("f1","1",0,360);
-    double Angle_CM_Used = Angle_CM->GetRandom();
-    double Angle_Lab     = Phi_Rest_Frame(Earth_or_Air,DM_mx,Angle_CM_Used);
-    cout << "Angle_CM_Used: " << Angle_CM_Used << endl;
+    double Angle_Lab     = Phi_Rest_Frame(Earth_or_Air,DM_mx,Ratio_of_Energy_Loss_to_Atom);
     cout << "Angle_Lab: " << Angle_Lab << endl;
     
     double MDV = DM_Velocity_Aft_Colliding*TMath::Cos(Angle_Lab*Degree_to_Radian);//  Mother_direction_Value
@@ -1215,11 +1213,12 @@ double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_
                 f3->SetParameter(0,mx);f3->SetParameter(1,Sigma_SI_Default);f3->SetParameter(2,(DM_Velocity_Aft_Colliding*1e3/3e8));f3->SetParameter(3,ATOM_KIND);
                 double Random_Energy= f3->GetRandom();
                 //cout << "Random_Energy: " << Random_Energy << endl;
+                cout << "(Function)Random_Energy/DM_Velocity_Aft_Colliding: " << Random_Energy/DM_Velocity_Aft_Colliding << endl;
+
                 Energy_Lost_Total = Energy_Lost_Total + Random_Energy;
                 DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Random_Energy);
                 DM_Velocity_Aft_Colliding = Velocity_DM(mx,DM_Energy_Aft_Colliding);
                 //cout << "kkk: " << kkk << endl;
-                //cout << "Random_Energy: " << Random_Energy << endl;
                 //cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
                 Count = Count + 1;
                 if(DM_Energy_Aft_Colliding<1e-2 or Random_Energy==0)
@@ -2152,7 +2151,10 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
      std::setprecision(9);
      double Track_Point[3]={0,0,-6371-80};//Start from the bottom point
 
+     
      double  Path_Original= 0;
+     double  Ratio_of_Energy_Loss_to_Atom = 0;
+     
      if(Check_Threshold==0)
      {
          double Center_of_Earth[3]={0,0,0};
@@ -2302,11 +2304,14 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
                  cout << "Bef_Vel: " << DM_Velocity_Aft_Colliding << endl;
 
                  double *V_Aft_Collision_AIR = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,2);
+                 double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_AIR[0]*1e3/3e8);
+                 double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
+                 cout << "Ratio_of_Energy_Loss_to_Atom: " << Ratio_of_Energy_Loss_to_Atom << endl;
                  DM_Velocity_Aft_Colliding=V_Aft_Collision_AIR[0];
                  cout << "Aft_Vel: " << DM_Velocity_Aft_Colliding << endl;
                  
                  if(Straight_or_scattered==1){
-                 double *Direction_aft = Aft_scatterd_Direction(2,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction);
+                 double *Direction_aft = Aft_scatterd_Direction(2,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
                  Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];}
                  
                  if(Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8)<0.01)
@@ -2589,12 +2594,15 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
                 cout << "Sprint: " << Sprint_Length << endl;
                 cout << "Temp_Length: " << Temp_Length << endl;
 
-                double *V_Aft_Collision_AIR = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,1);
-                DM_Velocity_Aft_Colliding=V_Aft_Collision_AIR[0];
+                double *V_Aft_Collision_Earth = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,1);
+                double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_Earth[0]*1e3/3e8);
+                double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
+                cout << "Ratio_of_Energy_Loss_to_Atom: " << Ratio_of_Energy_Loss_to_Atom << endl;
+                DM_Velocity_Aft_Colliding=V_Aft_Collision_Earth[0];
                 cout << "Aft_Vel: " << DM_Velocity_Aft_Colliding << endl;
                 
                 if(Straight_or_scattered==1){
-                double *Direction_aft = Aft_scatterd_Direction(1,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction);
+                double *Direction_aft = Aft_scatterd_Direction(1,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
                 Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];}
                 
                 if(Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8)<0.01)

@@ -62,7 +62,8 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
                 TH1F   *N_Earth_Collision_Time = new TH1F("N_Earth_Collision_Time","N_Earth_Collision_Time",100,0,500);
                 TH2F   *Y_Air_Length_to_Energy_Loss= new TH2F("Y_Air_Length_to_Energy_Loss","Y_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
                 TH2F   *N_Air_Length_to_Energy_Loss= new TH2F("N_Air_Length_to_Energy_Loss","N_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
-                
+                TH1F   *Ratio_of_Earth_Origin_After = new TH1F("Ratio_of_Earth_Origin_After","Ratio_of_Earth_Origin_After",1e2,0,1);
+
                 Y_Air_Length_to_Energy_Loss->SetLineColor(2);
                 N_Air_Length_to_Energy_Loss->SetLineColor(3);
 
@@ -74,6 +75,7 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
                     {
                     N_Earth_Collision_Time->Fill(Collision_Time_Earth);
                     N_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
+                    Ratio_of_Earth_Origin_After->Fill(Path_Length_Earth/Oringal_Length_Earth);
                     cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
                     cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
                     }
@@ -93,6 +95,7 @@ for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
                 N_Air_Length_to_Energy_Loss->Write();
                 Y_Earth_Collision_Time->Write();
                 N_Earth_Collision_Time->Write();
+                Ratio_of_Earth_Origin_After->Write();
                 cout << "Yes  " << endl;
                 fout->Close();
             }//fin.is_open()

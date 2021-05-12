@@ -9,8 +9,16 @@ double Mass_to_Nucleon(double DM_mx, int Earth_or_Air)
     if(Earth_or_Air==2)
     {return (DM_mx)/(15.);}
 }
-
-
+double Theta_in_center_of_mass(double DM_mx, int Earth_or_Air, double RELA)
+{
+    double Current_M;if(Earth_or_Air==1)Current_M=35.;if(Earth_or_Air==2)Current_M=15.;//1 is earth, 2 is air
+    double Numerator_Over_Denominator = (2*DM_mx*Current_M)/(TMath::Power(DM_mx+Current_M,2));
+    double theta = TMath::ACos(1-(RELA)/(Numerator_Over_Denominator))/Degree_to_Radian;
+    cout << "1-(RELA)/(Numerator_Over_Denominator): " << 1-(RELA)/(Numerator_Over_Denominator) << endl;
+    cout << "DM_mx: " << DM_mx << endl;
+    cout << "theta: " << theta << endl;
+    return theta;
+}
 double Square_Sum(double *Vector1,double *Vector2)//Momentum
 {return Vector1[0]*Vector2[0]+Vector1[1]*Vector2[1]+Vector1[2]*Vector2[2];}
 
@@ -35,8 +43,9 @@ double Distant_Criteria(double *The_first_point, double *The_second_point)
     return Total_Difference;
 }
 
-double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double Theta)
+double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double RELA)
 {
+    double Theta = Theta_in_center_of_mass(DM_mx,Earth_or_Air,RELA);
     double tanPhi = TMath::Sin(Theta*Degree_to_Radian)/(TMath::Cos(Theta*Degree_to_Radian)* Mass_to_Nucleon(DM_mx,Earth_or_Air));
     double Phi = TMath::ATan(tanPhi)/Degree_to_Radian;
     cout << "Phi: " << Phi << endl;

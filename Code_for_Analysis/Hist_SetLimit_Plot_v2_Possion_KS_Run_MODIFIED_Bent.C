@@ -135,7 +135,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2500)
+    while(jjj<2)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {

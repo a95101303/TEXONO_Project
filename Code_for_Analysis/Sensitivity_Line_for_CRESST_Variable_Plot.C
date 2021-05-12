@@ -5,24 +5,26 @@
 #include "TH1.h"
 #include "TLine.h"
 
-void Sensitivity_Line_for_CRESST_Overlap()
+void Sensitivity_Line_for_CRESST_Variable_Plot()
 {
-    string Exp_Flux[1]={"3_CRESST_Flux","4_CRESST_Flux"};
-    string Mass_Point[4]={"20","10","2","0P2"};
+    string Exp_Flux[2]={"3_CRESST_Flux","4_CRESST_Flux"};
+    string Mass_Point[3]={"20","2","0P2"};
 
-    for(int Exp=0; Exp<1; Exp++)
+    for(int Exp=1; Exp<2; Exp++)
     {
         for(int Mass_INT=1; Mass_INT<2; Mass_INT++)
         {
             TH1F *Bent_Line; TH1F *Straight_Line;
             
-            TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/20_STS_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
-                Bent_Line=(TH1F*)fin2->Get("Collision_Time_Hist_Earth");
+            TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Hist_1_STS_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+                Bent_Line=(TH1F*)fin2->Get("Ratio_of_Earth_Origin_After");
                 Bent_Line->SetLineColor(2);
                 Bent_Line->SetLineStyle(1);
+            Bent_Line->GetXaxis()->SetRangeUser(0,100);
+            Bent_Line->GetXaxis()->SetRangeUser(0,100);
 
-            TFile *fin3 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/20_STS_Bent_Comparison.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
-                Straight_Line=(TH1F*)fin3->Get("Collision_Time_Hist_Earth");
+            TFile *fin3 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Hist_1_STS_Bent_Comparison.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+                Straight_Line=(TH1F*)fin3->Get("Ratio_of_Earth_Origin_After");
                 Straight_Line->SetLineColor(3);
                 Straight_Line->SetLineStyle(1);
         
@@ -48,7 +50,7 @@ void Sensitivity_Line_for_CRESST_Overlap()
             leg->AddEntry(Bent_Line ,"Bent","L");
             leg->AddEntry(Straight_Line  ,"Straight","L");
             
-            c3->Print(Form("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/3_CRESST_Flux/%sGeV_Collision_Time.png",Mass_Point[Mass_INT].c_str()));
+            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Ratio_of_Earth_Origin_After.pdf",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
         }
     }
     
