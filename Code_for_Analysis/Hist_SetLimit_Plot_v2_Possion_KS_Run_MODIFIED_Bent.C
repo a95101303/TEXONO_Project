@@ -135,7 +135,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2)
+    while(jjj<500)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -206,7 +206,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         double *A=KS_Collision_Time_EARTH(Sigma_SI, Velocity_Y, Velocity_Z, Random_Velocity,DM_mx,Path_Length_For_Three_Components);
 
         //Air_Value
-double *ATM_Value = KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to_be_Bent,kkk,Index_Sigma,Sigma_SI,0,1,Random_Velocity,DM_mx,Path_Length_For_Three_Components,A[0],Direction_of_Velocity);
+double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to_be_Bent,kkk,Index_Sigma,Sigma_SI,0,1,Random_Velocity,DM_mx,Path_Length_For_Three_Components,A[0],Direction_of_Velocity);
         Arrival_air = ATM_Value[6];
         
         Oringal_Length_Air = ATM_Value[10]; Path_Length_Air = ATM_Value[11];

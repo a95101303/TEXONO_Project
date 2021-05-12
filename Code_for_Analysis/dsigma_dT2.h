@@ -1773,7 +1773,7 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
     {
       //  cout << "Earth: " << kkk << endl;
         Density_of_earth_Layer[kkk] = (earth_table[kkk+1][1]+earth_table[kkk][1])/2;
-       // cout << "Density_of_earth_Layer[kkk]: " << Density_of_earth_Layer[kkk] << endl;
+        cout << "Density_of_earth_Layer[kkk]: " << Density_of_earth_Layer[kkk] << endl;
         double Length_Temp  =KS_Earth_Path_Length_for_STS(0,PY,PZ,earth_table[kkk+1][0],Previous_Total);
                Length_Temp_1=KS_Earth_Path_Length_for_STS(1,PY,PZ,earth_table[13][0],Previous_Total);
 
@@ -2228,6 +2228,7 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
              int Times = Possion_GetRandom_Full(Lamda_for_Average);
              cout << "Segment: " << Segment << endl;
              double Sprint_Length = Segment*Times;
+             cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
 
              //Toward Inner or Outer
              double Inner_Scaling=0;double Outer_Scaling=0;
@@ -2499,12 +2500,18 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
 
 
             double Segment = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,Density_Index[Place_Now],Weighted_Atomic_Number);
+            cout << "Lamda_for_Average: " << Lamda_for_Average << endl;
+            cout << "WIMP_Mass: " << WIMP_Mass << endl;
+            cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+            cout << "Density_Index[Place_Now]: " << Density_Index[Place_Now] << endl;
+            cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
+            cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
             if(Segment>=1e20) Segment=0;
             int Times = Possion_GetRandom_Full(Lamda_for_Average);
 
             cout << "Segment:  " << Segment << endl;
             double Sprint_Length = Segment*Times;
-
+            cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
             //Toward Inner or Outer
             double Inner_Scaling=0;double Outer_Scaling=0;
             double Final_Length_Scaling=0;
