@@ -29,7 +29,7 @@
 
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
-void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Index, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Index_Mass, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
 {
     cout << "Sigma_SI: " << Sigma_SI << endl;
     //==============================Second step==============================
@@ -49,8 +49,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
     //double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
     //Start
-    double WIMP_Mass = WIMP_Mass_Array[Index];
-    double DM_mx = WIMP_Mass_Array[Index];
+    double WIMP_Mass = WIMP_Mass_Array[Index_Mass];
+    double DM_mx = WIMP_Mass_Array[Index_Mass];
     //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
     cout << "WIMP_Mass: " << WIMP_Mass << endl;
 
@@ -303,8 +303,8 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent.root",Mass_Point[Index].c_str(),Index_Sigma));
-    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();
     //Flux_HIST_Aft_Collision_Earth->Write();

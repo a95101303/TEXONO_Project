@@ -2155,7 +2155,7 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
      double  Path_Original= 0;
      double  Ratio_of_Energy_Loss_to_Atom = 0;
      
-     if(Check_Threshold==0)
+     if(Check_Threshold>-1)
      {
          double Center_of_Earth[3]={0,0,0};
          double Track_Point_interim[3]={0,0,0};//Applied for checking the points after the next step
@@ -2327,12 +2327,14 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
 
              if( (Distant_Criteria(Track_Point,Center_of_Earth)-6371 <=1e-10) and Step!=0)
              {
+                 cout << "In La~" << endl;
                  Arrival_or_not = 1;
                  cout << "Temp_Length: " << Temp_Length << endl;
                  break;
              }
              else if(  (6451 - (Distant_Criteria(Track_Point,Center_of_Earth))) <=1e-10 and Step!=0)
              {
+                 cout << "Out La~" << endl;
                  Arrival_or_not = 0;
                  cout << "Temp_Length: " << Temp_Length << endl;
                  break;
@@ -2431,7 +2433,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
     double Track_Point[3]={Intermediate_Point[0],Intermediate_Point[1],Intermediate_Point[2]};//Start from the bottom point
 
     double  Path_Original=0;
-    if(Check_Threshold==0)
+    if(Check_Threshold>-1)
     {
         double Center_of_Earth[3]={0,0,0};
         double Track_Point_interim[3]={0,0,0};//Applied for checking the points after the next step
