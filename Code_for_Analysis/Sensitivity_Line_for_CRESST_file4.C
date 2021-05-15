@@ -21,7 +21,7 @@ void Sensitivity_Line_for_CRESST_file4()//CDEX:Threshold=160eV, TEXONO:Threshold
     int Bent_Type=0; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=1;kkk<2;kkk++)
+for(int kkk=3;kkk<4;kkk++)
     {
         int Mass_INT=kkk;
         //string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
@@ -38,7 +38,7 @@ for(int kkk=1;kkk<2;kkk++)
         int Check_ZERO=0;
 
         double Mass=0;
-    for(int FILE=23; FILE<27; FILE++){//Open1
+    for(int FILE=27; FILE<31; FILE++){//Open1
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
         ifstream fin(path);
@@ -212,7 +212,7 @@ for(int kkk=1;kkk<2;kkk++)
         Threshold_Plot_2->SetLineColor(5);
         Threshold_Plot_2->SetMarkerColor(5);
         Threshold_Plot_2->SetName("Threshold_Plot");
-        Threshold_Plot_2->GetXaxis()->SetLimits(1e-42,1e-26);
+        Threshold_Plot_2->GetXaxis()->SetLimits(1e-42,1e-25);
         Threshold_Plot_2->GetYaxis()->SetRangeUser(1e-42,1e-28);
         Threshold_Plot_2->SetTitle("");
         Threshold_Plot_2->GetXaxis()->SetTitle("Sigma_SI");

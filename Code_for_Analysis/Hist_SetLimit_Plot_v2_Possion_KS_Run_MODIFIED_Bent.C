@@ -140,8 +140,21 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
         
-        cout << "===================================" << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+
         sigma_si = Sigma_SI;
         cout << "sigma_si : " << sigma_si << endl;
         mx = WIMP_Mass;
