@@ -1213,7 +1213,6 @@ double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_
                 f3->SetParameter(0,mx);f3->SetParameter(1,Sigma_SI_Default);f3->SetParameter(2,(DM_Velocity_Aft_Colliding*1e3/3e8));f3->SetParameter(3,ATOM_KIND);
                 double Random_Energy= f3->GetRandom();
                 //cout << "Random_Energy: " << Random_Energy << endl;
-                cout << "(Function)Random_Energy/DM_Velocity_Aft_Colliding: " << Random_Energy/DM_Velocity_Aft_Colliding << endl;
 
                 Energy_Lost_Total = Energy_Lost_Total + Random_Energy;
                 DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Random_Energy);
@@ -1578,10 +1577,17 @@ double insert(double x, double x0, double y0, double x1, double y1)
 
  double Length_for_asking_the_collision(double Collision_Time, double WIMP_mx, double Velocity, double Sigma_SI_Default, double Density, double A_on_the_path)//km
  {//The example of count: (11.34*(15))/(unified_atomic_mass_g*(APb))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,APb))
+     cout << "Collision_Time: " << Collision_Time << endl;
+     cout << "WIMP_mx: " << WIMP_mx << endl;
+     cout << "Velocity: " << Velocity << endl;
+     cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
+     cout << "Density: " << Density << endl;
+     cout << "A_on_the_path:" << A_on_the_path << endl;
+     
      double First_Term = ((Density)/(unified_atomic_mass_g*(A_on_the_path))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path)));
-     //cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path) <<endl;
-     //cout << "First_Term: " << First_Term << endl;
-     //cout << "(Collision_Time/First_Term)*1e-5: " << (Collision_Time/First_Term)*1e-5 << endl;
+     cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path) <<endl;
+     cout << "First_Term: " << First_Term << endl;
+     cout << "(Collision_Time/First_Term)*1e-5: " << (Collision_Time/First_Term)*1e-5 << endl;
      return (Collision_Time/First_Term)*1e-5;//km
  }
 double Averaged_Collision_Time_with_Length(double Length, double WIMP_mx, double Velocity, double Sigma_SI_Default, double Density, double A_on_the_path)//km
@@ -2113,6 +2119,7 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
      static int Air_Threshold=0;
      cout << "index: " << index << endl;
      //cout << "================Check_The_turning_Point(Air)================" << endl;
+     /*
      if(TEMP_INDEX!=index)
      {
          for(int EEE=0; EEE<5; EEE++)//i is earth and 2 is air
@@ -2123,13 +2130,14 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
          cout << "Air_Threshold: " << Air_Threshold << endl;
      }
      TEMP_INDEX = index;
+      */
      //cout << "=======================================================" << endl;
 
      //===========================
      int Check_Threshold=0;
      int Collision_Time=0;
      int Arrival_or_not=0;
-     // /*
+     /*
      for(int kkk=0; kkk<19; kkk++)
      {
          double Segment_Test = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,STS_Density[kkk],14.99);
@@ -2142,6 +2150,7 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
              DM_Velocity_Aft_Colliding=1e-5;
          }
      }
+      */
      cout << "Check_threshold " << Check_Threshold << endl;
      //
      
@@ -2224,9 +2233,15 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
              cout << "Place_now" << Place_Now << endl;
 
              double Segment = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,Density_Index[Place_Now],14.99);
+             cout << "Lamda_for_Average: " << Lamda_for_Average << endl;
+             cout << "WIMP_Mass: " << WIMP_Mass << endl;
+             cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+             cout << "Density_Index[Place_Now]: " << Density_Index[Place_Now] << endl;
+             cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
+             cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
+             cout << "Segment:  " << Segment << endl;
              if(Segment>=1e20) Segment=0;
              int Times = Possion_GetRandom_Full(Lamda_for_Average);
-             cout << "Segment: " << Segment << endl;
              double Sprint_Length = Segment*Times;
              cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
 
@@ -2411,6 +2426,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
     static int Earth_Threshold=0;
     cout << "index: " << index << endl;
     //cout << "================Check_The_turning_Point(Air)================" << endl;
+    /*
     if(TEMP_INDEX!=index)
     {
         for(int EEE=0; EEE<5; EEE++)//i is earth and 2 is air
@@ -2421,6 +2437,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
         cout << "Earth_Threshold: " << Earth_Threshold << endl;
     }
     TEMP_INDEX = index;
+     */
     //cout << "=======================================================" << endl;
 
     //===========================
@@ -2508,10 +2525,10 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
             cout << "Density_Index[Place_Now]: " << Density_Index[Place_Now] << endl;
             cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
             cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
+            cout << "Segment:  " << Segment << endl;
             if(Segment>=1e20) Segment=0;
             int Times = Possion_GetRandom_Full(Lamda_for_Average);
 
-            cout << "Segment:  " << Segment << endl;
             double Sprint_Length = Segment*Times;
             cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
             //Toward Inner or Outer

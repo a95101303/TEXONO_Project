@@ -12,13 +12,13 @@ void Sensitivity_Line_for_CRESST_Overlap()
     double GetPoint_X_Bef[2];double GetPoint_Y_Bef[2];double Slope_Earth_Bef;
     double GetPoint_X_Aft[2];double GetPoint_Y_Aft[2];double Slope_Earth_Aft;
 
-    for(int Exp=0; Exp<1; Exp++)
+    for(int Exp=1; Exp<2; Exp++)
     {
-        for(int Mass_INT=2; Mass_INT<3; Mass_INT++)
+        for(int Mass_INT=0; Mass_INT<4; Mass_INT++)
         {
             TGraph *NU_STS; TGraph *NU_STS_Bent;TGraph *NU_STS_Earth;TGraph *NU_STS_Earth_Bent;
             
-        TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS=(TGraph*)fin2->Get("Threshold_Plot");
                 NU_STS->SetLineColor(2);
                 NU_STS->SetLineStyle(1);
@@ -27,7 +27,7 @@ void Sensitivity_Line_for_CRESST_Overlap()
                 NU_STS_Bent=(TGraph*)fin3->Get("Threshold_Plot");
                 NU_STS_Bent->SetLineColor(2);
                 NU_STS_Bent->SetLineStyle(5);
-        TFile *fin4 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_Earth.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin4 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_Earth_.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS_Earth=(TGraph*)fin4->Get("Threshold_Plot");
                 NU_STS_Earth->SetLineColor(4);
                 NU_STS_Earth->SetLineStyle(1);
@@ -90,17 +90,17 @@ void Sensitivity_Line_for_CRESST_Overlap()
             Linear_Line_Bef->SetParameter(1,Slope_Earth_Bef);
             Linear_Line_Bef->SetParameter(2,GetPoint_Y_Bef[0]-GetPoint_X_Bef[0]*Slope_Earth_Bef );
             Linear_Line_Bef->SetLineColor(8);
-            Linear_Line_Bef->Draw("Lsame");
+            //Linear_Line_Bef->Draw("Lsame");
 
             
             TF1 *Linear_Line_Aft= new TF1("Linear_Line_Aft","[1]*x+[2]",GetPoint_X_Aft[0],GetPoint_X_Aft[1]);
             Linear_Line_Aft->SetParameter(1,Slope_Earth_Aft);
             Linear_Line_Aft->SetParameter(2,GetPoint_Y_Aft[0]-GetPoint_X_Aft[0]*Slope_Earth_Aft );
             Linear_Line_Aft->SetLineColor(9);
-            Linear_Line_Aft->Draw("Lsame");
+            //Linear_Line_Aft->Draw("Lsame");
 
             
-            Linear_Line->SetLineColor(2);
+            Linear_Line->SetLineColor(3);
             Linear_Line->Draw("Lsame");
 
             cout << "YES7" << endl;
@@ -111,7 +111,7 @@ void Sensitivity_Line_for_CRESST_Overlap()
             c3->SetLogx();
             cout << "YES10" << endl;
             
-            //c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/All_%sGeV_STS.png",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/All_%sGeV_STS.pdf",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
         }
     }
 }
