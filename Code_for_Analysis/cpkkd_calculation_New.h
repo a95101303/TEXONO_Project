@@ -289,8 +289,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
 
 
     //==============Constant_for_calculation==================
-    //double A = AGe;//Only for CRESST
-    double A = 20;
+    double A = AGe;//Only for CRESST
+    //double A = 20;
     
     static double T[reso_T];static double T_QF[reso_T];double recoil[reso_T];
     double v;double  MaxV=0;
@@ -645,7 +645,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
            // cout << "Factor1: " << Factor1[i] << endl;
          
     }
-    //cout << "Velocity_Min: " << Velocity_Min << endl;
+    cout << "Velocity_Min: " << Velocity_Min << endl;
     cout << "================================================" << endl;
     if(Option==0 and Model_of_Interaction==0)return (T_QF);
     if(Option==0 and Model_of_Interaction>0)return (T);

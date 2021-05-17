@@ -10,8 +10,45 @@ void run_single_sigma_ks_modified_bent_v15_minprint(double mx=2.0)
     int Event_Number=1000;
     gROOT->ProcessLine(".L Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent.C");
     
-    string Mass_Point[5]={"20","10","2","0P2","0P05"};
-      
+    string Mass_Point[5]={"20","10","2","0P2","0P05"};//First Round
+    //string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,50,1e-33)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,50,1e-33)",Event_Number));
+
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,51,1e-28)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,51,1e-28)",Event_Number));
+
+    //=================================Second Round
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,1,%i,1,1e-34)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,1,1e-34)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,1,%i,2,1e-32)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,2,1e-32)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,1,1e-32)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,1,1e-32)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,2,1e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,2,1e-30)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,2,1e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,2,1e-30)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,22,5e-29)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,23,6e-29)",Event_Number));
+   // gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,24,7e-29)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,1,%i,25,8e-29)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,1,%i,26,1e-28)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,1,%i,27,2e-28)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,22,8e-28)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,23,9e-28)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,24,1e-27)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,24,1e-27)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,24,3e-27)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,25,4e-27)",Event_Number));
+
+    //================================First Round
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,0,%i,22,1e-29)",Event_Number));
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,0,%i,23,2e-29)",Event_Number));
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,0,%i,24,3e-29)",Event_Number));
@@ -45,7 +82,7 @@ void run_single_sigma_ks_modified_bent_v15_minprint(double mx=2.0)
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,4,%i,1,1e-32)",Event_Number));
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,4,%i,1,1e-32)",Event_Number));
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,4,%i,2,1e-30)",Event_Number));
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,4,%i,2,1e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,4,%i,2,1e-30)",Event_Number));
 
     /*
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,4,%i,23,2e-27)",Event_Number));

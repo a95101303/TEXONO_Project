@@ -5,29 +5,29 @@
 #include "TH1.h"
 #include "TLine.h"
 
-void Sensitivity_Line_for_CRESST_Overlap()
+void Sensitivity_Line_for_CDEX_Overlap()
 {
     string Exp_Flux[2]={"3_CRESST_Flux","4_CRESST_Flux"};
-    string Mass_Point[4]={"20","10","2","0P2"};
+    string Mass_Point[1]={"0P05"};
     double GetPoint_X_Bef[2];double GetPoint_Y_Bef[2];double Slope_Earth_Bef;
     double GetPoint_X_Aft[2];double GetPoint_Y_Aft[2];double Slope_Earth_Aft;
 
     for(int Exp=1; Exp<2; Exp++)
     {
-        for(int Mass_INT=0; Mass_INT<4; Mass_INT++)
+        for(int Mass_INT=0; Mass_INT<1; Mass_INT++)
         {
             TGraph *NU_STS; TGraph *NU_STS_Bent;TGraph *NU_STS_Earth;TGraph *NU_STS_Earth_Bent;
             
-        TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/MD_STS.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS=(TGraph*)fin2->Get("Threshold_Plot");
                 NU_STS->SetLineColor(2);
                 NU_STS->SetLineStyle(1);
 
-        TFile *fin3 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin3 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/MD_STS_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS_Bent=(TGraph*)fin3->Get("Threshold_Plot");
                 NU_STS_Bent->SetLineColor(2);
                 NU_STS_Bent->SetLineStyle(5);
-        TFile *fin4 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_Earth_.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin4 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/MD_STS_Earth.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS_Earth=(TGraph*)fin4->Get("Threshold_Plot");
                 NU_STS_Earth->SetLineColor(4);
                 NU_STS_Earth->SetLineStyle(1);
@@ -42,7 +42,7 @@ void Sensitivity_Line_for_CRESST_Overlap()
             cout << "Slope_Earth_Bef: " << Slope_Earth_Bef << endl;
             cout << "X=0, Y= " << GetPoint_Y_Bef[0]-GetPoint_X_Bef[0]*Slope_Earth_Bef << endl;
             
-        TFile *fin5 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/NU_STS_Earth_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
+        TFile *fin5 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/MD_STS_Earth_Bent.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str()));
                 NU_STS_Earth_Bent=(TGraph*)fin5->Get("Threshold_Plot");
                 NU_STS_Earth_Bent->SetLineColor(4);
                 NU_STS_Earth_Bent->SetLineStyle(5);
@@ -57,9 +57,8 @@ void Sensitivity_Line_for_CRESST_Overlap()
             cout << "Slope_Earth_Aft: " << Slope_Earth_Aft << endl;
             cout << "X=0, Y= " << GetPoint_Y_Aft[0]-GetPoint_X_Aft[0]*Slope_Earth_Aft << endl;
 
-             cout << "Difference: " << (1-Slope_Earth_Aft)/(1-Slope_Earth_Bef) << endl;
-
-
+             
+            cout << "Difference: " << (Slope_Earth_Aft-Slope_Earth_Bef)/Slope_Earth_Bef << endl;
             TCanvas *c3 = new TCanvas("c3");
             gStyle->SetOptFit(0);
             gStyle->SetOptStat(0);
