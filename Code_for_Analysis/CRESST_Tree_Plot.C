@@ -16,11 +16,11 @@ void CRESST_Tree_Plot()//
     int Bent_or_Not=1;
     string Type[2]={"_Comparison",""};
 
-for(int Bent_or_Not=0; Bent_or_Not<1; Bent_or_Not++)
+for(int Bent_or_Not=0; Bent_or_Not<2; Bent_or_Not++)
     {
-    for(int Mass_INT=2; Mass_INT<3; Mass_INT++)
+    for(int Mass_INT=0; Mass_INT<3; Mass_INT++)
     {
-        for(int FILE=21; FILE<22; FILE++)
+        for(int FILE=50; FILE<51; FILE++)
         {
             string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Type[Bent_or_Not].c_str());
     ifstream fin(path);
@@ -60,8 +60,9 @@ for(int Bent_or_Not=0; Bent_or_Not<1; Bent_or_Not++)
                 TH1F   *Earth_Survive = new TH1F("Earth_Survive","Earth_Survive",3,0,3);
                 TH1F   *Y_Earth_Collision_Time = new TH1F("Y_Earth_Collision_Time","Y_Earth_Collision_Time",100,0,500);
                 TH1F   *N_Earth_Collision_Time = new TH1F("N_Earth_Collision_Time","N_Earth_Collision_Time",100,0,500);
-                TH1F   *Y_Air_Collision_Time = new TH1F("Y_Air_Collision_Time","Y_Air_Collision_Time",100,0,500);
-                TH1F   *N_Air_Collision_Time = new TH1F("N_Air_Collision_Time","N_Air_Collision_Time",100,0,500);
+                TH1F   *Y_Air_Collision_Time = new TH1F("Y_Air_Collision_Time","Y_Air_Collision_Time",1000,0,500);
+                TH1F   *Y_Air_MFP = new TH1F("Y_Air_MFP","Y_Air_MFP",100,0,1);
+                TH1F   *N_Air_Collision_Time = new TH1F("N_Air_Collision_Time","N_Air_Collision_Time",1000,0,500);
                 TH1F   *Energy_Loss_to_Air = new TH1F("Energy_Loss_to_Air","Energy_Loss_to_Air",20,0,1);
 
                 TH2F   *Y_Air_Length_to_Energy_Loss= new TH2F("Y_Air_Length_to_Energy_Loss","Y_Air_Length_to_Energy_Loss",200,0,3000,20,0,1);
@@ -81,13 +82,16 @@ for(int Bent_or_Not=0; Bent_or_Not<1; Bent_or_Not++)
                     }
                     if(Arrival_earth==0 and Arrival_air==1)
                     {
+                    Y_Air_MFP->Fill(Collision_Time_Air/Path_Length_Air);
+                        cout << "mx: " << mx << endl;
+                        cout << "Collision_Time_Air/Path_Length_Air: " << Collision_Time_Air/Path_Length_Air << endl;
                     Y_Air_Collision_Time->Fill(Collision_Time_Air);
                     Energy_Loss_to_Air->Fill(Energy_Loss_Percentage_lf);
                     N_Earth_Collision_Time->Fill(Collision_Time_Earth);
                     N_Air_Length_to_Energy_Loss->Fill(Path_Length_Earth,Energy_Loss_Percentage_lf);
                     Ratio_of_Earth_Origin_After->Fill(Path_Length_Earth/Oringal_Length_Earth);
-                    cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
-                    cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
+                    //cout << "Path_Length_Earth: " << Path_Length_Earth << endl;
+                    //cout << "Energy_Loss_Percentage_lf: " << Energy_Loss_Percentage_lf << endl;
                     }
                     if(Arrival_earth==1 and Arrival_air==1)
                     {
@@ -111,6 +115,7 @@ for(int Bent_or_Not=0; Bent_or_Not<1; Bent_or_Not++)
                 Y_Air_Collision_Time->Write();
                 N_Air_Collision_Time->Write();
                 Ratio_of_Earth_Origin_After->Write();
+                Y_Air_MFP->Write();
                 cout << "Yes  " << endl;
                 fout->Close();
             }//fin.is_open()

@@ -21,7 +21,7 @@ void Sensitivity_Line_for_CRESST_file4()//CDEX:Threshold=160eV, TEXONO:Threshold
     int Bent_Type=0; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=3;kkk<4;kkk++)
+for(int kkk=2;kkk<3;kkk++)
     {
         int Mass_INT=kkk;
         //string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
@@ -38,7 +38,7 @@ for(int kkk=3;kkk<4;kkk++)
         int Check_ZERO=0;
 
         double Mass=0;
-    for(int FILE=27; FILE<32; FILE++){//Open1
+    for(int FILE=50; FILE<51; FILE++){//Open1
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
         ifstream fin(path);
@@ -114,20 +114,22 @@ for(int kkk=3;kkk<4;kkk++)
         //Energy recoil Spectrum
         TGraph *ER_Spectrum_Bef = new TGraph(reso_T,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
         ER_Spectrum_Bef->GetXaxis()->SetTitle("Energy[keVee]");
-        ER_Spectrum_Bef->GetYaxis()->SetTitle("Count[Evts/kg/day]");
+        ER_Spectrum_Bef->GetYaxis()->SetTitle("CPKKD");
         ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e2);
         ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-8,1e+15);
         ER_Spectrum_Bef->SetName("ER_Spectrum_Bef");
         ER_Spectrum_Bef->SetLineColor(2);
         ER_Spectrum_Bef->SetMarkerColor(2);
-        ER_Spectrum_Bef->SetLineWidth(5);
+        ER_Spectrum_Bef->SetLineWidth(2);
             
         TGraph *ER_Spectrum_Aft = new TGraph(reso_T,T_QF_Original_Aft_Array,Factor1_Original_Aft_Array);
         ER_Spectrum_Aft->GetXaxis()->SetTitle("Edet[keVee]");
-        ER_Spectrum_Aft->GetYaxis()->SetTitle("Count[Evts/kg/day]");
+        ER_Spectrum_Aft->GetYaxis()->SetTitle("CPKKD");
         ER_Spectrum_Aft->SetName("ER_Spectrum_Aft");
         ER_Spectrum_Aft->SetLineColor(3);
         ER_Spectrum_Aft->SetMarkerColor(3);
+        ER_Spectrum_Aft->SetLineWidth(2);
+
             /*
         double Data_RE_TEXONO[4]= {0.225,0.275,0.325,0.375};//CDEX Brem: 0.265(for threshold 0.25), CDEX Migdal: 0.2, CDEX Brem: 0.206
         double Data_RATE_TEXONO[4]= {49.432,33.209,8.993,13.404};

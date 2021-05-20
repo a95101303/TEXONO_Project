@@ -43,11 +43,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(int Bent_or_not, int Ind
     string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
     double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};//12 for TEXONO
      */
-    //string Mass_Point[5]={"20","10","2","0P2","0P05"};
-    //double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
+    string Mass_Point[5]={"20","10","2","0P2","0P05"};
+    double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
 
-    string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
-    double WIMP_Mass_Array[4]={15,6,0.6,0.08};//12 for TEXONO
+    //string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
+    //double WIMP_Mass_Array[4]={15,6,0.6,0.08};//12 for TEXONO
 
     //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
     //double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};

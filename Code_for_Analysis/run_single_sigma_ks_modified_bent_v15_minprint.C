@@ -12,11 +12,15 @@ void run_single_sigma_ks_modified_bent_v15_minprint(double mx=2.0)
     
     string Mass_Point[5]={"20","10","2","0P2","0P05"};//First Round
     //string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,50,1e-33)",Event_Number));
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,50,1e-33)",Event_Number));
+    //Prove the length of the air
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,0,%i,50,7e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,0,%i,50,7e-30)",Event_Number));
 
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,51,1e-28)",Event_Number));
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,51,1e-28)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,2,%i,49,1e-33)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,2,%i,49,1e-33)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,3,%i,50,1e-27)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(1,3,%i,50,1e-27)",Event_Number));
 
     //=================================Second Round
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent(0,1,%i,1,1e-34)",Event_Number));

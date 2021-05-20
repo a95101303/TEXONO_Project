@@ -38,19 +38,22 @@ void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
     const int Event_Number=1;
     double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
       */
+    const int Event_Number=1;
+    double WIMP_Mass_Array[Event_Number]={20};//17 for CDEX
+
     /*
     const int Event_Number=15;
     //double WIMP_Mass_Array[Event_Number]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,0.048};//17 for TEXONO
     double WIMP_Mass_Array[Event_Number]={0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2};//15 for TEXONO
      */
-    
+    /*
     const int Event_Number=12;
     double WIMP_Mass_Array[Event_Number]={2.35,3,4,5,7,9,11,13,15,17,19,20};//12 for TEXONO
-     
+     */
     double Critical_Point[12] = {779.135000,750,700,650,600,550,500,450,400,350,278.036};
     double Sigma_SI_Array[Event_Number];
     //Check
-    double Threshold_Criteria_Test=(1000.0*max_recoil_A(2.34,779.135000*1000.0/2.99792458e8, AGe));
+    double Threshold_Criteria_Test=(1000.0*max_recoil_A(20,779.135000*1000.0/2.99792458e8, AGe));
     cout << "Threshold_Criteria_Test: " << Threshold_Criteria_Test << endl;
     double Threshold_Criteria_Test_2=(1000.0*max_recoil_A(0.14,779.135000*1000.0/2.99792458e8, 16));//O:0.0174361 Al:0.0104113
     cout << "Threshold_Criteria_Test_2: " << Threshold_Criteria_Test_2 << endl;
@@ -71,7 +74,7 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                 double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-30) * TMath::Power(10,lll);
                 cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
                 
-                int Simulated_Event_Number=5;
+                int Simulated_Event_Number=50;
                 double Velocity[Simulated_Event_Number];double Velocity_Z[Simulated_Event_Number];
                 double Velocity_X[Simulated_Event_Number];double Velocity_Y[Simulated_Event_Number];
                 double Collision_Expectation_ATM[Simulated_Event_Number];double Collision_Expectation_EARTH[Simulated_Event_Number];
@@ -85,8 +88,8 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     cout << "//Event: " << kkk;
                     gRandom = new TRandom3(0);
                     gRandom->SetSeed(0);
-                    Velocity[kkk]=779.135;//Max
-                    
+                    //Velocity[kkk]=779.135;//Max
+                    Velocity[kkk]=300.135;//Max
                     Velocity_X[kkk]= 0.510533;
                     Velocity_Y[kkk]= -0.458848;
                     Velocity_Z[kkk]= 1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk];
@@ -97,7 +100,7 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     Velocity_Z[kkk] = sqrt(1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
                     */
                     /*
-                    Velocity_Z[kkk]=1;//Minimum
+                    Velocity_Z[kkk]=1;//
                     Velocity_X[kkk]=0;
                     Velocity_Y[kkk]=0;
                      */
@@ -173,19 +176,19 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                             //====================Test_Function====================
                     //Two-stage collision
                         double *V_Aft_Collision_AIR = Velocity_Aft_collision(AC,WIMP_Mass,Sigma_SI_Default,Velocity[kkk],2);
-                        //cout << "V_Aft_AIR: " << V_Aft_Collision_AIR[0] << endl;
+                        cout << "V_Aft_AIR: " << V_Aft_Collision_AIR[0] << endl;
 
                         double *V_Aft_Collision_EARTH = Velocity_Aft_collision(EC,WIMP_Mass,Sigma_SI_Default,V_Aft_Collision_AIR[0],1);
-                        //cout << "V_Aft_EARTH: " << V_Aft_Collision_EARTH[0] << endl;
+                        cout << "V_Aft_EARTH: " << V_Aft_Collision_EARTH[0] << endl;
                        
                         double *V_Aft_Collision_CEMENT = Velocity_Aft_collision(CC,WIMP_Mass,Sigma_SI_Default,V_Aft_Collision_EARTH[0],3);
-                        //cout << "V_Aft_CEMENT: " << V_Aft_Collision_CEMENT[0] << endl;
+                        cout << "V_Aft_CEMENT: " << V_Aft_Collision_CEMENT[0] << endl;
 
                         double *V_Aft_Collision_REACTOR_WALL = Velocity_Aft_collision(RCL,WIMP_Mass,Sigma_SI_Default,V_Aft_Collision_CEMENT[0],3);
-                        //cout << "V_Aft_REACTOR_WALL : " << V_Aft_Collision_REACTOR_WALL[0] << endl;
+                        cout << "V_Aft_REACTOR_WALL : " << V_Aft_Collision_REACTOR_WALL[0] << endl;
 
                         double *V_Aft_Collision_REACTOR_WATER = Velocity_Aft_collision(RCR,WIMP_Mass,Sigma_SI_Default,V_Aft_Collision_REACTOR_WALL[0],5);
-                        //cout << "V_Aft_Collision_REACTOR_WATER : " << V_Aft_Collision_REACTOR_WATER[0] << endl;
+                        cout << "V_Aft_Collision_REACTOR_WATER : " << V_Aft_Collision_REACTOR_WATER[0] << endl;
                         
                         double *V_Aft_Collision_SHIELDING = Velocity_Aft_collision(CS,WIMP_Mass,Sigma_SI_Default,V_Aft_Collision_REACTOR_WATER[0],6);
                         cout << "V_Aft_Collision_SHIELDING : " << V_Aft_Collision_SHIELDING[0] << endl;
