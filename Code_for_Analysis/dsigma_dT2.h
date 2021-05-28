@@ -2119,18 +2119,6 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
      static int Air_Threshold=0;
      cout << "index: " << index << endl;
      //cout << "================Check_The_turning_Point(Air)================" << endl;
-     /*
-     if(TEMP_INDEX!=index)
-     {
-         for(int EEE=0; EEE<5; EEE++)//i is earth and 2 is air
-         {
-             int Check   = Velocity_Aft_collision(5000,WIMP_Mass,Sigma_SI_Default,779.135,2)[3];
-             if(Air_Threshold<Check)Air_Threshold=Check;
-         }
-         cout << "Air_Threshold: " << Air_Threshold << endl;
-     }
-     TEMP_INDEX = index;
-      */
      //cout << "=======================================================" << endl;
 
      //===========================
@@ -2424,21 +2412,6 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
     cout << "Velocity_Air_Initial: " << DM_Velocity_Aft_Colliding << endl;
 
     static int Earth_Threshold=0;
-    cout << "index: " << index << endl;
-    //cout << "================Check_The_turning_Point(Air)================" << endl;
-    /*
-    if(TEMP_INDEX!=index)
-    {
-        for(int EEE=0; EEE<5; EEE++)//i is earth and 2 is air
-        {
-            int Check   = Velocity_Aft_collision(5000,WIMP_Mass,Sigma_SI_Default,779.135,1)[3];
-            if(Earth_Threshold<Check)Earth_Threshold=Check;
-        }
-        cout << "Earth_Threshold: " << Earth_Threshold << endl;
-    }
-    TEMP_INDEX = index;
-     */
-    //cout << "=======================================================" << endl;
 
     //===========================
     int Check_Threshold=0;
@@ -2535,7 +2508,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
             double Inner_Scaling=0;double Outer_Scaling=0;
             double Final_Length_Scaling=0;
             
-
+            //ON THE SURFACE OF THE LATER BETWEEN DIFFERENT DENSITIES
             if( ((Length_Interval[Place_Now-1])-(Distant(Track_Point,Center_of_Earth)))> 1e-2 )
             {
                 if(Place_Now<13){
@@ -2564,6 +2537,8 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
                 Outer_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now-2],Track_Point,Direction);}
                 
             }
+            
+            //DECIDE TOWARD INNER OR OUTER
             cout << "Inner_Scaling: " << Inner_Scaling << endl;
             cout << "Outer_Scaling: " << Outer_Scaling << endl;
             
@@ -2700,6 +2675,163 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
     return RETURN_VALUE;
 }
 
+double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scattered, double Sigma_SI_Default, double Velocity, double WIMP_Mass, double *Direction, double Length_of_Material, double Density_of_Material) //Velocity(km/s) Density(g/cm^3)
+{
+    //double Direction[3]   ={ 1e-50, 1e-50, PZ };
+    double Direction_VT[3]={0,0,0};//Used for the calculation
+    double Track_Point[3]={0,0,0};//Run from the bottom
+    double LOF_km = Length_of_Material*1e-3;
+    static double RETURN_VALUE[20];//Return the value back
+    
+    double DM_Velocity_Aft_Colliding=Velocity;double Lamda_for_Average=0.001;
+
+    //===========================
+    int Collision_Time=0;
+    int Arrival_or_not = 0;
+    TCanvas *c1 = new TCanvas("c1","Graph2D example",0,0,600,400);
+       TGraph2D *dt = new TGraph2D();
+     
+    double Temp_Length=0;
+    double Path_Original=10;
+    int Check_Threshold=0;
+    
+    if(Check_Threshold>-1)
+    {
+        int Step=0;
+        while( (Track_Point[2]-LOF_km)<1e-10)
+        {
+            dt->SetPoint(Step,Track_Point[0],Track_Point[1],Track_Point[2]);
+            
+            cout << "Direction[0]: "   << Direction[0] << endl;
+            cout << "Direction[1]: "   << Direction[1] << endl;
+            cout << "Direction[2]: "   << Direction[2] << endl;
+
+            cout << "Track_Point_Now[0]: " << Track_Point[0] << endl;
+            cout << "Track_Point_Now[1]: " << Track_Point[1] << endl;
+            cout << "Track_Point_Now[2]: " << Track_Point[2] << endl;
+            
+            double Segment = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,Density_of_Material,Weighted_Atomic_Number);
+            /*
+            cout << "Lamda_for_Average: " << Lamda_for_Average << endl;
+            cout << "WIMP_Mass: " << WIMP_Mass << endl;
+            cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+            cout << "Density_Index[Place_Now]: " << Density_Index[Place_Now] << endl;
+            cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
+            cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
+            cout << "Segment:  " << Segment << endl;
+             */
+            if(Segment>=1e20) Segment=0;
+            int Times = Possion_GetRandom_Full(Lamda_for_Average);
+            double Sprint_Length = Segment*Times;
+            cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
+            
+            double Critera_of_surpassing = Track_Point[2]+Sprint_Length*Direction[2];
+            
+            if(Critera_of_surpassing>LOF_km)
+            {
+                double Final_Length_Scaling = (1 - Track_Point[2]) / Direction[2] ;//Final_Path
+                
+                Track_Point[0] = Track_Point[0]+(Final_Length_Scaling*Direction[0]);
+                Track_Point[1] = Track_Point[1]+(Final_Length_Scaling*Direction[1]);
+                Track_Point[2] = Track_Point[2]+(Final_Length_Scaling*Direction[2]);
+                
+                Temp_Length = Temp_Length + Final_Length_Scaling;
+                //======Print to check=====//
+                cout << "CASE1" << endl;
+                cout << "Final_Length_Scaling: " << Final_Length_Scaling << endl;
+                cout << "Temp_Length: " << Temp_Length << endl;
+                Step = Step + 1;
+            }
+
+            else if(Critera_of_surpassing<=LOF_km)
+            {
+                //In the material
+                Track_Point[0] = Track_Point[0]+(Sprint_Length*Direction[0]);
+                Track_Point[1] = Track_Point[1]+(Sprint_Length*Direction[1]);
+                Track_Point[2] = Track_Point[2]+(Sprint_Length*Direction[2]);
+                
+                Temp_Length = Temp_Length + Sprint_Length;
+
+                cout << "CASE2" << endl;
+                cout << "Sprint: " << Sprint_Length << endl;
+                cout << "Temp_Length: " << Temp_Length << endl;
+
+                double *V_Aft_Collision_Earth = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,1);
+                double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_Earth[0]*1e3/3e8);
+                double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
+                cout << "Ratio_of_Energy_Loss_to_Atom: " << Ratio_of_Energy_Loss_to_Atom << endl;
+                DM_Velocity_Aft_Colliding=V_Aft_Collision_Earth[0];
+                cout << "Aft_Vel: " << DM_Velocity_Aft_Colliding << endl;
+                
+                if(Straight_or_scattered==1){
+                double *Direction_aft = Aft_scatterd_Direction(1,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
+                Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];}
+                
+                if(Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8)<0.01)
+                {
+                    cout << "Energy Threshold" << endl;
+                    break;
+                }
+                Step = Step + 1;
+                Collision_Time = Collision_Time + 1;
+            }
+            if( (Track_Point[2]-0.) <1e-10 and Step!=0)
+            {
+                cout << "No!Back_Scattering: " << Step << endl;
+                cout << "Temp_Length: " << Temp_Length << endl;
+                Arrival_or_not = 0;
+                break;
+            }
+            if( (Track_Point[2]-10.) <1e-10)
+            {
+                cout << "Step: " << Step << endl;
+                cout << "Temp_Length: " << Temp_Length << endl;
+                Arrival_or_not = 1;
+                break;
+            }
+
+        }
+
+        cout << "Final_Track_Point[0]: " << Track_Point[0] << endl;
+        cout << "Final_Track_Point[1]: " << Track_Point[1] << endl;
+        cout << "Track_Track_Point[2]: " << Track_Point[2] << endl;
+        
+        
+        cout << "=========Temp_Length-10=========: " << Temp_Length-10 << endl;
+
+
+        cout << "Step: " << Step << endl;
+        cout << "Collision_Time: " << Collision_Time << endl;
+
+        
+    }
+    if(Temp_Length!=0)
+    {
+    gStyle->SetPalette(1);
+    dt->SetMarkerStyle(20);
+    dt->Draw("pcolLINE");
+    }
+    //=======================
+    //cout << "Ene_Vel_Air_Final: " << Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) << endl;
+    //cout << "Velocity_Air_Final: " << DM_Velocity_Aft_Colliding << endl;
+    //cout << "Collision_TIME_Check: " <<Collision_TIME_Check << endl;
+    //cout << " Actual_collision: " << Actual_collision << endl;
+    if(Check_Threshold==0)
+    {
+        if(Path_Original!=0){RETURN_VALUE[1]=(Temp_Length/Path_Original);}
+        else{RETURN_VALUE[1]=0;}
+    RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;RETURN_VALUE[2]=Collision_Time;
+    RETURN_VALUE[3]=Arrival_or_not;
+    RETURN_VALUE[4]=10;RETURN_VALUE[5]=Temp_Length;RETURN_VALUE[6]=Collision_Time;
+    }
+    
+    if(Check_Threshold!=0)
+    {
+   RETURN_VALUE[0]=0;RETURN_VALUE[1]=0;RETURN_VALUE[2]=0;
+    }
+
+    return RETURN_VALUE;
+}
 
 
 
