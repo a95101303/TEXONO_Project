@@ -2,16 +2,21 @@
 const double AT_mx = 931.494013*1e3; // keV/c^2   AT_mx: 931.494013MeV/c^2
 const double Degree_to_Radian = 0.0174532925; //Degree*Degree_to_Radian=Radian
 
-double Mass_to_Nucleon(double DM_mx, int Earth_or_Air)
+double Mass_to_Nucleon(double DM_mx, int Earth_or_Air, double Atomic_Number)
 {
     if(Earth_or_Air==1)
     {return (DM_mx)/(35.);}
     if(Earth_or_Air==2)
     {return (DM_mx)/(15.);}
+    if(Earth_or_Air> 2)
+    {return (DM_mx)/(Atomic_Number);}
 }
-double Theta_in_center_of_mass(double DM_mx, int Earth_or_Air, double RELA)
+double Theta_in_center_of_mass(double DM_mx, int Earth_or_Air, double Atomic_Number, double RELA)
 {
-    double Current_M;if(Earth_or_Air==1)Current_M=35.;if(Earth_or_Air==2)Current_M=15.;//1 is earth, 2 is air
+    double Current_M;
+    if(Earth_or_Air==1)Current_M=35.;if(Earth_or_Air==2)Current_M=15.;//1 is earth, 2 is air
+    if(Earth_or_Air> 2)Current_M=Atomic_Number ;//Cement
+
     double Numerator_Over_Denominator = (2*DM_mx*Current_M)/(TMath::Power(DM_mx+Current_M,2));
     double theta = TMath::ACos(1-(RELA)/(Numerator_Over_Denominator))/Degree_to_Radian;
     cout << "1-(RELA)/(Numerator_Over_Denominator): " << 1-(RELA)/(Numerator_Over_Denominator) << endl;
@@ -43,10 +48,10 @@ double Distant_Criteria(double *The_first_point, double *The_second_point)
     return Total_Difference;
 }
 
-double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double RELA)
+double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double RELA, double Atomic_Number)
 {
-    double Theta = Theta_in_center_of_mass(DM_mx,Earth_or_Air,RELA);
-    double tanPhi = TMath::Sin(Theta*Degree_to_Radian)/(TMath::Cos(Theta*Degree_to_Radian)* Mass_to_Nucleon(DM_mx,Earth_or_Air));
+    double Theta = Theta_in_center_of_mass(DM_mx,Earth_or_Air,Atomic_Number,RELA);
+    double tanPhi = TMath::Sin(Theta*Degree_to_Radian)/(TMath::Cos(Theta*Degree_to_Radian)* Mass_to_Nucleon(DM_mx,Earth_or_Air,Atomic_Number));
     double Phi = TMath::ATan(tanPhi)/Degree_to_Radian;
     cout << "Phi: " << Phi << endl;
     return Phi;
