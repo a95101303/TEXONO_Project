@@ -39,7 +39,7 @@ void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
     double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
       */
     const int Event_Number=1;
-    double WIMP_Mass_Array[Event_Number]={20};//17 for CDEX
+    double WIMP_Mass_Array[Event_Number]={10};//17 for CDEX
 
     /*
     const int Event_Number=15;
@@ -90,20 +90,27 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     gRandom->SetSeed(0);
                     //Velocity[kkk]=779.135;//Max
                     Velocity[kkk]=300.135;//Max
+                    /*
                     Velocity_X[kkk]= 0.510533;
                     Velocity_Y[kkk]= -0.458848;
                     Velocity_Z[kkk]= 1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk];
-                     
+                     */
                     /*
                     Velocity_X[kkk] = 0.49;
                     Velocity_Y[kkk] = -0.80;
                     Velocity_Z[kkk] = sqrt(1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
                     */
-                    /*
+                    
                     Velocity_Z[kkk]=1;//
                     Velocity_X[kkk]=0;
                     Velocity_Y[kkk]=0;
+                     
+                    /*
+                    Velocity_Z[kkk]=0;//
+                    Velocity_X[kkk]=0;
+                    Velocity_Y[kkk]=1;
                      */
+                    
                     double Dark_Matter_Energy = Energy_DM(WIMP_Mass,Velocity[kkk]*1e3/3e8);//KeV
                     double Dark_Matter_Velocity = Velocity_DM(WIMP_Mass,Dark_Matter_Energy);//KeV
                     cout << "Velocity: " << Velocity[kkk] << endl;

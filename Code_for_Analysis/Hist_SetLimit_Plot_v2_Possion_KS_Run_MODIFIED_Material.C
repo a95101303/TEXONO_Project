@@ -29,22 +29,24 @@
 
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
-void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Material(int Bent_or_not, int Index_Mass, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Material(int Bent_or_not, int Index_Mass, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI, int Material)
 {
     //Bent_or_not=0 -> Non-scattering case, Bent_or_not=1 -> scattering case
     //Constant
-    string Mass_Point[4]={"20","2","0P2","0P05"};
-    double WIMP_Mass_Array[4]={20,2,0.2,0.05};//12 for TEXONO
+    string Mass_Point[4]={"15","2","0P2","0P05"};
+    double WIMP_Mass_Array[4]={15,2,0.2,0.05};//12 for TEXONO
     //Start
     double WIMP_Mass = WIMP_Mass_Array[Index_Mass];
     double DM_mx = WIMP_Mass_Array[Index_Mass];
     cout << "Sigma_SI: " << Sigma_SI << endl;
     cout << "WIMP_Mass: " << WIMP_Mass << endl;
 
-    int Material_Range=0;
+    int Material_Range=Material;
     double Density_for_Material[6]={Density_of_Cement,1,11.34,7.86,2.34,8.96};// Cement,H2O,Pb,Fe,B,Cu  g/cm^3
     string ATOM_number_for_Material[6]={"Cement","AH2O","APb","AFe","AB","ACu"};
     double Index_Atom[6]={Weighted_Atomic_Number_Cement,AH2O,APb,AFe,AB,ACu};
+    double Length_of_Material[6]={1,1,0.15,0.05,0.25,0.05};//m
+
     //double Thickness_of_Material[6]={1,1,1,1,1,1};
     //TH1F   *Flux_HIST_Aft_Collision_EARTH = new TH1F("Flux_HIST_Aft_Collision_EARTH","Flux_HIST_Aft_Collision_EARTH",2000,0,791);
 
@@ -87,7 +89,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Material(int Bent_or_not, int
 
     double Max_V=799.135;
     
-    while(jjj<2500)
+    while(jjj<2000)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -114,12 +116,14 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Material(int Bent_or_not, int
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
                  
         //Air_Value
-        double *BV =  KS_Collision_Time_Building_Aft_velocity_with_angle(BorNB,Sigma_SI,Max_V,DM_mx,V_M,1,Density_for_Material[Material_Range],Index_Atom[Material_Range]);
+        double *BV =  KS_Collision_Time_Building_Aft_velocity_with_angle(BorNB,Sigma_SI,Max_V,DM_mx,V_M,Length_of_Material[Material_Range],Density_for_Material[Material_Range],Index_Atom[Material_Range]);
         V_End_E = BV[0];Collision_Time_Earth = BV[2];Arrival_earth = BV[3];
         Oringal_Length_Earth = BV[4];Path_Length_Earth = BV[5];
         //Final_Length
         
         jjj = jjj + 1;
+        
+        if(BV[3]>0)kkk = kkk + 1;
         t1->Fill();
 
     }
@@ -133,8 +137,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Material(int Bent_or_not, int
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(BorNB==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
-    if(BorNB==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(BorNB==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent_%i.root",Mass_Point[Index_Mass].c_str(),Index_Sigma,Material_Range));
+    if(BorNB==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent_Comparison_%i.root",Mass_Point[Index_Mass].c_str(),Index_Sigma,Material_Range));
     TFile *fout=new TFile(fout_name,"recreate");
     //Original_Bent_Comparison_Ratio_Earth->Write();
     //Original_Bent_Comparison_Ratio_Air->Write();

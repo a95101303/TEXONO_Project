@@ -79,11 +79,15 @@ void Config_Air_Earth()
     {
         Deep_ATM[kkk]    = atm_table[kkk][0];
         Density_ATM[kkk] = atm_table[kkk][4];
+        cout << "Deep_ATM[kkk]: " << Deep_ATM[kkk] << endl;
+        cout << "tm_table[kkk][4]+tm_table[kkk+1][4]/2: " << (atm_table[kkk][4]+atm_table[kkk+1][4])/2 << endl;
     }
     for(int kkk=0; kkk<14; kkk++)
     {
         Deep_Earth[kkk]    = earth_table[kkk][0];
         Density_Earth[kkk] = earth_table[kkk][1];
+        cout << "Deep_Earth[kkk]: " << Deep_Earth[kkk] << endl;
+        cout << "(earth_table[kkk][1]+earth_table[kkk+1][1])/2: " << (earth_table[kkk][1]+earth_table[kkk+1][1])/2 << endl;
     }
 
 
@@ -91,7 +95,7 @@ void Config_Air_Earth()
     ATM_Model->SetLineColor(2);
     ATM_Model->SetTitle("");
     ATM_Model->GetXaxis()->SetTitle("R(km)");
-    ATM_Model->GetYaxis()->SetTitle("kg/m^{3}");
+    ATM_Model->GetYaxis()->SetTitle("g/cm^{3}");
     ATM_Model->GetXaxis()->SetRangeUser(0,6372);
     ATM_Model->GetYaxis()->SetRangeUser(0,15);
     ATM_Model->SetMarkerColor(2);

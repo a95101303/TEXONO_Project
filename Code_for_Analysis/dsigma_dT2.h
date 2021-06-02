@@ -2753,7 +2753,7 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
     if(Check_Threshold>-1)
     {
         int Step=0;
-        while( (Track_Point[2]-LOF_km)<1e-10)
+        while( (Track_Point[2]-0)>1e-10 or (Track_Point[2]-LOF_km)<=1e-10)
         {
             dt->SetPoint(Step,Track_Point[0],Track_Point[1],Track_Point[2]);
             
@@ -2781,6 +2781,8 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
             cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
             
             double Critera_of_surpassing = Track_Point[2]+Sprint_Length*Direction[2];
+            
+            cout << "Critera_of_surpassing: " << Critera_of_surpassing << endl;
             
             if(Critera_of_surpassing>LOF_km)
             {
@@ -2837,7 +2839,7 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
                 Arrival_or_not = 0;
                 break;
             }
-            if( (Track_Point[2]-10.) <1e-10 and Step!=0)
+            if( (Track_Point[2]-LOF_km) >=0 and Step!=0)
             {
                 cout << "Step: " << Step << endl;
                 cout << "Temp_Length: " << Temp_Length << endl;
@@ -2852,7 +2854,7 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
         cout << "Track_Track_Point[2]: " << Track_Point[2] << endl;
         
         
-        cout << "=========Temp_Length-10=========: " << Temp_Length-10 << endl;
+        cout << "=========Temp_Length-0.001=========: " << Temp_Length-LOF_km << endl;
 
 
         cout << "Step: " << Step << endl;
@@ -2877,7 +2879,7 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
         else{RETURN_VALUE[1]=0;}
     RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;RETURN_VALUE[2]=Collision_Time;
     RETURN_VALUE[3]=Arrival_or_not;
-    RETURN_VALUE[4]=10;RETURN_VALUE[5]=Temp_Length;RETURN_VALUE[6]=Collision_Time;
+        RETURN_VALUE[4]=0.001;RETURN_VALUE[5]=Temp_Length;RETURN_VALUE[6]=Collision_Time;
     }
     
     if(Check_Threshold!=0)
