@@ -1,4 +1,4 @@
-double CDEX_real_Migdal_Lower[16][2] = {
+double CDEX_real_Migdal_Lower_Original[16][2] = {
 2,2.68927e-37,
 1,1.68575e-36,
 0.9,2.15376e-36,
