@@ -17,21 +17,14 @@
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Ours.h"
 
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Migdal_Lower.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Migdal_Lower_Original.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Migdal_Upper.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Brem_Lower_Original.h"
-
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Lower.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Upper.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Lower_Original.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Lower.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Upper.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Lower_All_Bins.h"
 
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Lower_1st_Original.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Lower_1st.h"
-
-void SetLimits_TEXONO_Vacuum()
+void SetLimits_CDEX_Earth()
 {
         TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
     leg->SetFillColor(0);
@@ -85,12 +78,12 @@ void SetLimits_TEXONO_Vacuum()
 
   //frame->GetXaxis()->CenterTitle();
   //frame->GetYaxis()->CenterTitle();
-    frame->GetXaxis()->SetTitle("M_{#chi}");
-    frame->GetYaxis()->SetTitle("#sigma_{SI}");
   frame->GetXaxis()->SetMoreLogLabels();
   frame->Draw();
   gPad->SetLogx();
   gPad->SetLogy();
+    frame->GetXaxis()->SetTitle("M_{#chi}");
+    frame->GetYaxis()->SetTitle("#sigma_{SI}");
 
 //=================================================================================================
   TGraph *gCMB = new TGraph(); gCMB->SetName("gCMB"); 
@@ -144,7 +137,7 @@ void SetLimits_TEXONO_Vacuum()
       CRESST_Surface_text->SetLineWidth(2);
       CRESST_Surface_text->SetTextColor(1);
       CRESST_Surface_text->SetTextAngle(-2);
-     // CRESST_Surface_text->Draw();
+      //CRESST_Surface_text->Draw();
 //==================================================================================================
     TGraph *gcresstII = new TGraph(); gcresstII->SetName("gcresstII");
     for(int i=0;i<37;i++)
@@ -161,7 +154,7 @@ void SetLimits_TEXONO_Vacuum()
       CRESST_2_text->SetLineWidth(2);
       CRESST_2_text->SetTextColor(1);
       CRESST_2_text->SetTextAngle(-30);
-     // CRESST_2_text->Draw();
+      //CRESST_2_text->Draw();
 //==================================================================================================
     TGraph *gcresst_surf_Ours = new TGraph(); gcresst_surf_Ours->SetName("gcresst_surf_Ours");
     for(int i=0;i<16;i++)
@@ -199,92 +192,199 @@ void SetLimits_TEXONO_Vacuum()
     
     TFile *f=new TFile("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/Set_Limits_Plot_for_ALL.root");
     
+    //CDEX-1a
+    TGraph *CDEX_1a=(TGraph*)f->Get("CDEX-1a");
+    CDEX_1a->SetName("CDEX-1a");
+    CDEX_1a->SetFillColor(kYellow+0);
+    CDEX_1a->SetLineWidth(5);
+    CDEX_1a->SetLineColor(kOrange+7);
+    CDEX_1a->SetFillStyle(3144);
+    CDEX_1a->Draw("lfsame");
 
-    int Work_Line_Width=4;
-//TEXONO
-    TGraph *TEXONO_Down=(TGraph*)f->Get("TEXONO_With_Subtracting_the_KL_shells");
-    TEXONO_Down->SetLineColor(6);
-    TEXONO_Down->SetLineWidth(Work_Line_Width);
-    TEXONO_Down->SetName("TEXONO_Real");
-    TEXONO_Down->SetLineColor(kOrange+10);
-    TEXONO_Down->SetFillStyle(3144);
-    TEXONO_Down->Draw("lsame");
+    double x1, y1;
 
-    
-    
-    TLatex *tex11 = new TLatex(1.5,4e-38,"TEXONO(NU)");
-    tex11->SetTextFont(42);
-    tex11->SetTextSize(0.04);
-    tex11->SetLineWidth(1);
-    tex11->SetTextColor(kOrange+10);
-    tex11->SetTextAngle(-30);
-    tex11->Draw();
+     double CDEX_x[Number_of_Candidates], CDEX_y[Number_of_Candidates];
+    for(int i=0;i<Number_of_Candidates;i++)
+      {
+        CDEX_1a->GetPoint(i,x1,y1);
+        CDEX_x[i] = x1;
+        CDEX_y[i] = y1;
+          cout << "CDEX_x[i]: " << CDEX_x[i] << endl;
+          cout << "CDEX_y[i]: " << CDEX_y[i] << endl;
 
-     
-//
-     
- /*
-     TGraph *TEXONO_Up = new TGraph(cogent2013_bin,cogent2013_x,cogent2013_y);
-     g_cogent2013->SetName("g1_cogent2013");
-     g_cogent2013->SetFillColor(kGreen+2);
-     g_cogent2013->SetLineColor(1);
-     g_cogent2013->SetLineWidth(5);
-     g_cogent2013->Draw("f");
-*/
-    
-    
-    TGraph *texono_vacuum_brem = new TGraph(); texono_vacuum_brem->SetName("texono_vacuum_brem");
+      }
 
-    for(int i=0;i<16;i++)
+    TGraph *cdex_real = new TGraph(); cdex_real->SetName("cdex_real");
+    cdex_real->SetPoint(0, CDEX_x[0],CDEX_y[0]);
+
+    cout << "CDEX_x[0]: " << CDEX_x[0] << endl;
+    cout << "CDEX_y[0]: " << CDEX_y[0] << endl;
+
+    for(int i=0;i<12;i++)
     {
-        cout << "TEXONO_real_Brem_Lower_1st[i][0]: " << TEXONO_real_Brem_Lower_1st_Original[i][0] << endl;
-        cout << "TEXONO_real_Brem_Lower_1st[i][1]: " << TEXONO_real_Brem_Lower_1st_Original[i][1] << endl;
+        cout << "CDEX_real_chiN[i][0]: " << CDEX_real_chiN[i][0] << endl;
+        cout << "CDEX_real_chiN[i][1]: " << CDEX_real_chiN[i][1] << endl;
 
-        texono_vacuum_brem->SetPoint((i), TEXONO_real_Brem_Lower_1st_Original[i][0],TEXONO_real_Brem_Lower_1st_Original[i][1]);
+        cdex_real->SetPoint((i+1), CDEX_real_chiN[i][0],CDEX_real_chiN[i][1]);
+    }
+    cdex_real->SetPoint(13, CDEX_x[18],CDEX_y[18]);
+    cout << "CDEX_x[20]: " << CDEX_x[18] << endl;
+    cout << "CDEX_y[20]: " << CDEX_y[18] << endl;
+
+    cdex_real->SetName("cdex_real");
+    cdex_real->SetFillColor(kYellow+0);
+    cdex_real->SetFillStyle(3144);
+    cdex_real->SetLineColor(kOrange+10);
+    cdex_real->SetLineWidth(5);
+
+    cdex_real->Draw("lfsame");
+
+    TLatex *tex10 = new TLatex(2,1e-40,"CDEX-1b(NU)");
+    tex10->SetTextFont(42);
+    tex10->SetTextSize(0.04);
+    tex10->SetLineWidth(2);
+    tex10->SetTextColor(kCyan-3);
+    tex10->SetTextAngle(-20);
+    tex10->Draw();
+
+
+     
+    TGraph *cdex_real_Migdal = new TGraph(); cdex_real_Migdal->SetName("cdex_real_MD");
+
+    for(int i=0;i<17;i++)
+    {
+        cout << "CDEX_real_Migdal_Lower[i][0]: " << CDEX_real_Migdal_Lower[i][0] << endl;
+        cout << "CDEX_real_Migdal_Lower[i][1]: " << CDEX_real_Migdal_Lower[i][1] << endl;
+
+        cdex_real_Migdal->SetPoint((i), CDEX_real_Migdal_Lower[i][0],CDEX_real_Migdal_Lower[i][1]);
+    }
+
+    for(int i=0;i<17;i++)
+    {
+        cout << "CDEX_real_Migdal_Upper[i][0]: " << CDEX_real_Migdal_Upper[i][0] << endl;
+        cout << "CDEX_real_Migdal_Upper[i][1]: " << CDEX_real_Migdal_Upper[i][1] << endl;
+
+        cdex_real_Migdal->SetPoint((i+16), CDEX_real_Migdal_Upper[i][0],CDEX_real_Migdal_Upper[i][1]);
+    }
+
+    cdex_real_Migdal->SetPoint((32), CDEX_real_Migdal_Lower[0][0],CDEX_real_Migdal_Lower[0][1]);
+
+    cdex_real_Migdal->SetFillColor(kCyan+4);
+    cdex_real_Migdal->SetLineColor(kOrange+10);
+    cdex_real_Migdal->SetLineWidth(5);
+    cdex_real_Migdal->Draw("lfsame");
+    cdex_real_Migdal->SetFillStyle(3144);
+
+    TLatex *tex5;
+    tex5 = new TLatex(0.05,1e-33,"CDEX-1b(Migdal Effect)");
+    tex5->SetTextFont(42);
+    tex5->SetTextSize(0.04);
+    tex5->SetLineWidth(2);
+    tex5->SetTextColor(kCyan+4);
+    tex5->SetTextAngle(-15);
+    tex5->Draw();
+    
+     
+    
+    TGraph *texono_real_Migdal = new TGraph(); texono_real_Migdal->SetName("texono_real_MD");
+
+    for(int i=0;i<15;i++)
+    {
+        cout << "TEXONO_real_Migdal_Lower[i][0]: " << TEXONO_real_Migdal_Lower[i][0] << endl;
+        cout << "TEXONO_real_Migdal_Lower[i][1]: " << TEXONO_real_Migdal_Lower[i][1] << endl;
+
+        texono_real_Migdal->SetPoint((i), TEXONO_real_Migdal_Lower[i][0],TEXONO_real_Migdal_Lower[i][1]);
+    }
+    
+    for(int i=0;i<15;i++)
+    {
+        cout << "CDEX_real_Migdal_Upper[i][0]: " << TEXONO_real_Migdal_Upper[i][0] << endl;
+        cout << "CDEX_real_Migdal_Upper[i][1]: " << TEXONO_real_Migdal_Upper[i][1] << endl;
+
+        texono_real_Migdal->SetPoint((i+15), TEXONO_real_Migdal_Upper[i][0],TEXONO_real_Migdal_Upper[i][1]);
     }
     
      
-    texono_vacuum_brem->SetLineColor(kOrange+10);
-    texono_vacuum_brem->SetLineWidth(Work_Line_Width);
-    texono_vacuum_brem->SetFillStyle(3144);
-    texono_vacuum_brem->Draw("lsame");
+    texono_real_Migdal->SetFillColor(kCyan-4);
+    texono_real_Migdal->SetLineColor(1);
+    texono_real_Migdal->SetLineWidth(5);
+    //texono_real_Migdal->Draw("fsame");
+    texono_real_Migdal->SetFillStyle(3144);
+
+    TLatex *tex6;
+    tex6 = new TLatex(0.05,5e-35,"TEXONO(Migdal Effect)");
+    tex6->SetTextFont(42);
+    tex6->SetTextSize(0.04);
+    tex6->SetLineWidth(2);
+    tex6->SetTextColor(kCyan-4);
+    //tex6->Draw();
+
+    /*
+    TGraph *texono_real_Migdal_all_bins = new TGraph(); texono_real_Migdal_all_bins->SetName("texono_real_MD_all_Bins");
+
+    for(int i=0;i<15;i++)
+    {
+        cout << "TEXONO_real_Migdal_Lower_All_Bins[i][0]: " << TEXONO_real_Migdal_Lower_All_Bins[i][0] << endl;
+        cout << "TEXONO_real_Migdal_Lower_All_Bins[i][1]: " << TEXONO_real_Migdal_Lower_All_Bins[i][1] << endl;
+
+        texono_real_Migdal_all_bins->SetPoint((i), TEXONO_real_Migdal_Lower_All_Bins[i][0],TEXONO_real_Migdal_Lower_All_Bins[i][1]);
+    }
+
+    texono_real_Migdal_all_bins->SetFillColor(kCyan-4);
+    texono_real_Migdal_all_bins->SetLineColor(1);
+    texono_real_Migdal_all_bins->SetLineWidth(5);
+    texono_real_Migdal_all_bins->Draw("Lsame");
+    texono_real_Migdal_all_bins->SetFillStyle(3144);
+
+    */
+    
+    TGraph *texono_real_brem = new TGraph(); texono_real_brem->SetName("texono_real_BR");
+
+    for(int i=0;i<18;i++)
+    {
+        cout << "TEXONO_real_Brem_Lower[i][0]: " << TEXONO_real_Brem_Lower[i][0] << endl;
+        cout << "TEXONO_real_Brem_Lower[i][1]: " << TEXONO_real_Brem_Lower[i][1] << endl;
+
+        texono_real_brem->SetPoint((i), TEXONO_real_Brem_Lower[i][0],TEXONO_real_Brem_Lower[i][1]);
+    }
+    
+    for(int i=0;i<18;i++)
+    {
+        cout << "TEXONO_real_Brem_Lower[i][0]: " << TEXONO_real_Brem_Upper[i][0] << endl;
+        cout << "TEXONO_real_Brem_Lower[i][1]: " << TEXONO_real_Brem_Upper[i][1] << endl;
+
+        texono_real_brem->SetPoint((i+18), TEXONO_real_Brem_Upper[i][0],TEXONO_real_Brem_Upper[i][1]);
+    }
+
+     
+    texono_real_brem->SetFillColor(kGreen+2);
+    texono_real_brem->SetLineColor(1);
+    texono_real_brem->SetLineWidth(5);
+    //texono_real_brem->Draw("fsame");
+    texono_real_brem->SetFillStyle(3144);
    // texono_real_brem->SetMarkerStyle(8);
    // texono_real_brem->SetMarkerSize(0.5);
    // texono_real_brem->SetMarkerColor(2);
 
     TLatex *tex7;
-    tex7 = new TLatex(0.05,5e-28,"TEXONO(Brem)");
+    tex7 = new TLatex(0.05,1e-29,"TEXONO(Brem)");
     tex7->SetTextFont(42);
     tex7->SetTextSize(0.04);
     tex7->SetLineWidth(2);
-    tex7->SetTextColor(kOrange+10);
-    tex7->SetTextAngle(-20);
-    tex7->Draw();
+    tex7->SetTextColor(kGreen+2);
+    //tex7->Draw();
     
-    
-    TGraph *texono_vacuum_Migdal = new TGraph(); texono_vacuum_Migdal->SetName("texono_vacuum_Migdal");
+    /*
+    TGraph *texono_real_Migdal = new TGraph(); texono_real_Migdal->SetName("texono_real");
 
     for(int i=0;i<16;i++)
     {
-        cout << "TEXONO_real_Migdal_Lower[i][0]: " << TEXONO_real_Migdal_Lower_Original[i][0] << endl;
-        cout << "TEXONO_real_Migdal_Lower[i][1]: " << TEXONO_real_Migdal_Lower_Original[i][1] << endl;
+        cout << "TEXONO_real_Migdal_Lower[i][0]: " << TEXONO_real_Migdal_Lower[i][0] << endl;
+        cout << "TEXONO_real_Migdal_Lower[i][1]: " << TEXONO_real_Migdal_Lower[i][1] << endl;
 
-        texono_vacuum_Migdal->SetPoint((i), TEXONO_real_Migdal_Lower_Original[i][0],TEXONO_real_Migdal_Lower_Original[i][1]);
+        texono_real_Migdal->SetPoint((i+1), TEXONO_real_Migdal_Lower[i][0],TEXONO_real_Migdal_Lower[i][1]);
     }
-     
-    texono_vacuum_Migdal->SetLineColor(kOrange+10);
-    texono_vacuum_Migdal->SetLineWidth(Work_Line_Width);
-    texono_vacuum_Migdal->SetFillStyle(3144);
-    texono_vacuum_Migdal->Draw("lsame");
-
-    TLatex *tex_CDEX_MD;
-    tex_CDEX_MD = new TLatex(0.05,3e-32,"TEXONO(Migdal)");
-    tex_CDEX_MD->SetTextFont(42);
-    tex_CDEX_MD->SetTextSize(0.04);
-    tex_CDEX_MD->SetLineWidth(2);
-    tex_CDEX_MD->SetTextColor(kOrange+10);
-    tex_CDEX_MD->SetTextAngle(-20);
-    tex_CDEX_MD->Draw();
+     */
 
 
        // DAMA legend
@@ -853,5 +953,6 @@ void SetLimits_TEXONO_Vacuum()
      leg->AddEntry(g_damah_90,"DAMA2009","f");
     leg->AddEntry(g_cogent2013,"CoGeNT(2013)","f");
        leg->Draw();
-      plot->Print("TEXONO_Vacuum.pdf");
+    
+      plot->Print("CDEX_Earth.pdf");
 }

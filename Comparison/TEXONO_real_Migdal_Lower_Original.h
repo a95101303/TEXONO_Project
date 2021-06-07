@@ -1,4 +1,5 @@
-double TEXONO_real_Migdal_Lower[16][2] = {
+double TEXONO_real_Migdal_Lower_Original[16][2] = {
+    2.34,1.5e-36,
 2,2.50677e-36,
 1,1.61262e-35,
 0.9,2.06977e-35,
@@ -14,7 +15,6 @@ double TEXONO_real_Migdal_Lower[16][2] = {
 0.08,4.03811e-32,
 0.07,5.83733e-32,
 0.06,1.56485e-31,
-0.05,5.65301e-31,
 };
 //Before the modification
 /*
@@ -33,5 +33,4 @@ double TEXONO_real_Migdal_Lower[16][2] = {
 0.08,4.03811e-32,
 0.07,5.83733e-32,
 0.06,1.56485e-31,
-0.05,5.65301e-31,
 */

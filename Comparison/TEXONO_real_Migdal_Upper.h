@@ -14,5 +14,6 @@ double TEXONO_real_Migdal_Upper[29][2] = {
     0.9,3.5e-28,
     1,3e-28,
     2,1.1e-28,
+    2.34,9.5e-29,
 };
 //Threshold=0.2keV

@@ -1,5 +1,5 @@
-double CDEX_real_Migdal_Lower[16][2] = {
-2,2.68927e-37,
+double CDEX_real_Migdal_Lower[17][2] = {
+2.07,2.68927e-37,
 1,1.68575e-36,
 0.9,2.15376e-36,
 0.8,2.81632e-36,
@@ -13,8 +13,8 @@ double CDEX_real_Migdal_Lower[16][2] = {
 0.09,3.1e-33,
 0.08,3.8e-33,
 0.07,4.4e-33,
-0.06,6.27e-33,
-0.05,4e-32,
+0.06,8.3e-33,
+0.05,2e-32,
 };
 //Before the modification
 /*

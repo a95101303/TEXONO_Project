@@ -1,4 +1,5 @@
-double TEXONO_real_Brem_Lower_1st[16][2] = {
+double TEXONO_real_Brem_Lower_1st_Original[16][2] = {
+2.34,4.79661e-32,
 2,5.79661e-32,
 1,2.87544e-31,
 0.9,3.63746e-31,
@@ -14,7 +15,6 @@ double TEXONO_real_Brem_Lower_1st[16][2] = {
 0.08,3.34942e-28,
 0.07,7.75928e-28,
 0.06,3.7769e-27,
-0.05,3.39948e-26,
 };
 //const int Number_for_Brem = 251;
 //Ew_point_interp = 520*20;

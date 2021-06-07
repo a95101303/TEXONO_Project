@@ -29,6 +29,13 @@
 
 void SetLimits_CDEX_Vaccum()
 {
+    TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
+    leg->SetFillColor(0);
+    leg->SetFillStyle(0);
+    leg->SetTextSize(0.04);
+    leg->SetBorderSize(0);
+    leg->SetTextFont(22);
+
   int Number_of_Candidates=20;
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);
@@ -78,6 +85,8 @@ void SetLimits_CDEX_Vaccum()
   frame->Draw();
   gPad->SetLogx();
   gPad->SetLogy();
+    frame->GetXaxis()->SetTitle("M_{#chi}");
+    frame->GetYaxis()->SetTitle("#sigma_{SI}");
 
 //=================================================================================================
   TGraph *gCMB = new TGraph(); gCMB->SetName("gCMB"); 
@@ -96,7 +105,9 @@ void SetLimits_CDEX_Vaccum()
     CMB_Text->SetLineWidth(2);
     CMB_Text->SetTextColor(1);
     CMB_Text->SetTextAngle(5);
-    CMB_Text->Draw();
+    //CMB_Text->Draw();
+    leg->AddEntry(gCMB,"CMB","f");
+
 //=================================================================================================
   TGraph *gXQC = new TGraph(); gXQC->SetName("gXQC");
   for(int i=0;i<15;i++)
@@ -114,7 +125,8 @@ void SetLimits_CDEX_Vaccum()
     XQC_Text->SetLineWidth(2);
     XQC_Text->SetTextColor(1);
     XQC_Text->SetTextAngle(-40);
-    XQC_Text->Draw();
+    //XQC_Text->Draw();
+    leg->AddEntry(gXQC,"XQC","f");
 //==================================================================================================
     TGraph *gcresst_surf = new TGraph(); gcresst_surf->SetName("gcresst_surf");
     for(int i=0;i<34;i++)
@@ -131,7 +143,8 @@ void SetLimits_CDEX_Vaccum()
       CRESST_Surface_text->SetLineWidth(2);
       CRESST_Surface_text->SetTextColor(1);
       CRESST_Surface_text->SetTextAngle(-2);
-      CRESST_Surface_text->Draw();
+      //CRESST_Surface_text->Draw();
+        leg->AddEntry(gcresst_surf,"CRESST(2017) Surface","f");
 //==================================================================================================
     TGraph *gcresstII = new TGraph(); gcresstII->SetName("gcresstII");
     for(int i=0;i<37;i++)
@@ -148,7 +161,9 @@ void SetLimits_CDEX_Vaccum()
       CRESST_2_text->SetLineWidth(2);
       CRESST_2_text->SetTextColor(1);
       CRESST_2_text->SetTextAngle(-30);
-      CRESST_2_text->Draw();
+      //CRESST_2_text->Draw();
+    leg->AddEntry(gcresstII,"CRESST II","f");
+
 //==================================================================================================
     TGraph *gcresst_surf_Ours = new TGraph(); gcresst_surf_Ours->SetName("gcresst_surf_Ours");
     for(int i=0;i<16;i++)
@@ -160,7 +175,9 @@ void SetLimits_CDEX_Vaccum()
     //gcresst_surf_Ours->Draw("l");
     
 //==================================================================================================
-    
+    int Work_Line_Width=4;
+
+
     TFile *f=new TFile("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/Set_Limits_Plot_for_ALL.root");
     
     //CDEX-1a
@@ -168,7 +185,7 @@ void SetLimits_CDEX_Vaccum()
     CDEX_1a->SetName("CDEX-1a");
     CDEX_1a->SetLineColor(kOrange+10);
     CDEX_1a->SetFillStyle(3144);
-    CDEX_1a->SetLineWidth(5);
+    CDEX_1a->SetLineWidth(Work_Line_Width);
     CDEX_1a->Draw("Lsame");
 
 
@@ -200,13 +217,13 @@ void SetLimits_CDEX_Vaccum()
         cout << "CDEX_real_Migdal_Lower_Original[i][0]: " << CDEX_real_Migdal_Lower_Original[i][0] << endl;
         cout << "CDEX_real_Migdal_Lower_Original[i][1]: " << CDEX_real_Migdal_Lower_Original[i][1] << endl;
 
-        cdex_vacuum_Migdal->SetPoint((i), CDEX_real_Migdal_Lower[i][0],CDEX_real_Migdal_Lower[i][1]);
+        cdex_vacuum_Migdal->SetPoint((i), CDEX_real_Migdal_Lower_Original[i][0],CDEX_real_Migdal_Lower_Original[i][1]);
     }
 
 
     cdex_vacuum_Migdal->SetFillColor(kRed+3);
     cdex_vacuum_Migdal->SetLineColor(kOrange+10);
-    cdex_vacuum_Migdal->SetLineWidth(5);
+    cdex_vacuum_Migdal->SetLineWidth(Work_Line_Width);
     cdex_vacuum_Migdal->Draw("Lsame");
     cdex_vacuum_Migdal->SetFillStyle(3144);
 
@@ -232,7 +249,7 @@ void SetLimits_CDEX_Vaccum()
 
      cdex_vacuum_Brem->SetFillColor(kOrange+10);
      cdex_vacuum_Brem->SetLineColor(kOrange+10);
-     cdex_vacuum_Brem->SetLineWidth(5);
+     cdex_vacuum_Brem->SetLineWidth(Work_Line_Width);
      cdex_vacuum_Brem->Draw("Lsame");
      cdex_vacuum_Brem->SetFillStyle(3144);
 
@@ -372,7 +389,8 @@ void SetLimits_CDEX_Vaccum()
   tex->SetTextSize(0.04);
   tex->SetLineWidth(2);
   tex->SetTextColor(kBlue);
-  tex->Draw();
+  //tex->Draw();
+
 
   tex = new TLatex(11.2,6.15e-42,"5-#sigma,");
   tex->SetTextFont(42);
@@ -392,37 +410,38 @@ void SetLimits_CDEX_Vaccum()
   //DAMA2009 allowed region
   TGraph *g_dama2009 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama2009.txt", "%lg  %lg");
   g_dama2009->SetName("g_dama2009");
-  g_dama2009->SetFillColor(kBlue-4);
-  g_dama2009->SetFillStyle(3001);
+  g_dama2009->SetFillColor(kBlue+0);
+  g_dama2009->SetFillStyle(1001);
   g_dama2009->Draw("f");
 
     
   //DAMA2009 allowed region
   TGraph *g_dama1 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_up_band.txt", "%lg  %lg");
   g_dama1->SetName("g_dama1");
-  g_dama1->SetFillColor(kBlue-4);
-  g_dama1->SetFillStyle(3001);
+  g_dama1->SetFillColor(kBlue+0);
+  g_dama1->SetFillStyle(1001);
   g_dama1->Draw("f");
 
   TGraph *g_damal_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_UP90_RL.txt", "%lg  %lg");
   g_damal_90->SetName("g_damal_90");
-  g_damal_90->SetFillColor(kBlue);
-  g_damal_90->SetFillStyle(1001);
+  g_damal_90->SetFillColor(kBlue+0);
+  g_damal_90->SetFillStyle(1001);//1001
   g_damal_90->Draw("f");
 
   //DAMA2009 allowed region
   TGraph *g_dama2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_down_band.txt", "%lg  %lg");
   g_dama2->SetName("g_dama2");
-  g_dama2->SetFillColor(kBlue-4);
-  g_dama2->SetFillStyle(3001);
+  g_dama2->SetFillColor(kBlue+0);
+  g_dama2->SetFillStyle(1001);
   g_dama2->Draw("f");
 
   TGraph *g_damah_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_Down90_RL.txt", "%lg  %lg");
   g_damah_90->SetName("g_damah_90");
-  g_damah_90->SetFillColor(kBlue);
-  g_damah_90->SetFillStyle(1001);
+  g_damah_90->SetFillColor(kBlue+0);
+  g_damah_90->SetFillStyle(1001);//1001
   g_damah_90->Draw("f");
 
+  leg->AddEntry(g_damah_90,"DAMA2009","f");
 
    
   //CDMS-II Si legend
@@ -468,7 +487,7 @@ void SetLimits_CDEX_Vaccum()
   tex->SetTextColor(kMagenta-4);
   tex->SetLineWidth(2);
   tex->SetTextAngle(-15);
-  tex->Draw();
+  //tex->Draw();
 
   //CoGent AM allowed region
  double cogent2013_x[cogent2013_bin], cogent2013_y[cogent2013_bin];
@@ -481,9 +500,9 @@ for(int i=0;i<cogent2013_bin;i++)
  TGraph *g_cogent2013 = new TGraph(cogent2013_bin,cogent2013_x,cogent2013_y);
  g_cogent2013->SetName("g1_cogent2013");
  g_cogent2013->SetFillColor(kMagenta-4);
- g_cogent2013->SetLineColor(1);
- g_cogent2013->SetLineWidth(5);
  g_cogent2013->Draw("f");
+
+ leg->AddEntry(g_cogent2013,"CoGeNT(2013)","f");
 
  //===============================================================
 
@@ -909,5 +928,6 @@ c1b_migdal_adjust->SetLineWidth(5);
  }
  atm_project->Draw("l");
 */
+    leg->Draw();
     plot->Print("CDEX_Vacuum.pdf");
 }

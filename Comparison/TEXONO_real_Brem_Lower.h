@@ -1,4 +1,5 @@
-double TEXONO_real_Brem_Lower[18][2] = {
+double TEXONO_real_Brem_Lower[19][2] = {
+2.34,1.5e-32,
 2,2.2e-32,
 1,1.5e-31,
 0.9,1.8e-31,
