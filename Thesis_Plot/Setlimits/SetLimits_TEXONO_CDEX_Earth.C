@@ -26,6 +26,20 @@
 
 void SetLimits_TEXONO_CDEX_Earth()
 {
+        TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
+    leg->SetFillColor(0);
+    leg->SetFillStyle(0);
+    leg->SetTextSize(0.04);
+    leg->SetBorderSize(0);
+    leg->SetTextFont(22);
+
+    TLegend *leg1 = new TLegend(0.55,0.14,0.75,0.35);
+    leg1->SetFillColor(0);
+    leg1->SetFillStyle(0);
+    leg1->SetTextSize(0.04);
+    leg1->SetBorderSize(0);
+    leg1->SetTextFont(22);
+
   int Number_of_Candidates=20;
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);
@@ -188,10 +202,12 @@ void SetLimits_TEXONO_CDEX_Earth()
     //CDEX-1a
     TGraph *CDEX_1a=(TGraph*)f->Get("CDEX-1a");
     CDEX_1a->SetName("CDEX-1a");
-    CDEX_1a->SetFillColor(kYellow+0);
-    CDEX_1a->SetLineWidth(5);
+    CDEX_1a->SetFillColor(kBlue-9);
+    CDEX_1a->SetLineColor(1);
     CDEX_1a->SetFillStyle(3144);
     CDEX_1a->Draw("fsame");
+
+    leg1->AddEntry(CDEX_1a,"CDEX(#chi-N)","f");
 
     double x1, y1;
 
@@ -224,7 +240,7 @@ void SetLimits_TEXONO_CDEX_Earth()
     cout << "CDEX_y[20]: " << CDEX_y[18] << endl;
 
     cdex_real->SetName("cdex_real");
-    cdex_real->SetFillColor(kYellow+0);
+    cdex_real->SetFillColor(kBlue-9);
     cdex_real->SetFillStyle(3144);
     cdex_real->SetLineWidth(5);
 
@@ -237,6 +253,7 @@ void SetLimits_TEXONO_CDEX_Earth()
     tex10->SetTextColor(kOrange-3);
     tex10->SetTextAngle(-20);
     //tex10->Draw();
+    
 
 
      
@@ -261,9 +278,10 @@ void SetLimits_TEXONO_CDEX_Earth()
     cdex_real_Migdal->SetPoint((32), CDEX_real_Migdal_Lower[0][0],CDEX_real_Migdal_Lower[0][1]);
 
     cdex_real_Migdal->SetFillColor(kCyan+4);
-    cdex_real_Migdal->SetLineWidth(5);
     cdex_real_Migdal->Draw("fsame");
     cdex_real_Migdal->SetFillStyle(3144);
+
+    leg1->AddEntry(cdex_real_Migdal,"CDEX(MD)","f");
 
     TLatex *tex5;
     tex5 = new TLatex(0.05,1e-33,"CDEX-1b(Migdal Effect)");
@@ -321,7 +339,6 @@ void SetLimits_TEXONO_CDEX_Earth()
     texono_real->SetName("texono_real");
     texono_real->SetFillColor(kOrange-3);
     texono_real->SetFillStyle(3144);
-    texono_real->SetLineWidth(5);
     texono_real->Draw("fsame");
     
     TLatex *tex11 = new TLatex(2,1e-39,"TEXONO(NU)");
@@ -332,7 +349,8 @@ void SetLimits_TEXONO_CDEX_Earth()
     tex11->SetTextAngle(-25);
     //tex11->Draw();
 
-     
+     leg1->AddEntry(texono_real,"TEXONO(#chi-N)","f");
+
 //
      
     
@@ -359,9 +377,10 @@ void SetLimits_TEXONO_CDEX_Earth()
      texono_real_Migdal->SetPoint((32), TEXONO_real_Migdal_Lower[0][0],TEXONO_real_Migdal_Lower[0][1]);
 
     texono_real_Migdal->SetFillColor(kCyan-4);
-    texono_real_Migdal->SetLineWidth(5);
     texono_real_Migdal->Draw("fsame");
     texono_real_Migdal->SetFillStyle(3144);
+
+    leg1->AddEntry(texono_real_Migdal,"TEXONO(MD)","f");
 
     TLatex *tex6;
     tex6 = new TLatex(0.05,5e-33,"TEXONO(Migdal Effect)");
@@ -393,13 +412,12 @@ void SetLimits_TEXONO_CDEX_Earth()
 
      
     texono_real_brem->SetFillColor(kGreen+2);
-    texono_real_brem->SetLineColor(kOrange+10);
-    texono_real_brem->SetLineWidth(5);
     texono_real_brem->Draw("fsame");
     texono_real_brem->SetFillStyle(3144);
    // texono_real_brem->SetMarkerStyle(8);
    // texono_real_brem->SetMarkerSize(0.5);
    // texono_real_brem->SetMarkerColor(2);
+    leg1->AddEntry(texono_real_brem,"TEXONO(Brem)","f");
 
     TLatex *tex7;
     tex7 = new TLatex(0.1,1e-29,"TEXONO(Brem)");
@@ -412,566 +430,572 @@ void SetLimits_TEXONO_CDEX_Earth()
     
 
 
-    // DAMA legend
-    //CoGent AM legend
-    TLatex *tex;
-    TPave *pave = new TPave(3.2,5.6e-42,3.8,8e-42,4,"br");
-    pave->SetFillColor(kBlue-4);
-    pave->SetLineColor(kBlue-4);
-    pave->SetLineWidth(0);
-    pave->SetFillStyle(3001);
-    pave->SetShadowColor(0);
-    //pave->Draw();
-
-    pave = new TPave(3.35,6.15e-42,3.635,7.44e-42,4,"br");
-    pave->SetFillColor(kBlue);
-    pave->SetLineColor(kBlue);
-    pave->SetFillStyle(1001);
-    pave->SetBorderSize(1);
-    pave->SetShadowColor(0);
-    //pave->Draw();
-
-    //tex = new TLatex(4.0,6.15e-39,"DAMA/LIBRA phase-1, Na-recoil:  5 #sigma & 90%");
-      tex = new TLatex(3.0,6.15e-39,"DAMA/LIBRA phase-1");
-    tex->SetTextFont(42);
-    tex->SetTextSize(0.04);
-    tex->SetLineWidth(2);
-    tex->SetTextColor(kBlue);
-    //tex->Draw();
-
-    tex = new TLatex(11.2,6.15e-42,"5-#sigma,");
-    tex->SetTextFont(42);
-    tex->SetTextSize(0.04);
-    tex->SetLineWidth(2);
-    tex->SetTextColor(kBlue);
-    //tex->Draw();
-
-
-    tex = new TLatex(13.2,6.15e-42,"90%");
-    tex->SetTextFont(42);
-    tex->SetTextSize(0.04);
-    tex->SetLineWidth(2);
-    tex->SetTextColor(kBlue);
-    //tex->Draw();
-  //
-    //DAMA2009 allowed region
-    TGraph *g_dama2009 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama2009.txt", "%lg  %lg");
-    g_dama2009->SetName("g_dama2009");
-    g_dama2009->SetFillColor(kBlue-4);
-    g_dama2009->SetFillStyle(3001);
-    g_dama2009->Draw("f");
-
-      
-    //DAMA2009 allowed region
-    TGraph *g_dama1 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_up_band.txt", "%lg  %lg");
-    g_dama1->SetName("g_dama1");
-    g_dama1->SetFillColor(kBlue-4);
-    g_dama1->SetFillStyle(3001);
-    g_dama1->Draw("f");
-
-    TGraph *g_damal_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_UP90_RL.txt", "%lg  %lg");
-    g_damal_90->SetName("g_damal_90");
-    g_damal_90->SetFillColor(kBlue);
-    g_damal_90->SetFillStyle(1001);
-    g_damal_90->Draw("f");
-
-    //DAMA2009 allowed region
-    TGraph *g_dama2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_down_band.txt", "%lg  %lg");
-    g_dama2->SetName("g_dama2");
-    g_dama2->SetFillColor(kBlue-4);
-    g_dama2->SetFillStyle(3001);
-    g_dama2->Draw("f");
-
-    TGraph *g_damah_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_Down90_RL.txt", "%lg  %lg");
-    g_damah_90->SetName("g_damah_90");
-    g_damah_90->SetFillColor(kBlue);
-    g_damah_90->SetFillStyle(1001);
-    g_damah_90->Draw("f");
-
-
-     
-    //CDMS-II Si legend
-    pave = new TPave(3.2,1.2e-42,3.8,1.8e-42,4,"br");
-    pave->SetFillColor(kAzure+1);
-    pave->SetLineColor(kAzure+1);
-    pave->SetFillStyle(3001);
-    pave->SetShadowColor(0);
-    //pave->Draw();
-
-    tex = new TLatex(4.0,1.3e-42,"CDMS-II Si");
-    tex->SetTextFont(42);
-    tex->SetTextSize(0.03440367);
-    tex->SetLineWidth(2);
-    tex->SetTextColor(kAzure+1);
-    //tex->Draw();
-  //
-    //CDMS-II Si 68 allowed
-    double cdms_si_allow68_x[cdms_si_allow68_bin], cdms_si_allow68_y[cdms_si_allow68_bin];
-    for(int i=0;i<cdms_si_allow68_bin;i++)
-      { cdms_si_allow68_x[i] = cdms_si_allow68[i][1];
-        cdms_si_allow68_y[i] = cdms_si_allow68[i][2];
-      }
-    TGraph *g_cdms_si_allow68 = new TGraph(cdms_si_allow68_bin,cdms_si_allow68_x,cdms_si_allow68_y);
-    g_cdms_si_allow68->SetName("g_cdms_si_allow68");
-    g_cdms_si_allow68->SetFillColor(kAzure+1);
-    g_cdms_si_allow68->SetFillStyle(3001);
-    //g_cdms_si_allow68->Draw("f");
-    
-    
-  //===============================================================
-    //CoGent AM legend
-
-    pave = new TPave(3.2,0.103e-40,3.8,0.15e-40,4,"br");
-    pave->SetFillColor(kGreen+2);
-    pave->SetLineColor(kGreen+2);
-    pave->SetShadowColor(0);
-    //pave->Draw();
-
-      tex = new TLatex(3.6,3.5e-42,"CoGeNT(2013)");
-    tex->SetTextFont(42);
-    tex->SetTextSize(0.04);
-    tex->SetTextColor(kMagenta-4);
-    tex->SetLineWidth(2);
-    //tex->Draw();
-
-    //CoGent AM allowed region
-   double cogent2013_x[cogent2013_bin], cogent2013_y[cogent2013_bin];
-  for(int i=0;i<cogent2013_bin;i++)
-    { cogent2013_x[i] = cogent2013[i][1];
-      cogent2013_y[i] = cogent2013[i][2];
-      
-    }
-   
-   TGraph *g_cogent2013 = new TGraph(cogent2013_bin,cogent2013_x,cogent2013_y);
-   g_cogent2013->SetName("g1_cogent2013");
-   g_cogent2013->SetFillColor(kMagenta-4);
-   g_cogent2013->SetLineColor(1);
-   g_cogent2013->SetLineWidth(5);
-   g_cogent2013->Draw("f");
-
-   //===============================================================
-
-   //texono2013 result
-   TGraph *g_texono2013 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/texono2013.txt","%lg  %lg");
-   g_texono2013->SetName("g_texono2013");
-   g_texono2013->SetLineWidth(5);
-   g_texono2013->SetLineColor(1);
-   //g_texono2013->Draw("c");
-   
-   tex = new TLatex(10.0,4.7e-41,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO (2013)");
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(3.2);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   
-   //DAMIC2014
-   TGraph *g_DAMIC = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMIC.txt","%lg  %lg");
-   g_DAMIC->SetName("g_DAMIC");
-   g_DAMIC->SetLineColor(kRed-2);
-   g_DAMIC->SetLineWidth(5);
-   //g_DAMIC->Draw("l");
-
-   tex = new TLatex(1.75,9.0e-39,"DAMIC");
-   tex->SetTextColor(kRed-2);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(338);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   //superCDMS2014
-   TGraph *g_superCDMS2014 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/superCDMS2014.txt","%lg  %lg");
-   g_superCDMS2014->SetName("g_superCDMS2014");
-   g_superCDMS2014->SetLineColor(kCyan-2);
-   g_superCDMS2014->SetLineWidth(3);
-   //g_superCDMS2014->Draw("c");
-
-   tex = new TLatex(7.4,2.5e-42,"SuperCDMS (2014)");
-   tex->SetTextColor(kCyan-2);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03);
-   tex->SetTextAngle(308);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-
-   //CDMS2015
-   TGraph *g_CDMS2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDMS_2015.txt","%lg  %lg");
-   g_CDMS2015->SetName("g_CDMS2015");
-   g_CDMS2015->SetLineColor(kYellow+4);
-   g_CDMS2015->SetLineWidth(3);
-   //g_CDMS2015->Draw("c");
-    
-   tex = new TLatex(3.0,2e-41,"CDMSlite (2016)");
-   tex->SetTextColor(kYellow+4);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03);
-   tex->SetTextAngle(338);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-
-   //Cresst2015
-   TGraph *g_Cresst2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Cresst_SI_2015.txt","%lg  %lg");
-   g_Cresst2015->SetName("g_Cresst2015");
-   g_Cresst2015->SetLineColor(kMagenta);
-   g_Cresst2015->SetLineWidth(5);
-   //g_Cresst2015->Draw("l");
-   
-   tex = new TLatex(2.15,7.5e-40,"CRESST-II (2016)");
-   tex->SetTextColor(6);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(305);
-   tex->SetLineWidth(2);
-   // tex->Draw();
-
-
-   
-   //PandaX2016
-   TGraph *g_PandaX2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/PandaX_20170217_v2.txt","%lg  %lg");
-   g_PandaX2016->SetName("g_PandaX2016");
-   g_PandaX2016->SetLineColor(kGreen+3);
-   g_PandaX2016->SetLineWidth(5);
-   //g_PandaX2016->Draw("l");
-   
-   tex = new TLatex(4.3,7.0e-43,"PandaX (2016)");
-   tex->SetTextColor(kGreen+3);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(290);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-
-
-   //Lux2016
-   TGraph *g_Lux2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Lux_20170217_cm.txt","%lg  %lg");
-   g_Lux2016->SetName("g_Lux2016");
-   g_Lux2016->SetLineColor(kOrange+7);
-   g_Lux2016->SetLineWidth(5);
-   //g_Lux2016->Draw("l");
-   
-   tex = new TLatex(5.5,7.0e-43,"LUX (2016)");
-   tex->SetTextColor(kOrange+7);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(290);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   //cdex2016
-      /*
-   TGraph *g_cdex2016 = new TGraph("CDEX_2016.txt","%lg  %lg");
-   g_cdex2016->SetName("g_cdex2016");
-   g_cdex2016->SetLineColor(kBlack);
-   g_cdex2016->SetLineWidth(8);
-   g_cdex2016->Draw("l");
-       */
-      /*
-   tex = new TLatex(7.5,2.8e-43,"CDEX-1a");
-   tex->SetTextColor(kBlack);
-   tex->SetTextFont(62);
-   tex->SetTextSize(0.03422619);
-   tex->SetTextAngle(15);
-   tex->SetLineWidth(2);
-   tex->Draw();
-       */
-   //cdex2016 new BS
-   TGraph *g_cdex2016new = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1_lihb_20170217.dat","%lg  %lg");
-   g_cdex2016new->SetName("g_cdex2016new");
-   g_cdex2016new->SetLineColor(kRed+1);
-   g_cdex2016new->SetLineWidth(8);
-   //g_cdex2016new->Draw("l");
-
-   tex = new TLatex(3.5,5.0e-41,"CDEX-1 Modulation (this work)");
-   tex->SetTextColor(kRed+1);
-   tex->SetTextFont(40);
-   tex->SetTextSize(0.04);
-   tex->SetTextAngle(310);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-
-   TGraph *g_npc = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Bounds_mass_cx_fit_npc_50eV.txt", "%lg %lg %*lg");
-   g_npc->SetName("g_npc");
-   g_npc->SetLineWidth(5);
-   g_npc->SetLineColor(kRed);
-   //g_npc->Draw("l");
-   
-   tex = new TLatex(4.5,5e-40,"NPC-TEXONO");
-   tex->SetTextColor(2);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.03422619);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-  /////////////////////////
-  // XMASS 2018
-  /////////////////////////
-   TGraph *xmass = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass2018.txt", "%lg %lg");
-   xmass->SetName("xmass");
-   xmass->SetLineWidth(5);
-   xmass->SetLineColor(kGray);
-  // xmass->Draw("c");
-
-   tex = new TLatex(5.6,7e-40,"XMASS 2018");
-   tex->SetTextColor(kGray);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.05);
-   tex->SetTextAngle(280);
-   tex->SetLineWidth(2);
-  // tex->Draw();
-
-  /////////////////////////
-  // XMASS 2018 v2
-  /////////////////////////
-   TGraph *xmass2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass_2018_v2.txt", "%lg %lg");
-   xmass2->SetName("xmass2");
-   xmass2->SetLineWidth(5);
-   xmass2->SetLineColor(kGray+2);
-   //xmass2->Draw("c");
-
-   tex = new TLatex(4.2,7e-40,"XMASS 2018");
-   tex->SetTextColor(kGray+2);
-   tex->SetTextFont(42);
-   tex->SetTextSize(0.05);
-   tex->SetTextAngle(283);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-
-  /////////////////////////
-  // C1B spectrum
-  /////////////////////////
-      /*
-   //TGraph *c1b_2017_cpc = new TGraph("c1b_2017_cpc.txt","%lg  %lg");
-   TGraph *c1b_2017_cpc = new TGraph("CDEX1B-limit-SI.txt","%lg  %lg");
-   c1b_2017_cpc->SetName("c1b_2017_cpc");
-   c1b_2017_cpc->SetLineWidth(5);
-   c1b_2017_cpc->SetLineColor(kBlack);
-   c1b_2017_cpc->SetLineStyle(9);
-   c1b_2017_cpc->Draw("l");
-
-   tex = new TLatex(3.0,5.2e-41,"CDEX-1B unmodulated : Run 1");
-   tex->SetTextColor(kGreen);
-   tex->SetTextFont(62);
-   tex->SetTextSize(0.03);
-   tex->SetTextAngle(319);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   TGraph *c1b_2017_cpc0 = new TGraph("CDEX1B-limit-SI_SIDM_all.txt","%lg  %lg");
-   c1b_2017_cpc0->SetName("c1b_2017_cpc0");
-   c1b_2017_cpc0->SetLineWidth(5);
-   c1b_2017_cpc0->SetLineColor(kRed);
-   c1b_2017_cpc0->SetLineStyle(1);
-   c1b_2017_cpc0->Draw("l");
-
-   tex = new TLatex(3.0,5.2e-42,"CDEX-1B cortrected");
-   tex->SetTextColor(kGreen);
-   tex->SetTextFont(62);
-   tex->SetTextSize(0.03);
-   tex->SetTextAngle(319);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-  */
-
-  /////////////////////////
-  // C1B annual modulation
-  /////////////////////////
-  /*
-   tex = new TLatex(10,1.4e-41,"C1B-AM : old");
-   tex->SetTextColor(kRed);
-   tex->SetTextFont(62);
-   tex->SetTextSize(0.035);
-   tex->SetTextAngle(15);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   tex = new TLatex(8.2,2e-41,"CDEX-1B Modulation (this work)");
-   tex->SetTextColor(kRed);
-   tex->SetTextFont(60);
-   tex->SetTextSize(0.046);
-   tex->SetTextAngle(13);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-  //
-   TGraph *g_v60_53E_p1525 = new TGraph("simu_v60_53E_p1525.txt","%lg  %lg");
-   g_v60_53E_p1525->SetName("g_v60_53E_p1525");
-   g_v60_53E_p1525->SetLineWidth(6);
-   g_v60_53E_p1525->SetLineColor(kGray);
-   g_v60_53E_p1525->SetLineStyle(1);
-   //g_v60_53E_p1525->Draw("c");
-
-   TGraph *g_v60_sys_kl_53E_p1525 = new TGraph("simu_v60_sys_kl_53E_p1525.txt","%lg  %lg");
-   g_v60_sys_kl_53E_p1525->SetName("g_v60_sys_kl_53E_p1525");
-   g_v60_sys_kl_53E_p1525->SetLineWidth(6);
-   g_v60_sys_kl_53E_p1525->SetLineColor(kBlue-1);
-   g_v60_sys_kl_53E_p1525->SetLineStyle(2);
-   //g_v60_sys_kl_53E_p1525->Draw("c");
-
-  //
-   TGraph *g_v60_sys_trimm_53E_p1525 = new TGraph("simu_v60_sys_trimm_53E_p1525.txt","%lg  %lg");
-   g_v60_sys_trimm_53E_p1525->SetName("g_v60_sys_trimm_53E_p1525");
-   g_v60_sys_trimm_53E_p1525->SetLineWidth(6);
-   g_v60_sys_trimm_53E_p1525->SetLineColor(kRed-1);
-   g_v60_sys_trimm_53E_p1525->SetLineStyle(2);
-   //g_v60_sys_trimm_53E_p1525->Draw("c");
-
-  //
-   TGraph *g_v60_sys_trimp_53E_p1525 = new TGraph("simu_v60_sys_trimp_53E_p1525.txt","%lg  %lg");
-   g_v60_sys_trimp_53E_p1525->SetName("g_v60_sys_trimp_53E_p1525");
-   g_v60_sys_trimp_53E_p1525->SetLineWidth(6);
-   g_v60_sys_trimp_53E_p1525->SetLineColor(kGreen-1);
-   g_v60_sys_trimp_53E_p1525->SetLineStyle(2);
-   //g_v60_sys_trimp_53E_p1525->Draw("c");
-
-  //
-   TGraph *g_v60_53E_p1525_nonflat = new TGraph("simu_v60_53E_p1525_nonflat.txt","%lg  %lg");
-   g_v60_53E_p1525_nonflat->SetName("g_v60_53E_p1525_nonflat");
-   g_v60_53E_p1525_nonflat->SetLineWidth(6);
-   g_v60_53E_p1525_nonflat->SetLineColor(kGray);
-   g_v60_53E_p1525_nonflat->SetLineStyle(1);
-  //g_v60_53E_p1525_nonflat->Draw("c");
-
-  //
-   TGraph *g_v60_nosys_53E_p1525 = new TGraph("simu_v60_nosys_53E_p1525.txt","%lg  %lg");
-   g_v60_nosys_53E_p1525->SetName("g_v60_nosys_53E_p1525");
-   g_v60_nosys_53E_p1525->SetLineWidth(6);
-   g_v60_nosys_53E_p1525->SetLineColor(kGray);
-   g_v60_nosys_53E_p1525->SetLineStyle(1);
-  //g_v60_nosys_53E_p1525->Draw("c");
-
-  //
-  const int reso_mx = 500;
-  double mass[reso_mx];
-  double data_v60_53E_p1525[reso_mx];
-  double data_v60_sys_kl_53E_p1525[reso_mx];
-  double data_v60_sys_trimm_53E_p1525[reso_mx];
-  double data_v60_sys_trimp_53E_p1525[reso_mx];
-  double data_v60_sys_nonflat_53E_p1525[reso_mx];
-  double data_v60_sys_nosys_53E_p1525[reso_mx];
-
-  double data_sys[reso_mx];
-
-  double x, y0, y1, y2, y3, y4, y5;
-
-  for(int i=0;i<reso_mx;i++)
-  {
-    g_v60_53E_p1525->GetPoint(i,x,y0);
-    mass[i] = x;
-    data_v60_53E_p1525[i] = y0;
-  //
-    g_v60_sys_kl_53E_p1525->GetPoint(i,x,y1);
-    data_v60_sys_kl_53E_p1525[i] = y1;
-  //
-    g_v60_sys_trimm_53E_p1525->GetPoint(i,x,y2);
-    data_v60_sys_trimm_53E_p1525[i] = y2;
-  //
-    g_v60_sys_trimp_53E_p1525->GetPoint(i,x,y3);
-    data_v60_sys_trimp_53E_p1525[i] = y3;
-
-    g_v60_53E_p1525_nonflat->GetPoint(i,x,y4);
-    data_v60_sys_nonflat_53E_p1525[i] = y4;
-
-    g_v60_nosys_53E_p1525->GetPoint(i,x,y5);
-    data_v60_sys_nosys_53E_p1525[i] = y5;
-
-  //printf("%d %f %e %e %e %e\n",i,mass[i],data_v60_53E_p1525[i],data_v60_sys_kl_53E_p1525[i],data_v60_sys_trimm_53E_p1525[i],data_v60_sys_trimp_53E_p1525[i]);
-  }
-
-  for(int i=0;i<reso_mx;i++)
-  {
-    data_sys[i] = 0.0;
-    if(data_sys[i]<data_v60_53E_p1525[i]) { data_sys[i] = data_v60_53E_p1525[i]; }
-    if(data_sys[i]<data_v60_sys_kl_53E_p1525[i]) { data_sys[i] = data_v60_sys_kl_53E_p1525[i]; }
-    if(data_sys[i]<data_v60_sys_trimp_53E_p1525[i]) { data_sys[i] = data_v60_sys_trimp_53E_p1525[i]; }
-    if(data_sys[i]<data_v60_sys_trimm_53E_p1525[i]) { data_sys[i] = data_v60_sys_trimm_53E_p1525[i]; }
-    if(data_sys[i]<data_v60_sys_nonflat_53E_p1525[i]) { data_sys[i] = data_v60_sys_nonflat_53E_p1525[i]; }
-    if(data_sys[i]<data_v60_sys_nosys_53E_p1525[i]) { data_sys[i] = data_v60_sys_nosys_53E_p1525[i]; }
-
-    printf("%f %e\n",mass[i],data_sys[i]);
-  }
-
-  TGraph *g_sys = new TGraph(reso_mx,mass,data_sys);
-  g_sys->SetName("g_sys");
-  g_sys->SetLineWidth(5);
-  g_sys->SetLineColor(kRed);
-  g_sys->SetLineStyle(1);
-  //g_sys->Draw("c");
-
-  //
-   TGraph *g_v51_sys_53E_p1525 = new TGraph("simu_v51_sys_53E_p1525.txt","%lg  %lg");
-   g_v51_sys_53E_p1525->SetName("g_v51_sys_53E_p1525");
-   g_v51_sys_53E_p1525->SetLineWidth(4);
-   g_v51_sys_53E_p1525->SetLineColor(kRed-7);
-   g_v51_sys_53E_p1525->SetLineStyle(9);
-  // g_v51_sys_53E_p1525->Draw("c");
-  //
-
-  //g_sys->Draw("c");
-
-  //
-   tex = new TLatex(12.5,1.3e-41,"CDEX-1B time-integrated");
-   tex->SetTextColor(kBlack);
-   tex->SetTextFont(60);
-   tex->SetTextSize(0.04);
-   tex->SetTextAngle(9);
-   tex->SetLineWidth(2);
-   //tex->Draw();
-
-   TGraph *nlimit_cjpl_linear = new TGraph("natural_limit_linear.txt","%lg  %lg");
-   nlimit_cjpl_linear->SetName("nlimit_cjpl_linear");
-  // nlimit_cjpl_linear->Draw("c");
-
-   TGraph *nlimit_cjpl_real = new TGraph("natural_limit_real.txt","%lg  %lg");
-   nlimit_cjpl_real->SetName("nlimit_cjpl_real");
-  // nlimit_cjpl_real->Draw("c");
-
-
-   TGraph *nlimit_cjpl_linear_np2 = new TGraph("natural_limit_linear_np2.txt","%lg  %lg");
-   nlimit_cjpl_linear_np2->SetName("nlimit_cjpl_linear_np2");
-  // nlimit_cjpl_linear_np2->Draw("c");
-
-   TGraph *nlimit_cjpl_real_np2 = new TGraph("natural_limit_real_np2.txt","%lg  %lg");
-   nlimit_cjpl_real_np2->SetName("nlimit_cjpl_real_np2");
-  // nlimit_cjpl_real_np2->Draw("c");
-
-      */
-      /*
-   TGraph *c1b_migdal_raw = new TGraph("c1b_migdal_raw.txt","%lg  %lg");
-   c1b_migdal_raw->SetName("c1b_migdal_raw");
-   c1b_migdal_raw->Draw("c");
-      */
-      
-   TGraph *c1b_migdal_adjust = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1b_migdal_adjust.txt","%lg  %lg");
-   c1b_migdal_adjust->SetName("c1b_migdal_adjust");
-  c1b_migdal_adjust->SetLineWidth(5);
-      c1b_migdal_adjust->SetLineColor(2);
-
-   //c1b_migdal_adjust->Draw("l");
+       // DAMA legend
+       //CoGent AM legend
+       TLatex *tex;
+       TPave *pave = new TPave(3.2,5.6e-42,3.8,8e-42,4,"br");
+       pave->SetFillColor(kBlue-4);
+       pave->SetLineColor(kBlue-4);
+       pave->SetLineWidth(0);
+       pave->SetFillStyle(3001);
+       pave->SetShadowColor(0);
+       //pave->Draw();
+
+       pave = new TPave(3.35,6.15e-42,3.635,7.44e-42,4,"br");
+       pave->SetFillColor(kBlue);
+       pave->SetLineColor(kBlue);
+       pave->SetFillStyle(1001);
+       pave->SetBorderSize(1);
+       pave->SetShadowColor(0);
+       //pave->Draw();
+
+       //tex = new TLatex(4.0,6.15e-39,"DAMA/LIBRA phase-1, Na-recoil:  5 #sigma & 90%");
+         tex = new TLatex(3.0,6.15e-39,"DAMA/LIBRA phase-1");
+       tex->SetTextFont(42);
+       tex->SetTextSize(0.04);
+       tex->SetLineWidth(2);
+       tex->SetTextColor(kBlue);
+       //tex->Draw();
+
+       tex = new TLatex(11.2,6.15e-42,"5-#sigma,");
+       tex->SetTextFont(42);
+       tex->SetTextSize(0.04);
+       tex->SetLineWidth(2);
+       tex->SetTextColor(kBlue);
+       //tex->Draw();
+
+
+       tex = new TLatex(13.2,6.15e-42,"90%");
+       tex->SetTextFont(42);
+       tex->SetTextSize(0.04);
+       tex->SetLineWidth(2);
+       tex->SetTextColor(kBlue);
+       //tex->Draw();
+     //
+       //DAMA2009 allowed region
+       TGraph *g_dama2009 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama2009.txt", "%lg  %lg");
+       g_dama2009->SetName("g_dama2009");
+       g_dama2009->SetFillColor(kBlue);
+       g_dama2009->SetFillStyle(1001);
+       g_dama2009->Draw("f");
+
+         
+       //DAMA2009 allowed region
+       TGraph *g_dama1 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_up_band.txt", "%lg  %lg");
+       g_dama1->SetName("g_dama1");
+       g_dama1->SetFillColor(kBlue);
+       g_dama1->SetFillStyle(1001);
+       g_dama1->Draw("f");
+
+       TGraph *g_damal_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_UP90_RL.txt", "%lg  %lg");
+       g_damal_90->SetName("g_damal_90");
+       g_damal_90->SetFillColor(kBlue);
+       g_damal_90->SetFillStyle(1001);
+       g_damal_90->Draw("f");
+
+       //DAMA2009 allowed region
+       TGraph *g_dama2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_down_band.txt", "%lg  %lg");
+       g_dama2->SetName("g_dama2");
+       g_dama2->SetFillColor(kBlue);
+       g_dama2->SetFillStyle(1001);
+       g_dama2->Draw("f");
+
+       TGraph *g_damah_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_Down90_RL.txt", "%lg  %lg");
+       g_damah_90->SetName("g_damah_90");
+       g_damah_90->SetFillColor(kBlue);
+       g_damah_90->SetFillStyle(1001);
+       g_damah_90->Draw("f");
+
+
+        
+       //CDMS-II Si legend
+       pave = new TPave(3.2,1.2e-42,3.8,1.8e-42,4,"br");
+       pave->SetFillColor(kAzure+1);
+       pave->SetLineColor(kAzure+1);
+       pave->SetFillStyle(3001);
+       pave->SetShadowColor(0);
+       //pave->Draw();
+
+       tex = new TLatex(4.0,1.3e-42,"CDMS-II Si");
+       tex->SetTextFont(42);
+       tex->SetTextSize(0.03440367);
+       tex->SetLineWidth(2);
+       tex->SetTextColor(kAzure+1);
+       //tex->Draw();
+     //
+       //CDMS-II Si 68 allowed
+       double cdms_si_allow68_x[cdms_si_allow68_bin], cdms_si_allow68_y[cdms_si_allow68_bin];
+       for(int i=0;i<cdms_si_allow68_bin;i++)
+         { cdms_si_allow68_x[i] = cdms_si_allow68[i][1];
+           cdms_si_allow68_y[i] = cdms_si_allow68[i][2];
+         }
+       TGraph *g_cdms_si_allow68 = new TGraph(cdms_si_allow68_bin,cdms_si_allow68_x,cdms_si_allow68_y);
+       g_cdms_si_allow68->SetName("g_cdms_si_allow68");
+       g_cdms_si_allow68->SetFillColor(kAzure+1);
+       g_cdms_si_allow68->SetFillStyle(3001);
+       //g_cdms_si_allow68->Draw("f");
        
-  /*
-   TGraph *migdal_max = new TGraph("migdal_max.txt","%lg  %lg");
-   migdal_max->SetName("migdal_max");
-  // migdal_max->Draw("c");
+       
+     //===============================================================
+       //CoGent AM legend
 
-   TGraph *np2_project = new TGraph("np2_limit.txt","%lg  %lg");
-   np2_project->SetName("np2_project");
-   np2_project->Draw("l");
+       pave = new TPave(3.2,0.103e-40,3.8,0.15e-40,4,"br");
+       pave->SetFillColor(kGreen+2);
+       pave->SetLineColor(kGreen+2);
+       pave->SetShadowColor(0);
+       //pave->Draw();
 
-   TGraph *atm_project = new TGraph();
-   atm_project->SetName("atm_project");
-   for(int i=0;i<9;i++)
-   {
-     np2_project->GetPoint(i,x,y0);
-     atm_project->SetPoint(i,x,7.0*y0);
-   }
-   atm_project->Draw("l");
-  */
+         tex = new TLatex(3.6,3.5e-42,"CoGeNT(2013)");
+       tex->SetTextFont(42);
+       tex->SetTextSize(0.04);
+       tex->SetTextColor(kMagenta-4);
+       tex->SetLineWidth(2);
+       //tex->Draw();
+
+       //CoGent AM allowed region
+      double cogent2013_x[cogent2013_bin], cogent2013_y[cogent2013_bin];
+     for(int i=0;i<cogent2013_bin;i++)
+       { cogent2013_x[i] = cogent2013[i][1];
+         cogent2013_y[i] = cogent2013[i][2];
+         
+       }
+      
+      TGraph *g_cogent2013 = new TGraph(cogent2013_bin,cogent2013_x,cogent2013_y);
+      g_cogent2013->SetName("g1_cogent2013");
+      g_cogent2013->SetFillColor(kMagenta-4);
+      g_cogent2013->Draw("f");
+
+      //===============================================================
+
+      //texono2013 result
+      TGraph *g_texono2013 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/texono2013.txt","%lg  %lg");
+      g_texono2013->SetName("g_texono2013");
+      g_texono2013->SetLineWidth(5);
+      g_texono2013->SetLineColor(1);
+      //g_texono2013->Draw("c");
+      
+      tex = new TLatex(10.0,4.7e-41,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO (2013)");
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(3.2);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      
+      //DAMIC2014
+      TGraph *g_DAMIC = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMIC.txt","%lg  %lg");
+      g_DAMIC->SetName("g_DAMIC");
+      g_DAMIC->SetLineColor(kRed-2);
+      g_DAMIC->SetLineWidth(5);
+      //g_DAMIC->Draw("l");
+
+      tex = new TLatex(1.75,9.0e-39,"DAMIC");
+      tex->SetTextColor(kRed-2);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(338);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      //superCDMS2014
+      TGraph *g_superCDMS2014 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/superCDMS2014.txt","%lg  %lg");
+      g_superCDMS2014->SetName("g_superCDMS2014");
+      g_superCDMS2014->SetLineColor(kCyan-2);
+      g_superCDMS2014->SetLineWidth(3);
+      //g_superCDMS2014->Draw("c");
+
+      tex = new TLatex(7.4,2.5e-42,"SuperCDMS (2014)");
+      tex->SetTextColor(kCyan-2);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03);
+      tex->SetTextAngle(308);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+
+      //CDMS2015
+      TGraph *g_CDMS2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDMS_2015.txt","%lg  %lg");
+      g_CDMS2015->SetName("g_CDMS2015");
+      g_CDMS2015->SetLineColor(kYellow+4);
+      g_CDMS2015->SetLineWidth(3);
+      //g_CDMS2015->Draw("c");
+       
+      tex = new TLatex(3.0,2e-41,"CDMSlite (2016)");
+      tex->SetTextColor(kYellow+4);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03);
+      tex->SetTextAngle(338);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+
+      //Cresst2015
+      TGraph *g_Cresst2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Cresst_SI_2015.txt","%lg  %lg");
+      g_Cresst2015->SetName("g_Cresst2015");
+      g_Cresst2015->SetLineColor(kMagenta);
+      g_Cresst2015->SetLineWidth(5);
+      //g_Cresst2015->Draw("l");
+      
+      tex = new TLatex(2.15,7.5e-40,"CRESST-II (2016)");
+      tex->SetTextColor(6);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(305);
+      tex->SetLineWidth(2);
+      // tex->Draw();
+
+
+      
+      //PandaX2016
+      TGraph *g_PandaX2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/PandaX_20170217_v2.txt","%lg  %lg");
+      g_PandaX2016->SetName("g_PandaX2016");
+      g_PandaX2016->SetLineColor(kGreen+3);
+      g_PandaX2016->SetLineWidth(5);
+      //g_PandaX2016->Draw("l");
+      
+      tex = new TLatex(4.3,7.0e-43,"PandaX (2016)");
+      tex->SetTextColor(kGreen+3);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(290);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+
+
+      //Lux2016
+      TGraph *g_Lux2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Lux_20170217_cm.txt","%lg  %lg");
+      g_Lux2016->SetName("g_Lux2016");
+      g_Lux2016->SetLineColor(kOrange+7);
+      g_Lux2016->SetLineWidth(5);
+      //g_Lux2016->Draw("l");
+      
+      tex = new TLatex(5.5,7.0e-43,"LUX (2016)");
+      tex->SetTextColor(kOrange+7);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(290);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      //cdex2016
+         /*
+      TGraph *g_cdex2016 = new TGraph("CDEX_2016.txt","%lg  %lg");
+      g_cdex2016->SetName("g_cdex2016");
+      g_cdex2016->SetLineColor(kBlack);
+      g_cdex2016->SetLineWidth(8);
+      g_cdex2016->Draw("l");
+          */
+         /*
+      tex = new TLatex(7.5,2.8e-43,"CDEX-1a");
+      tex->SetTextColor(kBlack);
+      tex->SetTextFont(62);
+      tex->SetTextSize(0.03422619);
+      tex->SetTextAngle(15);
+      tex->SetLineWidth(2);
+      tex->Draw();
+          */
+      //cdex2016 new BS
+      TGraph *g_cdex2016new = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1_lihb_20170217.dat","%lg  %lg");
+      g_cdex2016new->SetName("g_cdex2016new");
+      g_cdex2016new->SetLineColor(kRed+1);
+      g_cdex2016new->SetLineWidth(8);
+      //g_cdex2016new->Draw("l");
+
+      tex = new TLatex(3.5,5.0e-41,"CDEX-1 Modulation (this work)");
+      tex->SetTextColor(kRed+1);
+      tex->SetTextFont(40);
+      tex->SetTextSize(0.04);
+      tex->SetTextAngle(310);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+
+      TGraph *g_npc = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Bounds_mass_cx_fit_npc_50eV.txt", "%lg %lg %*lg");
+      g_npc->SetName("g_npc");
+      g_npc->SetLineWidth(5);
+      g_npc->SetLineColor(kRed);
+      //g_npc->Draw("l");
+      
+      tex = new TLatex(4.5,5e-40,"NPC-TEXONO");
+      tex->SetTextColor(2);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.03422619);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+     /////////////////////////
+     // XMASS 2018
+     /////////////////////////
+      TGraph *xmass = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass2018.txt", "%lg %lg");
+      xmass->SetName("xmass");
+      xmass->SetLineWidth(5);
+      xmass->SetLineColor(kGray);
+     // xmass->Draw("c");
+
+      tex = new TLatex(5.6,7e-40,"XMASS 2018");
+      tex->SetTextColor(kGray);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.05);
+      tex->SetTextAngle(280);
+      tex->SetLineWidth(2);
+     // tex->Draw();
+
+     /////////////////////////
+     // XMASS 2018 v2
+     /////////////////////////
+      TGraph *xmass2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass_2018_v2.txt", "%lg %lg");
+      xmass2->SetName("xmass2");
+      xmass2->SetLineWidth(5);
+      xmass2->SetLineColor(kGray+2);
+      //xmass2->Draw("c");
+
+      tex = new TLatex(4.2,7e-40,"XMASS 2018");
+      tex->SetTextColor(kGray+2);
+      tex->SetTextFont(42);
+      tex->SetTextSize(0.05);
+      tex->SetTextAngle(283);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+
+     /////////////////////////
+     // C1B spectrum
+     /////////////////////////
+         /*
+      //TGraph *c1b_2017_cpc = new TGraph("c1b_2017_cpc.txt","%lg  %lg");
+      TGraph *c1b_2017_cpc = new TGraph("CDEX1B-limit-SI.txt","%lg  %lg");
+      c1b_2017_cpc->SetName("c1b_2017_cpc");
+      c1b_2017_cpc->SetLineWidth(5);
+      c1b_2017_cpc->SetLineColor(kBlack);
+      c1b_2017_cpc->SetLineStyle(9);
+      c1b_2017_cpc->Draw("l");
+
+      tex = new TLatex(3.0,5.2e-41,"CDEX-1B unmodulated : Run 1");
+      tex->SetTextColor(kGreen);
+      tex->SetTextFont(62);
+      tex->SetTextSize(0.03);
+      tex->SetTextAngle(319);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      TGraph *c1b_2017_cpc0 = new TGraph("CDEX1B-limit-SI_SIDM_all.txt","%lg  %lg");
+      c1b_2017_cpc0->SetName("c1b_2017_cpc0");
+      c1b_2017_cpc0->SetLineWidth(5);
+      c1b_2017_cpc0->SetLineColor(kRed);
+      c1b_2017_cpc0->SetLineStyle(1);
+      c1b_2017_cpc0->Draw("l");
+
+      tex = new TLatex(3.0,5.2e-42,"CDEX-1B cortrected");
+      tex->SetTextColor(kGreen);
+      tex->SetTextFont(62);
+      tex->SetTextSize(0.03);
+      tex->SetTextAngle(319);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+     */
+
+     /////////////////////////
+     // C1B annual modulation
+     /////////////////////////
+     /*
+      tex = new TLatex(10,1.4e-41,"C1B-AM : old");
+      tex->SetTextColor(kRed);
+      tex->SetTextFont(62);
+      tex->SetTextSize(0.035);
+      tex->SetTextAngle(15);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      tex = new TLatex(8.2,2e-41,"CDEX-1B Modulation (this work)");
+      tex->SetTextColor(kRed);
+      tex->SetTextFont(60);
+      tex->SetTextSize(0.046);
+      tex->SetTextAngle(13);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+     //
+      TGraph *g_v60_53E_p1525 = new TGraph("simu_v60_53E_p1525.txt","%lg  %lg");
+      g_v60_53E_p1525->SetName("g_v60_53E_p1525");
+      g_v60_53E_p1525->SetLineWidth(6);
+      g_v60_53E_p1525->SetLineColor(kGray);
+      g_v60_53E_p1525->SetLineStyle(1);
+      //g_v60_53E_p1525->Draw("c");
+
+      TGraph *g_v60_sys_kl_53E_p1525 = new TGraph("simu_v60_sys_kl_53E_p1525.txt","%lg  %lg");
+      g_v60_sys_kl_53E_p1525->SetName("g_v60_sys_kl_53E_p1525");
+      g_v60_sys_kl_53E_p1525->SetLineWidth(6);
+      g_v60_sys_kl_53E_p1525->SetLineColor(kBlue-1);
+      g_v60_sys_kl_53E_p1525->SetLineStyle(2);
+      //g_v60_sys_kl_53E_p1525->Draw("c");
+
+     //
+      TGraph *g_v60_sys_trimm_53E_p1525 = new TGraph("simu_v60_sys_trimm_53E_p1525.txt","%lg  %lg");
+      g_v60_sys_trimm_53E_p1525->SetName("g_v60_sys_trimm_53E_p1525");
+      g_v60_sys_trimm_53E_p1525->SetLineWidth(6);
+      g_v60_sys_trimm_53E_p1525->SetLineColor(kRed-1);
+      g_v60_sys_trimm_53E_p1525->SetLineStyle(2);
+      //g_v60_sys_trimm_53E_p1525->Draw("c");
+
+     //
+      TGraph *g_v60_sys_trimp_53E_p1525 = new TGraph("simu_v60_sys_trimp_53E_p1525.txt","%lg  %lg");
+      g_v60_sys_trimp_53E_p1525->SetName("g_v60_sys_trimp_53E_p1525");
+      g_v60_sys_trimp_53E_p1525->SetLineWidth(6);
+      g_v60_sys_trimp_53E_p1525->SetLineColor(kGreen-1);
+      g_v60_sys_trimp_53E_p1525->SetLineStyle(2);
+      //g_v60_sys_trimp_53E_p1525->Draw("c");
+
+     //
+      TGraph *g_v60_53E_p1525_nonflat = new TGraph("simu_v60_53E_p1525_nonflat.txt","%lg  %lg");
+      g_v60_53E_p1525_nonflat->SetName("g_v60_53E_p1525_nonflat");
+      g_v60_53E_p1525_nonflat->SetLineWidth(6);
+      g_v60_53E_p1525_nonflat->SetLineColor(kGray);
+      g_v60_53E_p1525_nonflat->SetLineStyle(1);
+     //g_v60_53E_p1525_nonflat->Draw("c");
+
+     //
+      TGraph *g_v60_nosys_53E_p1525 = new TGraph("simu_v60_nosys_53E_p1525.txt","%lg  %lg");
+      g_v60_nosys_53E_p1525->SetName("g_v60_nosys_53E_p1525");
+      g_v60_nosys_53E_p1525->SetLineWidth(6);
+      g_v60_nosys_53E_p1525->SetLineColor(kGray);
+      g_v60_nosys_53E_p1525->SetLineStyle(1);
+     //g_v60_nosys_53E_p1525->Draw("c");
+
+     //
+     const int reso_mx = 500;
+     double mass[reso_mx];
+     double data_v60_53E_p1525[reso_mx];
+     double data_v60_sys_kl_53E_p1525[reso_mx];
+     double data_v60_sys_trimm_53E_p1525[reso_mx];
+     double data_v60_sys_trimp_53E_p1525[reso_mx];
+     double data_v60_sys_nonflat_53E_p1525[reso_mx];
+     double data_v60_sys_nosys_53E_p1525[reso_mx];
+
+     double data_sys[reso_mx];
+
+     double x, y0, y1, y2, y3, y4, y5;
+
+     for(int i=0;i<reso_mx;i++)
+     {
+       g_v60_53E_p1525->GetPoint(i,x,y0);
+       mass[i] = x;
+       data_v60_53E_p1525[i] = y0;
+     //
+       g_v60_sys_kl_53E_p1525->GetPoint(i,x,y1);
+       data_v60_sys_kl_53E_p1525[i] = y1;
+     //
+       g_v60_sys_trimm_53E_p1525->GetPoint(i,x,y2);
+       data_v60_sys_trimm_53E_p1525[i] = y2;
+     //
+       g_v60_sys_trimp_53E_p1525->GetPoint(i,x,y3);
+       data_v60_sys_trimp_53E_p1525[i] = y3;
+
+       g_v60_53E_p1525_nonflat->GetPoint(i,x,y4);
+       data_v60_sys_nonflat_53E_p1525[i] = y4;
+
+       g_v60_nosys_53E_p1525->GetPoint(i,x,y5);
+       data_v60_sys_nosys_53E_p1525[i] = y5;
+
+     //printf("%d %f %e %e %e %e\n",i,mass[i],data_v60_53E_p1525[i],data_v60_sys_kl_53E_p1525[i],data_v60_sys_trimm_53E_p1525[i],data_v60_sys_trimp_53E_p1525[i]);
+     }
+
+     for(int i=0;i<reso_mx;i++)
+     {
+       data_sys[i] = 0.0;
+       if(data_sys[i]<data_v60_53E_p1525[i]) { data_sys[i] = data_v60_53E_p1525[i]; }
+       if(data_sys[i]<data_v60_sys_kl_53E_p1525[i]) { data_sys[i] = data_v60_sys_kl_53E_p1525[i]; }
+       if(data_sys[i]<data_v60_sys_trimp_53E_p1525[i]) { data_sys[i] = data_v60_sys_trimp_53E_p1525[i]; }
+       if(data_sys[i]<data_v60_sys_trimm_53E_p1525[i]) { data_sys[i] = data_v60_sys_trimm_53E_p1525[i]; }
+       if(data_sys[i]<data_v60_sys_nonflat_53E_p1525[i]) { data_sys[i] = data_v60_sys_nonflat_53E_p1525[i]; }
+       if(data_sys[i]<data_v60_sys_nosys_53E_p1525[i]) { data_sys[i] = data_v60_sys_nosys_53E_p1525[i]; }
+
+       printf("%f %e\n",mass[i],data_sys[i]);
+     }
+
+     TGraph *g_sys = new TGraph(reso_mx,mass,data_sys);
+     g_sys->SetName("g_sys");
+     g_sys->SetLineWidth(5);
+     g_sys->SetLineColor(kRed);
+     g_sys->SetLineStyle(1);
+     //g_sys->Draw("c");
+
+     //
+      TGraph *g_v51_sys_53E_p1525 = new TGraph("simu_v51_sys_53E_p1525.txt","%lg  %lg");
+      g_v51_sys_53E_p1525->SetName("g_v51_sys_53E_p1525");
+      g_v51_sys_53E_p1525->SetLineWidth(4);
+      g_v51_sys_53E_p1525->SetLineColor(kRed-7);
+      g_v51_sys_53E_p1525->SetLineStyle(9);
+     // g_v51_sys_53E_p1525->Draw("c");
+     //
+
+     //g_sys->Draw("c");
+
+     //
+      tex = new TLatex(12.5,1.3e-41,"CDEX-1B time-integrated");
+      tex->SetTextColor(kBlack);
+      tex->SetTextFont(60);
+      tex->SetTextSize(0.04);
+      tex->SetTextAngle(9);
+      tex->SetLineWidth(2);
+      //tex->Draw();
+
+      TGraph *nlimit_cjpl_linear = new TGraph("natural_limit_linear.txt","%lg  %lg");
+      nlimit_cjpl_linear->SetName("nlimit_cjpl_linear");
+     // nlimit_cjpl_linear->Draw("c");
+
+      TGraph *nlimit_cjpl_real = new TGraph("natural_limit_real.txt","%lg  %lg");
+      nlimit_cjpl_real->SetName("nlimit_cjpl_real");
+     // nlimit_cjpl_real->Draw("c");
+
+
+      TGraph *nlimit_cjpl_linear_np2 = new TGraph("natural_limit_linear_np2.txt","%lg  %lg");
+      nlimit_cjpl_linear_np2->SetName("nlimit_cjpl_linear_np2");
+     // nlimit_cjpl_linear_np2->Draw("c");
+
+      TGraph *nlimit_cjpl_real_np2 = new TGraph("natural_limit_real_np2.txt","%lg  %lg");
+      nlimit_cjpl_real_np2->SetName("nlimit_cjpl_real_np2");
+     // nlimit_cjpl_real_np2->Draw("c");
+
+         */
+         /*
+      TGraph *c1b_migdal_raw = new TGraph("c1b_migdal_raw.txt","%lg  %lg");
+      c1b_migdal_raw->SetName("c1b_migdal_raw");
+      c1b_migdal_raw->Draw("c");
+         */
+         
+      TGraph *c1b_migdal_adjust = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1b_migdal_adjust.txt","%lg  %lg");
+      c1b_migdal_adjust->SetName("c1b_migdal_adjust");
+     c1b_migdal_adjust->SetLineWidth(5);
+         c1b_migdal_adjust->SetLineColor(2);
+
+      //c1b_migdal_adjust->Draw("l");
+          
+     /*
+      TGraph *migdal_max = new TGraph("migdal_max.txt","%lg  %lg");
+      migdal_max->SetName("migdal_max");
+     // migdal_max->Draw("c");
+
+      TGraph *np2_project = new TGraph("np2_limit.txt","%lg  %lg");
+      np2_project->SetName("np2_project");
+      np2_project->Draw("l");
+
+      TGraph *atm_project = new TGraph();
+      atm_project->SetName("atm_project");
+      for(int i=0;i<9;i++)
+      {
+        np2_project->GetPoint(i,x,y0);
+        atm_project->SetPoint(i,x,7.0*y0);
+      }
+      atm_project->Draw("l");
+     */
+        leg->AddEntry(gCMB,"CMB","f");
+        leg->AddEntry(gXQC,"XQC","f");
+        leg->AddEntry(gcresst_surf,"CRESST(2017) Surface","f");
+        leg->AddEntry(gcresstII,"CRESST II","f");
+        leg->AddEntry(g_damah_90,"DAMA2009","f");
+        leg->AddEntry(g_cogent2013,"CoGeNT(2013)","f");
+        leg->Draw();
+        leg1->Draw();
       plot->Print("Both_Earth.pdf");
 }
