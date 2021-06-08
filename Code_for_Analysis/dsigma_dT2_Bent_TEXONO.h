@@ -32,8 +32,11 @@ double Vector_for_axis[6][3]=
 
 double H_OCT_KS    =70.;//m, High_Outer_Ceiling_Top_KS: 70m
 double H_ICT_KS    =60.;//m, High_inner_Ceiling_Top_KS: 60m
+
 double R_OW_KS     =57.;//m, Radius_Outer_Wall_KS: 57m
 double R_IW_KS     =56.;//m, Radius_Inner_Wall_KS: 56m
+
+double H_RE        =50.;//m, High_Reactor: 50m
 double R_OWALL_RE  =28.;//m, Radius_Outer_Wall_Reactor: 28m
 double R_IWATER_RE =27.;//m, Radius_Inner_Water_Reactor: 27m
 
@@ -178,6 +181,7 @@ double Length_to_six_planes(int Layer, double *POS, double *DR)//Position(POS),
     double POS_Aft[3];
     double ET_XYZ[3][2];//Extended_Times_XYZ
     vector<double> Find_smallest_Vector;
+    double The_final_scaling;
     // Discover the length to six places
     for(int XYZ=0; XYZ<3; XYZ++)//The Axis
     {
@@ -191,13 +195,47 @@ double Length_to_six_planes(int Layer, double *POS, double *DR)//Position(POS),
         }
     }
     
-    std::sort(Find_smallest_Vector.begin(), Find_smallest_Vector.end());
+    if(Find_smallest_Vector.size()>0)
+    {
+        std::sort(Find_smallest_Vector.begin(), Find_smallest_Vector.end());
+        The_final_scaling = Find_smallest_Vector[0];
+    }
+    else{The_final_scaling =0;}
     //The smallest one
-    double The_final_scaling = Find_smallest_Vector[0];
     Find_smallest_Vector.clear();
     
     return The_final_scaling;
 
+}
+
+double SFLE(double a, double b, double c) // Solution_for_Linear_Equation[a(X^2) + b(X) + c = 0]
+{//Check OK!
+    double Denominator=0; //Down
+    double Numerator1=0;double Numerator2=0;double Numerator_Final=0; //Up
+    vector<double> Find_smallest_Vector;
+    
+    Denominator = 2*a;
+    Numerator1 = -b + sqrt(b*b-4*a*c);
+    if(Numerator1>0)Find_smallest_Vector.push_back(Numerator1);
+    Numerator2 = -b - sqrt(b*b-4*a*c);
+    if(Numerator2>0)Find_smallest_Vector.push_back(Numerator2);
+    
+    if(Find_smallest_Vector.size()>0)
+    {
+        std::sort(Find_smallest_Vector.begin(),Find_smallest_Vector.end());
+        Numerator_Final = Find_smallest_Vector[0];
+    }
+    else
+    {
+        Numerator_Final = 0;
+    }
+    
+    return (Numerator_Final/Denominator);
+}
+
+double Length_to_others(double *POS, double *DR, double R)//Position(POS),Direction(DR),Radius(R)
+{
+    return SFLE( (DR[0]*DR[0]+DR[1]*DR[1]),(2*POS[0]*DR[0]+2*(POS[1]-30)*DR[1]),(POS[0]*POS[0]+(POS[1]-30)*(POS[1]-30)-R*R) );
 }
 double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(DR)
 {
@@ -231,7 +269,18 @@ double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(D
     //Out of the shielding
     if(A_Layer==5)
     {
-        
+        double H_OCT_KS    =70.;//m, High_Outer_Ceiling_Top_KS: 70m
+        double H_ICT_KS    =60.;//m, High_inner_Ceiling_Top_KS: 60m
+        double R_OW_KS     =57.;//m, Radius_Outer_Wall_KS: 57m
+        double R_IW_KS     =56.;//m, Radius_Inner_Wall_KS: 56m
+
+        double H_RE        =50.;//m, High_Reactor: 50m
+        double R_OWALL_RE  =28.;//m, Radius_Outer_Wall_Reactor: 28m
+        double R_IWATER_RE =27.;//m, Radius_Inner_Water_Reactor: 27m
+
+        double Outer_Wall_Scaling = Length_to_others(POS,DR,R_OW_KS);
+        double Inner_Wall_Scaling = Length_to_others(POS,DR,R_IW_KS);
+
     }//if(A_Layer==5)
 }
 
