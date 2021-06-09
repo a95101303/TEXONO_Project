@@ -84,7 +84,7 @@ double *Starting_Position()
 }
 
 //Now where the particle is in the shielding
-int *Where_is_it(double *Position)
+int *Where_is_it_in_shielding(double *Position)
 {
     static double Return_Value[2];
     int layer_Number=0;int On_Surface=0;
@@ -156,6 +156,37 @@ int *Where_is_it(double *Position)
     return(Return_Value);
 }
 
+double RTC(double *POS)//Radius_To_Center(RTC)
+{
+    double X = (POS[0]-0);
+    double Y = (POS[1]-30);
+    return sqrt(X*X+Y*Y);
+}
+
+int *Where_is_it_out_of_shielding(double *POS)
+{
+    static double Return_Value[2];
+    int layer_Number=0;int On_Surface=0;int Component=0;
+    
+    if( (RTC(POS)>R_IWATER_RE) and (RTC(POS)<=R_OWALL_RE) and (POS[2]<=H_RE) )//Outer Wall of Reactor
+    {
+        Component==1;//Wall of Reactor
+    }
+    if( (RTC(POS)<=R_IWATER_RE) and (POS[2]<=H_RE) )//Inner Wall of Reactor
+    {
+        Component==2;//Wall of Reactor
+    }
+    if( (RTC(POS)==R_IW_KS) and (POS[2]<=H_ICT_KS) )//Inner Wall of KS
+    {
+        Component==3;//Wall of KS
+    }
+    if( (RTC(POS)==R_IW_KS) and (POS[2]<=H_ICT_KS) )//Inner Wall of KS
+    {
+        Component==3;//Wall of KS
+    }
+    return(Return_Value);
+}
+
 int DR_In_or_Out_on_surface(int IOS, double *DR)//Index_of_surface(IOS),Direction(DR)
 {
     double Criteria = DR[0]*Vector_for_axis[IOS-1][0]+DR[1]*Vector_for_axis[IOS-1][1]+DR[2]*Vector_for_axis[IOS-1][2];
@@ -176,6 +207,19 @@ int DR_In_or_Out_off_surface(double *POS, double *DR)
     return(In_or_Out_N);
 }
 
+double The_smallest_in_a_vector(vector<double> Vector)
+{
+    double Return_the_smallest_one=0;
+    if(Vector.size()>0)
+    {
+        std::sort(Vector.begin(), Vector.end());
+        Return_the_smallest_one = Vector[0];
+    }
+    else{Return_the_smallest_one=0;}
+    
+    return Return_the_smallest_one;
+}
+
 double Length_to_six_planes(int Layer, double *POS, double *DR)//Position(POS),
 {
     double POS_Aft[3];
@@ -189,18 +233,13 @@ double Length_to_six_planes(int Layer, double *POS, double *DR)//Position(POS),
         {
             double ET = (The_Material_Layer[Layer][XYZ]-POS[XYZ])/(DR[XYZ]);//Extension_times
             for(int POS_After_Axis=0; POS_After_Axis<3; POS_After_Axis++){POS_Aft[POS_After_Axis] = POS[POS_After_Axis] + ET*DR[POS_After_Axis];}
-            double *Fun_Layer_Aft= Where_is_it(POS_Aft);
+            double *Fun_Layer_Aft= Where_is_it_in_shielding(POS_Aft);
             if(Fun_Layer_Aft[0]==Layer){ET_XYZ[XYZ][PorN]=ET;}else{ET_XYZ[XYZ][PorN]=0;}
             if(Fun_Layer_Aft[0]==Layer and ET_XYZ[XYZ][PorN]>0){Find_smallest_Vector.push_back(ET_XYZ[XYZ][PorN]);}
         }
     }
     
-    if(Find_smallest_Vector.size()>0)
-    {
-        std::sort(Find_smallest_Vector.begin(), Find_smallest_Vector.end());
-        The_final_scaling = Find_smallest_Vector[0];
-    }
-    else{The_final_scaling =0;}
+    The_final_scaling = The_smallest_in_a_vector(Find_smallest_Vector);
     //The smallest one
     Find_smallest_Vector.clear();
     
@@ -220,28 +259,31 @@ double SFLE(double a, double b, double c) // Solution_for_Linear_Equation[a(X^2)
     Numerator2 = -b - sqrt(b*b-4*a*c);
     if(Numerator2>0)Find_smallest_Vector.push_back(Numerator2);
     
-    if(Find_smallest_Vector.size()>0)
-    {
-        std::sort(Find_smallest_Vector.begin(),Find_smallest_Vector.end());
-        Numerator_Final = Find_smallest_Vector[0];
-    }
-    else
-    {
-        Numerator_Final = 0;
-    }
-    
+    Numerator_Final = The_smallest_in_a_vector(Find_smallest_Vector);
+
     return (Numerator_Final/Denominator);
 }
 
-double Length_to_others(double *POS, double *DR, double R)//Position(POS),Direction(DR),Radius(R)
+double Scaling_to_others_XY(double *POS, double *DR, double R)//Position(POS),Direction(DR),Radius(R)
 {
     return SFLE( (DR[0]*DR[0]+DR[1]*DR[1]),(2*POS[0]*DR[0]+2*(POS[1]-30)*DR[1]),(POS[0]*POS[0]+(POS[1]-30)*(POS[1]-30)-R*R) );
 }
+double Scaling_to_others_Z(double *POS, double *DR, double H)//Position(POS),Direction(DR),Radius(R)
+{
+    return (H-POS[2])/DR[2];
+}
+double Radius_for_ceiling(double *POS, double *DR, double S)//Position(POS),Direction(DR),Scaling(S),Radius(R)
+{
+    double X = POS[0]+DR[0]*S;
+    double Y = (POS[1]-30)+DR[1]*S;
+    return sqrt(X*X+Y*Y);
+}
+
 double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(DR)
 {
     double RSF;//Return_Scaling_Factor
 
-    int *A_Position       = Where_is_it(POS);
+    int *A_Position       = Where_is_it_in_shielding(POS);
     int  A_Layer          = A_Position[0];
     int  A_Surface_index  = A_Position[1];
     int  DR_IN_OR_OUT = 0;
@@ -267,21 +309,30 @@ double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(D
     }//if(A_Layer<5)
     
     //Out of the shielding
-    if(A_Layer==5)
+    if( (A_Layer==4 and A_Surface_index!=0) or A_Layer==5 )
     {
-        double H_OCT_KS    =70.;//m, High_Outer_Ceiling_Top_KS: 70m
-        double H_ICT_KS    =60.;//m, High_inner_Ceiling_Top_KS: 60m
-        double R_OW_KS     =57.;//m, Radius_Outer_Wall_KS: 57m
-        double R_IW_KS     =56.;//m, Radius_Inner_Wall_KS: 56m
+        double vector<double>Find_smallest_Vector;
 
-        double H_RE        =50.;//m, High_Reactor: 50m
-        double R_OWALL_RE  =28.;//m, Radius_Outer_Wall_Reactor: 28m
-        double R_IWATER_RE =27.;//m, Radius_Inner_Water_Reactor: 27m
+        double Down_floor_Scaling     = Scaling_to_others_Z(POS,DR,-0.5);//Floor
+        if(Radius_for_ceiling(POS,DR,Down_floor_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Down_floor_Scaling);
+        
+        double Top_ceiling_Scaling   = Scaling_to_others_Z(POS,DR,H_OCT_KS);
+        if(Radius_for_ceiling(POS,DR,Top_ceiling_Scaling)<=R_OW_KS)Find_smallest_Vector.push_back(Top_ceiling_Scaling);
+        double Low_ceiling_Scaling = Scaling_to_others_Z(POS,DR,H_ICT_KS);
+        if(Radius_for_ceiling(POS,DR,Low_ceiling_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Low_ceiling_Scaling);
+        double Outer_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_OW_KS);
+        if(POS[2]+Outer_Wall_Scaling*DR[2]<=H_OCT_KS)Find_smallest_Vector.push_back(Outer_Wall_Scaling);
+        double Inner_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_IW_KS);
+        if(POS[2]+Inner_Wall_Scaling*DR[2]<=H_ICT_KS)Find_smallest_Vector.push_back(Inner_Wall_Scaling);
+        double Outer_RE_Scaling = Scaling_to_others_XY(POS,DR,R_OWALL_RE);
+        if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Outer_RE_Scaling);
+        double Inner_RE_Scaling = Scaling_to_others_XY(POS,DR,R_IWATER_RE);
+        if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Inner_RE_Scaling);
 
-        double Outer_Wall_Scaling = Length_to_others(POS,DR,R_OW_KS);
-        double Inner_Wall_Scaling = Length_to_others(POS,DR,R_IW_KS);
-
+        RSF = The_smallest_in_a_vector(Find_smallest_Vector);
+        Find_smallest_Vector.clear();
     }//if(A_Layer==5)
+        return RSF;
 }
 
 

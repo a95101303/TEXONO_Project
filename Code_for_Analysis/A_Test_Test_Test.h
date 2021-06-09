@@ -14,3 +14,22 @@ double Test(double *Position1)
     return 0;
 }
 
+double Test1(vector<double> Position1)
+{
+    cout << "Position1: " << Position1[0] << endl;
+    cout << "Type: " << typeid(Position1).name() << endl;
+    return Position1[0];
+}
+
+double The_smallest_in_the_vector(vector<double> Vector)
+{
+    double Return_the_smallest_one=0;
+    if(Vector.size()>0)
+    {
+        std::sort(Vector.begin(), Vector.end());
+        Return_the_smallest_one = Vector[0];
+    }
+    else{Return_the_smallest_one=0;}
+    
+    return Return_the_smallest_one;
+}

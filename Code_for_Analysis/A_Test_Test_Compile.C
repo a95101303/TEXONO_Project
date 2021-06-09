@@ -3,6 +3,7 @@
 void A_Test_Test_Compile()
 {
     double Position1[2]={1,2};
-    Test(Position1);
+    vector<double> Position2={10,5,8};
+    cout << "The_smallest_in_the_vector(Position2): " << The_smallest_in_the_vector(Position2) << endl;
     return 0;
 }
