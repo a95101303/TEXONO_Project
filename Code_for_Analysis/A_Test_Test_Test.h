@@ -1,3 +1,10 @@
+double Test3(int A)
+{
+    double B;
+    if(A==1)B=2;
+    return B;
+}
+
 double Test2(double *A)
 {
     cout << "TypeA: " << typeid(*A).name() << endl;
