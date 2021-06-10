@@ -123,47 +123,7 @@ int *Where_is_it_in_shielding(double *Position)
     return(Return_Value);
 }
 
-double RTC(double *POS)//Radius_To_Center(RTC) on XY plane
-{
-    double X = (POS[0]-0);
-    double Y = (POS[1]-30);
-    return sqrt(X*X+Y*Y);
-}
 
-int *Where_is_it_out_of_shielding(double *POS)
-{
-    static double Return_Value[2];
-    int Component=0;int On_Surface=0;
-    
-    if( (RTC(POS)>R_IWATER_RE) and (RTC(POS)<=R_OWALL_RE) and (POS[2]<=H_RE) )//Outer Wall of Reactor
-    {
-        Component==1;
-        if(RTC(POS)==R_OWALL_RE)On_Surface==1;
-    }
-    if( (RTC(POS)<=R_IWATER_RE) and (POS[2]<=H_RE) )//Inner Wall of Reactor
-    {
-        Component==2;
-        if(RTC(POS)==R_IWATER_RE)On_Surface==1;
-    }
-    if( (RTC(POS)<=R_OW_KS) and (RTC(POS)>=R_IW_KS) and (POS[2]<=H_ICT_KS) )//Side Wall of KS
-    {
-        Component==3;//Wall of KS
-        if(RTC(POS)==R_IW_KS)On_Surface==1;if(RTC(POS)==R_OW_KS)On_Surface==2;
-    }
-    if( (RTC(POS)<=R_IW_KS) and (POS[2]>=H_ICT_KS) and (POS[2]<=H_OCT_KS) )//Upper ceiling of KS
-    {
-        Component==4;//Wall of KS
-        if(POS[2]==H_ICT_KS)On_Surface==1;if(POS[2]==H_OCT_KS)On_Surface==2;
-    }
-    if( (RTC(POS)>R_IW_KS) and (RTC(POS)<=R_OW_KS) and (POS[2]>H_ICT_KS) and (POS[2]<=H_OCT_KS))//Corner of the wall
-    {
-        component==5;
-        if( (RTC(POS)==R_OW_KS) or (POS[2]==H_OCT_KS) )On_Surface==2;
-    }
-    Return_Value[0]=component;Return_Value[1]=On_Surface;
-    
-    return(Return_Value);
-}
 
 int DR_In_or_Out_on_surface(int IOS, double *DR)//Index_of_surface(IOS),Direction(DR)
 {//For the shielding
@@ -185,15 +145,6 @@ int DR_In_or_Out_off_surface(double *POS, double *DR)
     return(In_or_Out_N);
 }
 
-int DR_In_or_Out_to_Center(double *POS, double *DR)
-{//For the component out of the shielding
-    double Criteria = POS[0]*DR[0]+(POS[1]-30)*DR[1];
-    int In_or_Out_N=0;
-    if(Criteria>=0)In_or_Out_N=1;
-    else{In_or_Out_N=0;}
-    
-    return(In_or_Out_N);
-}
 
 double The_smallest_in_a_vector(vector<double> Vector)
 {
@@ -267,7 +218,8 @@ double Radius_for_ceiling(double *POS, double *DR, double S)//Position(POS),Dire
     return sqrt(X*X+Y*Y);
 }
 
-double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(DR)
+
+double CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),Direction(DR)
 {
     double RSF;//Return_Scaling_Factor
 
@@ -335,37 +287,180 @@ double Criteria_in_Shielding(double *POS, double *DR)//Position(POS),Direction(D
         return RSF;
 }
 
-
-double Criteria_out_of_Shielding(double *POS, double *DR)//Position(POS),Direction(DR)
+double RTC(double *POS)//Radius_To_Center(RTC) on XY plane
 {
-    double Shielding_Scaling      = Length_to_six_planes(4,POS,DR);
+    double X = (POS[0]-0);
+    double Y = (POS[1]-30);
+    return sqrt(X*X+Y*Y);
+}
 
-    double Down_floor_Scaling     = Scaling_to_others_Z(POS,DR,-0.5);//Floor
-    if(Radius_for_ceiling(POS,DR,Down_floor_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Down_floor_Scaling);
-
-    double Top_ceiling_Scaling   = Scaling_to_others_Z(POS,DR,H_OCT_KS);
-    if(Radius_for_ceiling(POS,DR,Top_ceiling_Scaling)<=R_OW_KS)Find_smallest_Vector.push_back(Top_ceiling_Scaling);
-    double Low_ceiling_Scaling = Scaling_to_others_Z(POS,DR,H_ICT_KS);
-    if(Radius_for_ceiling(POS,DR,Low_ceiling_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Low_ceiling_Scaling);
-    double Outer_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_OW_KS);
-    if(POS[2]+Outer_Wall_Scaling*DR[2]<=H_OCT_KS)Find_smallest_Vector.push_back(Outer_Wall_Scaling);
-    double Inner_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_IW_KS);
-    if(POS[2]+Inner_Wall_Scaling*DR[2]<=H_ICT_KS)Find_smallest_Vector.push_back(Inner_Wall_Scaling);
-    double Outer_RE_Scaling = Scaling_to_others_XY(POS,DR,R_OWALL_RE);
-    if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Outer_RE_Scaling);
-    double Inner_RE_Scaling = Scaling_to_others_XY(POS,DR,R_IWATER_RE);
-    if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Inner_RE_Scaling);
-
-    //Out of the shielding
-    if( A_Layer==5 )
+int *Where_is_it_out_of_shielding(double *POS)
+{
+    static double Return_Value[2];
+    int Component=0;int On_Surface=0;
+    
+    if( (RTC(POS)>R_IWATER_RE) and (RTC(POS)<=R_OWALL_RE) and (POS[2]<=H_RE) )//Outer Wall of Reactor
     {
-        int *B_Position = Where_is_it_out_of_shielding(POS);
-        vector<double>Find_smallest_Vector;
+        Component==1;
+        if(RTC(POS)==R_OWALL_RE)On_Surface==2;
+    }
+    if( (RTC(POS)<=R_IWATER_RE) and (POS[2]<=H_RE) )//Inner Wall of Reactor
+    {
+        Component==2;
+        if(RTC(POS)==R_IWATER_RE)On_Surface==2;
+    }
+    if( (RTC(POS)<=R_OW_KS) and (RTC(POS)>=R_IW_KS) and (POS[2]<=H_ICT_KS) )//Side Wall of KS
+    {
+        Component==3;//Wall of KS
+        if(RTC(POS)==R_IW_KS)On_Surface==1;if(RTC(POS)==R_OW_KS)On_Surface==2;
+    }
+    if( (RTC(POS)<=R_IW_KS) and (POS[2]>=H_ICT_KS) and (POS[2]<=H_OCT_KS) )//Upper ceiling of KS
+    {
+        Component==4;//Wall of KS
+        if(POS[2]==H_ICT_KS)On_Surface==1;if(POS[2]==H_OCT_KS)On_Surface==2;
+    }
+    if( (RTC(POS)>R_IW_KS) and (RTC(POS)<=R_OW_KS) and (POS[2]>H_ICT_KS) and (POS[2]<=H_OCT_KS))//Corner of the wall
+    {
+        component==5;
+        if( (RTC(POS)==R_OW_KS) or (POS[2]==H_OCT_KS) )On_Surface==2;
+    }
+    Return_Value[0]=component;Return_Value[1]=On_Surface;
+    
+    return(Return_Value);
+}
 
+double DOLOUD(double *Component)//Decision_On_Length_Out_Of_Detector(DOLOUD)
+{
+    vector<double> Find_smallest_Vector;
+    
+    if(Component[0]==1){//Floor
+        double Down_floor_Scaling     = Scaling_to_others_Z(POS,DR,-0.5);
+        if(Radius_for_ceiling(POS,DR,Down_floor_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Down_floor_Scaling);
+    }
+    if(Component[1]==1){//Shielding
+        double Shielding_Scaling      = Length_to_six_planes(4,POS,DR);
+        if(Shielding_Scaling>=0)Find_smallest_Vector.push_back(Shielding_Scaling);
+    }
+    if(Component[2]==1){//Outer_Reactor
+        double Outer_RE_Scaling = Scaling_to_others_XY(POS,DR,R_OWALL_RE);
+        if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Outer_RE_Scaling);
+    }
+    if(Component[3]==1){//Inner_Reactor
+        double Inner_RE_Scaling = Scaling_to_others_XY(POS,DR,R_IWATER_RE);
+        if(POS[2]+Outer_RE_Scaling*DR[2]<=H_RE)Find_smallest_Vector.push_back(Inner_RE_Scaling);
+    }
+    if(Component[4]==1){//Inner_Wall
+        double Inner_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_IW_KS);
+        if(POS[2]+Inner_Wall_Scaling*DR[2]<=H_ICT_KS)Find_smallest_Vector.push_back(Inner_Wall_Scaling);
+    }
+    if(Component[5]==1){//Outer_Wall
+        double Outer_Wall_Scaling = Scaling_to_others_XY(POS,DR,R_OW_KS);
+        if(POS[2]+Outer_Wall_Scaling*DR[2]<=H_OCT_KS)Find_smallest_Vector.push_back(Outer_Wall_Scaling);
+    }
+    if(Component[6]==1){//Low_ceiling
+        double Low_ceiling_Scaling = Scaling_to_others_Z(POS,DR,H_ICT_KS);
+        if(Radius_for_ceiling(POS,DR,Low_ceiling_Scaling)<=R_IW_KS)Find_smallest_Vector.push_back(Low_ceiling_Scaling);
+    }
+    if(Component[7]==1){//Top_ceiling
+        double Top_ceiling_Scaling   = Scaling_to_others_Z(POS,DR,H_OCT_KS);
+        if(Radius_for_ceiling(POS,DR,Top_ceiling_Scaling)<=R_OW_KS)Find_smallest_Vector.push_back(Top_ceiling_Scaling);
+    }
+    double Final_choice = The_smallest_in_a_vector(Find_smallest_Vector);
 
-        RSF = The_smallest_in_a_vector(Find_smallest_Vector);
-        Find_smallest_Vector.clear();
-    }//if(A_Layer==5)
+    return Final_choice;
+}
+int DIOOTC(double *POS, double *DR)//DR_In_or_Out_to_Center(DIOOTC)
+{//For the component out of the shielding
+    double Criteria = POS[0]*DR[0]+(POS[1]-30)*DR[1];
+    int In_or_Out_N=0;
+    if(Criteria>=0)In_or_Out_N=1;
+    else{In_or_Out_N=0;}
+    
+    return(In_or_Out_N);
+}
+double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(POS),Direction(DR)
+{
+    double *A_Position  = Where_is_it_out_of_shielding(POS);
+    int     A_Layer     = A_Position[0];
+    int A_Surface_index = A_Position[1];
+
+    double *B_Position  = Where_is_it_in_shielding(POS)
+    int     Compoent    = B_Position[0];
+    int B_Surface_index = B_Position[1];
+    
+    double Scaling_Length;
+    
+    if(A_Layer==4 and A_Surface_index!=0){double Arrival_of_point[7]={1,1,1,0,1,0,1,0};Scaling_Length = DOLOUD(Arrival_of_point);}
+    if(Compoent==1)//
+    {
+        if(A_Surface_index==2)
+        {
+            if(DIOOTC(POS,DR)>=0)
+            {
+                double Arrival_of_point[8]={1,1,1,0,1,0,1,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+            }
+        }
+        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
+        {
+                double Arrival_of_point[8]={1,0,1,1,0,0,0,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+    }
+    if(Compoent==2)//
+    {
+        if(A_Surface_index==2)
+        {
+            if(DIOOTC(POS,DR)>=0)
+            {
+                double Arrival_of_point[8]={1,0,1,0,0,0,0,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+            }
+        }
+        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
+        {
+                double Arrival_of_point[8]={1,0,0,1,0,0,0,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+    }
+
+    if(Compoent==3)//
+    {
+        if( (A_Surface_index==1 and DIOOTC(POS,DR)>=0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,0,1,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,1,0,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+        if( (A_Surface_index==0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,1,1,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+    }
+    if(Compoent==4)//
+    {
+        if( (A_Surface_index==1 and DR[2]<0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,0,1,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,1,0,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+        if( (A_Surface_index==0) )
+        {
+                double Arrival_of_point[8]={1,0,0,0,1,1,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+    }
+
 }
 
 
