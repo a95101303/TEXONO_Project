@@ -3,6 +3,10 @@ double Density_for_Material[6]={Density_of_Cement,1,11.34,7.86,2.34,8.96};// Cem
 string ATOM_number_for_Material[6]={"Cement","AH2O","APb","AFe","AB","ACu"};
 double Index_Atom[6]={Weighted_Atomic_Number_Cement,AH2O,APb,AFe,AB,ACu};
 
+double ANIS[5] ={AGe,ACu,AB,AFe,APb};//Atomic Numbers Inside the Shielding
+double DIS[5] ={5.323,8.96,2.34,7.86,11.34};//Densities Inside the Shielding
+double ANOFS[2]={Weighted_Atomic_Number_Cement,AH2O};//Atomic Numbers Out Of the Shielding
+double DOFS[5] ={Density_of_Cement,1};//Densities Out Of the Shielding
 //Thickness(TNK)
 double Cu_TKN=0.05;//OFHC Cu
 double B_TKN=0.25;//Boron
@@ -91,9 +95,9 @@ double *Starting_Position()
 //Now where the particle is in the shielding
 int *Where_is_it_in_shielding(double *Position)
 {
-    static double Return_Value[2];
+    static double Return_Value[3];
     int layer_Number=0;int On_Surface=0;
-    
+    int Yes_Or_No=0;
     //First Layer
     if( (abs(Position[0])<=Ge_Layer[0]*0.5) and (abs(Position[1])<=Ge_Layer[1]*0.5) and (abs(Position[2])<=Ge_Layer[2]*0.5) )
     {
@@ -124,7 +128,10 @@ int *Where_is_it_in_shielding(double *Position)
     }
     //Out of the detector
     
-    Return_Value[0]=layer_Number;Return_Value[1]=On_Surface;
+    if(layer_Number<4 or (layer_Number==4 and On_Surface==0) ) Yes_Or_No=1;
+    if( (layer_Number==4 and On_Surface>0) ) Yes_Or_No=2;
+    else{Yes_Or_No=0;}
+    Return_Value[0]=layer_Number;Return_Value[1]=On_Surface;Return_Value[2]=Yes_Or_No;
     return(Return_Value);
 }
 
@@ -178,52 +185,66 @@ int DR_In_or_Out_off_surface(double *POS, double *DR)
     return(In_or_Out_N);
 }
 
-double CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),Direction(DR)
+double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),Direction(DR)
 {
-    double RSF;//Return_Scaling_Factor
+    static double Return_Factor[2];//Return_Scaling_Factor, Layer the WIMP runs in
 
     int *A_Position       = Where_is_it_in_shielding(POS);
     int  A_Layer          = A_Position[0];
     int  A_Surface_index  = A_Position[1];
-    int  DR_IN_OR_OUT = 0;
+    int  DR_IN_OR_OUT = 0; double Layer_run=0;
     
+
     //In the shielding
     if( (A_Layer<4) )
     {
         if(A_Surface_index!=0)//On the surface
         {
             DR_IN_OR_OUT = DR_In_or_Out_on_surface(A_Surface_index,DR);
-            if(DR_IN_OR_OUT==1)RSF=Length_to_six_planes(A_Layer+1,POS,DR);
-            if(DR_IN_OR_OUT==0)
+            if(DR_IN_OR_OUT==1)
             {
-               RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR))
+                RSF           = Length_to_six_planes(A_Layer+1,POS,DR);
+                Layer_run =  A_Layer+1;
+            }
+            if( (A_Layer>0 and DR_IN_OR_OUT==0) )
+            {
+               RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
+               Layer_run =  A_Layer;
             }
         }
         if(A_Surface_index==0)//Off the surface
         {
             DR_IN_OR_OUT = DR_In_or_Out_off_surface(POS,DR);
-            if(DR_IN_OR_OUT==1)RSF = Length_to_six_planes(A_Layer,POS,DR);
+            Layer_run =  A_Layer;
+            if(DR_IN_OR_OUT==1)
+            {
+                RSF = Length_to_six_planes(A_Layer,POS,DR);
+            }
             if(DR_IN_OR_OUT==0)
             {
-               RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR))
+                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
             }
         }
     }//if(A_Layer<5)
     
     if( (A_Layer==4) )
     {
+        Layer_run =  A_Layer;
         if(A_Surface_index!=0)//On the surface
         {
             DR_IN_OR_OUT = DR_In_or_Out_on_surface(A_Surface_index,DR);
             if(DR_IN_OR_OUT==0)
             {
-               RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR))
+                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
             }
         }
         if(A_Surface_index==0)//Off the surface
         {
             DR_IN_OR_OUT = DR_In_or_Out_off_surface(POS,DR);
-            if(DR_IN_OR_OUT==1)RSF = Length_to_six_planes(A_Layer,POS,DR);
+            if(DR_IN_OR_OUT==1)
+            {
+                RSF = Length_to_six_planes(A_Layer,POS,DR);
+            }
             if(DR_IN_OR_OUT==0)
             {
                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR))
@@ -231,8 +252,9 @@ double CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),Di
         }
 
     }
-        
-    return RSF;
+       
+    Return_Factor[0]=RSF;Return_Factor[1]=Layer_run;
+    return Return_Factor;
 }
 
 
@@ -491,21 +513,74 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     return (Scaling_Length);
 }
 
+double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
+{
+    static double POS_Aft[3];
+    POS_Aft[0] = POS_Int[0]+(S*DR[0]);
+    POS_Aft[1] = POS_Int[1]+(S*DR[1]);
+    POS_Aft[2] = POS_Int[2]+(S*DR[2]);
+    return POS_Aft;
+}
+    
+    double DRAS(double )//DR_Aft_Scattering(DRAS)
+    {
+    double *Direction_aft = Aft_scatterd_Direction(3,Atomic_Number,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
+    Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];
+    }
+
+double *VAC(double Mx, double Sigma_SI, double V, double AN)//Velocity_Aft_Collision(VAC),Mx(Mass of WIMP),Sigma_SI, V(Velocity), Atomic Number(AN)
+{
+    static double Return_Value[2];
+    double *V_Aft_Collision_Earth = Velocity_Aft_collision_Bent(1,Mx,Sigma_SI,V,AN);
+    double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_Earth[0]*1e3/3e8);
+    double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
+    double DM_Velocity_Aft_Colliding=V_Aft_Collision_Earth[0];
+    Return_Value[0]=DM_Velocity_Aft_Colliding;Return_Value[1]=Ratio_of_Energy_Loss_to_Atom;
+    
+    return Return_Value;
+}
+double *DRAC()//Angle_Aft_Collision
+    {
+    static double DR_Aft[3];
+    double *Direction_aft = Aft_scatterd_Direction(3,Atomic_Number,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
+    Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];
+    }
+
 double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
 {
     static double RETURN_VALUE[20];//Return the value back
-    
     double Direction_VT[3]={0,0,0};//Used for the calculation
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
-
+    double Segment;
     //===========================
+    while( RTC(POS_Int)>=R_OW_KS or POS_Int[0]>=H_OCT_KS or Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    {
+        double *SLU;//Scaling_Length_Used,The layer a WIMP runs in
+        double *IOS_Position = Where_is_it_in_shielding(POS_Int);//Inside_Of_Shieing_Position
+        if(IOS_Position[2]==1)
+        {
+            SLU = CID(POS_Int,DR);
+            int Layer_run = SLU[1];
+        Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,DIS[Layer_run],ANIS[Layer_run]);//Atomic Number Of Material(ANOM)
+            if(Segment<=SLU)
+            {
+                POS_Int = PAP(Segment,POS_Int,DR);
+            }
+            if(Segment>SLU)  POS_Int = PAP(SLU,POS_Int,DR);
+        }
+        else if(IOS_Position[2]==2)
+        {
+            SLU     = COFD(POS_Int,DR);
+            POS_Int = PAP(SLU,POS_Int,DR);
+        }
+        else
+        {
+            SLU     = COFD(POS_Int,DR);
+            POS_Int = PAP(SLU,POS_Int,DR);
+        }
 
-    
-    double Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,DOF,ANOM);//Atomic Number Of Material(ANOM)
 
-    
-
-    
+    }
     return RETURN_VALUE;
 }
 

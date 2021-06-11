@@ -189,6 +189,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         if(DR[ROP[0]]*ROP[1]>0)cout << "Great!" << endl;
         if(DR[ROP[0]]*ROP[1]<0)DR[ROP[0]] = -DR[ROP[0]];
 
+        if()
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 

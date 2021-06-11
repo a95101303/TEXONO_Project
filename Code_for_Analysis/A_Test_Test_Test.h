@@ -40,3 +40,12 @@ double The_smallest_in_the_vector(vector<double> Vector)
     
     return Return_the_smallest_one;
 }
+
+double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
+{
+    static double POS_Aft[3];
+    POS_Aft[0] = POS_Int[0]+(S*DR[0]);
+    POS_Aft[1] = POS_Int[1]+(S*DR[1]);
+    POS_Aft[2] = POS_Int[2]+(S*DR[2]);
+    return POS_Aft;
+}

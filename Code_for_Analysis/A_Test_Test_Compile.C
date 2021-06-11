@@ -19,6 +19,20 @@ void A_Test_Test_Compile()
     if(A==0) B=1;
     if(B==1) cout << "ok: " << endl;
 
+    double Try[3]={1,2,3};
+    double DR[3]={1,2,3};
+    double *Try_Point=Try;
+    
+    cout << "Try_Point[0]: " << Try_Point[0] << endl;
+    cout << "Try_Point[1]: " << Try_Point[1] << endl;
+    cout << "Try_Point[2]: " << Try_Point[2] << endl;
+
+    Try_Point = PAP(1,Try_Point,DR);
+    
+    cout << "Try_Point[0]: " << Try_Point[0] << endl;
+    cout << "Try_Point[1]: " << Try_Point[1] << endl;
+    cout << "Try_Point[2]: " << Try_Point[2] << endl;
+
     return 0;
 
 }
