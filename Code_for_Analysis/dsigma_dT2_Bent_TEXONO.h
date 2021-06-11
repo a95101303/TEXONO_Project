@@ -1,4 +1,8 @@
 //All values are expressed in m, need to be changed to km when using. Thanks 1e-2*1e-3=1e-5
+double Density_for_Material[6]={Density_of_Cement,1,11.34,7.86,2.34,8.96};// Cement,H2O,Pb,Fe,B,Cu  g/cm^3
+string ATOM_number_for_Material[6]={"Cement","AH2O","APb","AFe","AB","ACu"};
+double Index_Atom[6]={Weighted_Atomic_Number_Cement,AH2O,APb,AFe,AB,ACu};
+
 //Thickness(TNK)
 double Cu_TKN=0.05;//OFHC Cu
 double B_TKN=0.25;//Boron
@@ -282,12 +286,12 @@ int *Where_is_it_out_of_shielding(double *POS)
     if( (RTC(POS)>R_IWATER_RE) and (RTC(POS)<=R_OWALL_RE) and (POS[2]<=H_RE) )//Outer Wall of Reactor
     {
         Component==1;
-        if(POS[2]==H_RE)On_Surface==2;if(RTC(POS)==R_OWALL_RE)On_Surface==2;
+        if(POS[2]==H_RE)On_Surface==2;if(RTC(POS)==R_OWALL_RE)On_Surface==22;
     }
     if( (RTC(POS)<=R_IWATER_RE) and (POS[2]<=H_RE) )//Inner Wall of Reactor
     {
         Component==2;
-        if(POS[2]==H_RE)On_Surface==1;if(RTC(POS)==R_IWATER_RE)On_Surface==2;
+        if(POS[2]==H_RE)On_Surface==2;if(RTC(POS)==R_IWATER_RE)On_Surface==22;
     }
     if( (RTC(POS)<=R_OW_KS) and (RTC(POS)>=R_IW_KS) and (POS[2]<=H_ICT_KS) )//Side Wall of KS
     {
@@ -345,6 +349,13 @@ double DOLOUD(double *Component)//Decision_On_Length_Out_Of_Detector(DOLOUD)
         double Top_ceiling_Scaling   = Scaling_to_others_Z(POS,DR,H_OCT_KS);
         if(Radius_for_ceiling(POS,DR,Top_ceiling_Scaling)<=R_OW_KS)Find_smallest_Vector.push_back(Top_ceiling_Scaling);
     }
+    if(Component[8]==1){//Top_reactor_Outer
+        double Top_Outer_Reactor_Scaling = Scaling_to_others_Z(POS,DR,H_RE);
+        if(Radius_for_ceiling(POS,DR,Top_Outer_Reactor_Scaling)<=R_OWALL_RE and Radius_for_ceiling(POS,DR,Top_Outer_Reactor_Scaling)>R_IWALL_RE)Find_smallest_Vector.push_back(Top_Outer_Reactor_Scaling);
+    if(Component[9]==1){//Top_reactor_Inner
+        double Top_Inner_Reactor_Scaling = Scaling_to_others_Z(POS,DR,H_RE);
+        if(Radius_for_ceiling(POS,DR,Top_Outer_Reactor_Scaling)<=R_IWALL_RE)Find_smallest_Vector.push_back(Top_Inner_Reactor_Scaling);
+    }
     double Final_choice = The_smallest_in_a_vector(Find_smallest_Vector);
 
     return Final_choice;
@@ -370,34 +381,34 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     
     double Scaling_Length;
     
-    if(A_Layer==4 and A_Surface_index!=0){double Arrival_of_point[8]={1,1,1,0,1,0,1,0};Scaling_Length = DOLOUD(Arrival_of_point);}
+    if(A_Layer==4 and A_Surface_index!=0){double Arrival_of_point[10]={1,1,1,0,1,0,1,0,0,0};Scaling_Length = DOLOUD(Arrival_of_point);}
     if(Compoent==1)//
     {
-        if(A_Surface_index==1)
+        if(A_Surface_index==2)
         {
             if(DR[2]>=0)
             {
-                double Arrival_of_point[8]={0,0,0,0,1,0,1,0};
+                double Arrival_of_point[10]={0,0,0,0,1,0,1,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
             }
             if(DR[2]<0)
             {
-                double Arrival_of_point[8]={1,0,1,1,0,0,0,0};
+                double Arrival_of_point[10]={1,0,1,1,0,0,0,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
             }
         }
 
-        if(A_Surface_index==2)
+        if(A_Surface_index==22)
         {
             if(DIOOTC(POS,DR)>=0)
             {
-                double Arrival_of_point[8]={1,1,0,0,1,0,1,0};
+                double Arrival_of_point[10]={1,1,0,0,1,0,1,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
             }
         }
         if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
         {
-                double Arrival_of_point[8]={1,0,1,1,0,0,0,0};
+                double Arrival_of_point[10]={1,0,1,1,0,0,0,0,1,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
     }
@@ -407,32 +418,36 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
         {
             if(DIOOTC(POS,DR)>=0)
             {
-                double Arrival_of_point[8]={1,0,1,0,0,0,0,0};
+                double Arrival_of_point[10]={1,0,1,0,0,0,0,0,1,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
             }
         }
         if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
         {
-                double Arrival_of_point[8]={1,0,0,1,0,0,0,0};
+                double Arrival_of_point[10]={1,0,0,1,0,0,0,0,0,1};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
     }
-
     if(Compoent==3)//
     {
+        if( (A_Surface_index==1 and DIOOTC(POS,DR)<0) )
+        {
+                double Arrival_of_point[10]={1,1,1,0,0,0,1,0,1,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+        }
         if( (A_Surface_index==1 and DIOOTC(POS,DR)>=0) )
         {
-                double Arrival_of_point[8]={1,0,0,0,0,1,0,1};
+                double Arrival_of_point[10]={1,0,0,0,0,1,0,1,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
         if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) )
         {
-                double Arrival_of_point[8]={1,0,0,0,1,0,0,1};
+                double Arrival_of_point[10]={1,0,0,0,1,0,0,1,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
         if( (A_Surface_index==0) )
         {
-                double Arrival_of_point[8]={1,0,0,0,1,1,0,1};
+                double Arrival_of_point[10]={1,0,0,0,1,1,0,1,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
     }
@@ -440,17 +455,17 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     {
         if( (A_Surface_index==1 and DR[2]<0) )
         {
-                double Arrival_of_point[8]={1,1,1,1,1,0,0,0};
+                double Arrival_of_point[10]={1,1,1,0,1,0,0,0,1,1};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
-        if( (A_Surface_index==0 and DR[2]>=0) )
+        if( (A_Surface_index==0) )
         {
-                double Arrival_of_point[8]={0,0,0,0,0,1,0,1};
+                double Arrival_of_point[10]={0,0,0,0,0,1,1,1,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
         if( (A_Surface_index==2) and DR[2]<0 )
         {
-                double Arrival_of_point[8]={0,0,0,0,0,1,1,0};
+                double Arrival_of_point[10]={0,0,0,0,0,1,1,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
         }
     }
@@ -458,16 +473,22 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     {
         if( (A_Surface_index==2) and DIOOTC(POS,DR)<0 )
         {
-            double Arrival_of_point[8]={0,0,0,0,1,0,1,1};
+            double Arrival_of_point[10]={0,0,0,0,1,0,1,1,0,0};
             Scaling_Length = DOLOUD(Arrival_of_point);
         }
         if( (A_Surface_index==22) and DR[2]<0 )
         {
-            double Arrival_of_point[8]={0,0,0,0,1,1,1,0};
+            double Arrival_of_point[10]={0,0,0,0,1,1,1,0,0,0};
+            Scaling_Length = DOLOUD(Arrival_of_point);
+        }
+        if( (A_Surface_index==0))
+        {
+            double Arrival_of_point[10]={0,0,0,0,1,1,1,1,0,0};
             Scaling_Length = DOLOUD(Arrival_of_point);
         }
     }
 
+    return (Scaling_Length);
 }
 
 

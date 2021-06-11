@@ -2890,5 +2890,28 @@ double *KS_Collision_Time_Building_Aft_velocity_with_angle(int Straight_or_scatt
     return RETURN_VALUE;
 }
 
+double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI_Default, double Velocity, double WIMP_Mass, double *Direction, double Length_of_Material, double Density_of_Material, double Atomic_Number) //Velocity(km/s) Density(g/cm^3)
+{
+    //double Direction[3]   ={ 1e-50, 1e-50, PZ };
+    double Direction_VT[3]={0,0,0};//Used for the calculation
+    double Track_Point[3]={0,0,0};//Run from the bottom
+
+    static double RETURN_VALUE[20];//Return the value back
+    
+    double DM_Velocity_Aft_Colliding=Velocity;double Lamda_for_Average=0.001;
+
+    //===========================
+    int Arrival_or_not = 0;
+    TCanvas *c1 = new TCanvas("c1","Graph2D example",0,0,600,400);
+    TGraph2D *dt = new TGraph2D();
+     
+    double Segment = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,Density_of_Material,Weighted_Atomic_Number);
+
+    
+
+    
+    return RETURN_VALUE;
+}
+
 
 
