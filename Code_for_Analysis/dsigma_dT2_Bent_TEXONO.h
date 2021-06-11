@@ -491,5 +491,22 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     return (Scaling_Length);
 }
 
+double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+{
+    static double RETURN_VALUE[20];//Return the value back
+    
+    double Direction_VT[3]={0,0,0};//Used for the calculation
+    double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
+
+    //===========================
+
+    
+    double Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,DOF,ANOM);//Atomic Number Of Material(ANOM)
+
+    
+
+    
+    return RETURN_VALUE;
+}
 
 
