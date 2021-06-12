@@ -4,9 +4,9 @@ string ATOM_number_for_Material[6]={"Cement","AH2O","APb","AFe","AB","ACu"};
 double Index_Atom[6]={Weighted_Atomic_Number_Cement,AH2O,APb,AFe,AB,ACu};
 
 double ANIS[5] ={AGe,ACu,AB,AFe,APb};//Atomic Numbers Inside the Shielding
-double DIS[5] ={5.323,8.96,2.34,7.86,11.34};//Densities Inside the Shielding
-double ANOFS[2]={Weighted_Atomic_Number_Cement,AH2O};//Atomic Numbers Out Of the Shielding
-double DOFS[5] ={Density_of_Cement,1};//Densities Out Of the Shielding
+double DIS[5] ={5.323,8.96,2.34,7.86,11.34};//Densities Inside the Shielding(g/cm^3)
+double ANOFS[3]={Weighted_Atomic_Number_Cement,AH2O,15};//Atomic Numbers Out Of the Shielding
+double DOFS[3] ={Density_of_Cement,1,kg_perm3_to_g_percm3(1.225)};//Densities Out Of the Shielding(g/cm^3)
 //Thickness(TNK)
 double Cu_TKN=0.05;//OFHC Cu
 double B_TKN=0.25;//Boron
@@ -401,53 +401,79 @@ double COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(P
     int     Compoent    = B_Position[0];
     int B_Surface_index = B_Position[1];
     
-    double Scaling_Length;
+    double Scaling_Length;double Layer_run;
     
-    if(A_Layer==4 and A_Surface_index!=0){double Arrival_of_point[10]={1,1,1,0,1,0,1,0,0,0};Scaling_Length = DOLOUD(Arrival_of_point);}
-    if(Compoent==1)//
+    if(A_Layer==4 and A_Surface_index!=0)
     {
-        if(A_Surface_index==2)
+        double Arrival_of_point[10]={1,1,1,0,1,0,1,0,0,0};
+        Scaling_Length = DOLOUD(Arrival_of_point);
+        Layer_run = 2;
+    }
+    if(Compoent==1)//Outer Wall of Reactor
+    {
+        if(A_Surface_index==2)//High
         {
             if(DR[2]>=0)
             {
                 double Arrival_of_point[10]={0,0,0,0,1,0,1,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 2;
             }
             if(DR[2]<0)
             {
                 double Arrival_of_point[10]={1,0,1,1,0,0,0,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 0;
             }
         }
 
-        if(A_Surface_index==22)
+        if(A_Surface_index==22)//Side
         {
             if(DIOOTC(POS,DR)>=0)
             {
                 double Arrival_of_point[10]={1,1,0,0,1,0,1,0,0,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 2;
             }
         }
-        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
+        if( (A_Surface_index==22 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
         {
                 double Arrival_of_point[10]={1,0,1,1,0,0,0,0,1,0};
                 Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 0;
         }
     }
-    if(Compoent==2)//
+    if(Compoent==2)//Inner Wall of Reactor
     {
-        if(A_Surface_index==2)
+        if(A_Surface_index==2)//High
+        {
+            if(DR[2]>=0)
+            {
+                double Arrival_of_point[10]={0,0,0,0,1,0,1,0,0,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 2;
+            }
+            if(DR[2]<0)
+            {
+                double Arrival_of_point[10]={1,0,0,1,0,0,0,0,0,0};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 0;
+            }
+        }
+        if(A_Surface_index==22)//Side
         {
             if(DIOOTC(POS,DR)>=0)
             {
-                double Arrival_of_point[10]={1,0,1,0,0,0,0,0,1,0};
-                Scaling_Length = DOLOUD(Arrival_of_point);
-            }
-        }
-        if( (A_Surface_index==2 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
-        {
                 double Arrival_of_point[10]={1,0,0,1,0,0,0,0,0,1};
                 Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 2;
+            }
+        }
+        if( (A_Surface_index==22 and DIOOTC(POS,DR)<0) or (A_Surface_index!=2) )
+        {
+                double Arrival_of_point[10]={1,0,1,1,0,0,0,0,0,1};
+                Scaling_Length = DOLOUD(Arrival_of_point);
+                Layer_run = 0;
         }
     }
     if(Compoent==3)//
@@ -531,27 +557,28 @@ double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
 double *VAC(double Mx, double Sigma_SI, double V, double AN)//Velocity_Aft_Collision(VAC),Mx(Mass of WIMP),Sigma_SI, V(Velocity), Atomic Number(AN)
 {
     static double Return_Value[2];
-    double *V_Aft_Collision_Earth = Velocity_Aft_collision_Bent(1,Mx,Sigma_SI,V,AN);
-    double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_Earth[0]*1e3/3e8);
-    double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
-    double DM_Velocity_Aft_Colliding=V_Aft_Collision_Earth[0];
+    double *V_Aft = Velocity_Aft_collision_Bent(1,Mx,Sigma_SI,V,AN);
+    double Energy_Loss_to_Atom   = Energy_DM(Mx,V*1e3/3e8) - Energy_DM(Mx,V_Aft[0]*1e3/3e8);
+    double Ratio_of_Energy_Loss_to_Atom = (Energy_Loss_to_Atom)/(Energy_DM(WIMP_Mass,V*1e3/3e8));
+    double DM_Velocity_Aft_Colliding=V_Aft[0];
     Return_Value[0]=DM_Velocity_Aft_Colliding;Return_Value[1]=Ratio_of_Energy_Loss_to_Atom;
     
     return Return_Value;
 }
-double *DRAC()//Angle_Aft_Collision
-    {
-    static double DR_Aft[3];
-    double *Direction_aft = Aft_scatterd_Direction(3,Atomic_Number,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
-    Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];
-    }
-
-double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+double *DRAC(double AN, double Mx, double V_Aft, double ROELTA)//Angle_Aft_Collision,Direction,Ratio_of_Energy_Loss_to_Atom(ROELTA)
 {
+    static double DR_Aft[3];
+    double *Direction_aft = Aft_scatterd_Direction(3,AN,Mx,V_Aft,Direction,ROELTA);
+    DR_Aft[0] = Direction_aft[0];DR_Aft[1] = Direction_aft[1];DR_Aft[2] = Direction_aft[2];
+    return DR_Aft;
+}
+
+double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+{//Straight_or_scattered(SorT)
     static double RETURN_VALUE[20];//Return the value back
     double Direction_VT[3]={0,0,0};//Used for the calculation
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
-    double Segment;
+    double Segment; double ROELTA=0;//Ratio_of_Energy_Loss_to_Atom(ROELTA)
     //===========================
     while( RTC(POS_Int)>=R_OW_KS or POS_Int[0]>=H_OCT_KS or Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
@@ -565,6 +592,9 @@ double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI, double 
             if(Segment<=SLU)
             {
                 POS_Int = PAP(Segment,POS_Int,DR);
+                double *VAC_end = VAC(Mx,Sigma_SI,V_Aft,ANIS[Layer_run]);//
+                V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+                if(SorT==1)DR = DRAC(ANIS[Layer_run],Mx,V_Aft,ROELTA);
             }
             if(Segment>SLU)  POS_Int = PAP(SLU,POS_Int,DR);
         }
@@ -576,7 +606,16 @@ double *KS_Real_N_With_Angle(int Straight_or_scattered, double Sigma_SI, double 
         else
         {
             SLU     = COFD(POS_Int,DR);
-            POS_Int = PAP(SLU,POS_Int,DR);
+            int Layer_run = SLU[1];
+        Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,DOFS[Layer_run],ANOFS[Layer_run]);//Atomic Number Of Material(ANOM)
+            if(Segment<=SLU)
+            {
+                POS_Int = PAP(Segment,POS_Int,DR);
+                double *VAC_end = VAC(Mx,Sigma_SI,V_Aft,ANOFS[Layer_run]);//
+                V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+                if(SorT==1)DR = DRAC(ANOFS[Layer_run],Mx,V_Aft,ROELTA);
+            }
+            if(Segment>SLU)  POS_Int = PAP(SLU,POS_Int,DR);
         }
 
 
