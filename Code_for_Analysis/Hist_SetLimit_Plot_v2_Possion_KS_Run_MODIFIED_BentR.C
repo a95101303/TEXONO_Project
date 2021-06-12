@@ -37,22 +37,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     
     //Constant
     
-    //string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
-    //double WIMP_Mass_Array[19]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,10,5,7};
-     
-    /*
-    string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-    double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};//12 for TEXONO
-     */
     string Mass_Point[5]={"20","10","2","0P2","0P05"};
     double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
 
-    //string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
-    //double WIMP_Mass_Array[4]={15,6,0.6,0.08};//12 for TEXONO
-
-    //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
-    //double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
-    //Start
     double WIMP_Mass = WIMP_Mass_Array[Index_Mass];
     double DM_mx = WIMP_Mass_Array[Index_Mass];
     //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
@@ -139,22 +126,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2500)
+    while(jjj<2)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
         
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
@@ -171,7 +147,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double Random_Velocity = 0;
         Random_Velocity = Flux_HIST->GetRandom();
         V_Int_A = Random_Velocity;
-        //Random_Velocity = 799.135;
 
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
@@ -184,18 +159,19 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double DR[3] = {V_X,V_Y,V_Z};
         
         double *SPF  = Starting_Position();//Starting_Point_Function
-        double SP[3] = {SPF[0],SPF[1],SPF[2]};
-        int   ROP[2] = {SPF[3],SPF[4]};//Restriction_on_Plane
+        double  SP[3] = {SPF[0],SPF[1],SPF[2]};
+        double ROP[2] = {SPF[3],SPF[4]};//Restriction_on_Plane
         if(DR[ROP[0]]*ROP[1]>0)cout << "Great!" << endl;
         if(DR[ROP[0]]*ROP[1]<0)DR[ROP[0]] = -DR[ROP[0]];
 
-        if()
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 
         double Dark_Matter_Energy = Energy_DM(DM_mx,Random_Velocity*1e3/3e8);//KeV
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
 
+        double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, Sigma_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+        Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
         //Final_Length
 
         jjj = jjj + 1;
