@@ -126,7 +126,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2)
+    while(jjj<200)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -157,13 +157,29 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double V_Y =    (par[1]/Random_Velocity);
         double V_Z =    (par[2]/Random_Velocity);
         double DR[3] = {V_X,V_Y,V_Z};
-        
+        cout << "DR[0]: " << DR[0] << endl;
+        cout << "DR[1]: " << DR[1] << endl;
+        cout << "DR[2]: " << DR[2] << endl;
+
         double *SPF  = Starting_Position();//Starting_Point_Function
         double  SP[3] = {SPF[0],SPF[1],SPF[2]};
+        cout << "SPF[0]: " << SPF[0] << endl;
+        cout << "SPF[1]: " << SPF[1] << endl;
+        cout << "SPF[2]: " << SPF[2] << endl;
+        
         double ROP[2] = {SPF[3],SPF[4]};//Restriction_on_Plane
-        if(DR[ROP[0]]*ROP[1]>0)cout << "Great!" << endl;
-        if(DR[ROP[0]]*ROP[1]<0)DR[ROP[0]] = -DR[ROP[0]];
+        int ROC1 = SPF[3];int ROC2 = SPF[4];
+        if(DR[ROC1]*ROP[1]>0)cout << "Great!" << endl;
+        if(DR[ROC1]*ROP[1]<0)
+        {
+            cout << "Change!" << endl;
+            DR[ROC1] = -DR[ROC1];
+        }
+        cout << "DR_1[0]: " << DR[0] << endl;
+        cout << "DR_1[1]: " << DR[1] << endl;
+        cout << "DR_1[2]: " << DR[2] << endl;
 
+        /*
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 
@@ -172,6 +188,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 
         double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, Sigma_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
         Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
+         */
         //Final_Length
 
         jjj = jjj + 1;
@@ -205,8 +222,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
-    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();
     //Flux_HIST_Aft_Collision_Earth->Write();

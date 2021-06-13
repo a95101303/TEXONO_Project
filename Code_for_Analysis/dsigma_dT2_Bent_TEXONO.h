@@ -80,34 +80,49 @@ double *Starting_Position()
     double SPA[3];//Starting_Positions
     double VR[2];//Vector_Restriction[0]:Coordinate Vector_Restriction[1]:Plus or Minus
     
-    TF1 *X_Detector = new TF1("X_Detector","x",-Ge_Layer[0]*0.5,Ge_Layer[0]*0.5);
-    TF1 *Y_Detector = new TF1("Y_Detector","x",-Ge_Layer[1]*0.5,Ge_Layer[1]*0.5);
-    TF1 *Z_Detector = new TF1("Z_Detector","x",-Ge_Layer[2]*0.5,Ge_Layer[2]*0.5);
+    TF1 *X_Detector = new TF1("X_Detector","1",-Ge_Layer[0]*0.5,Ge_Layer[0]*0.5);
+    TF1 *Y_Detector = new TF1("Y_Detector","1",-Ge_Layer[1]*0.5,Ge_Layer[1]*0.5);
+    TF1 *Z_Detector = new TF1("Z_Detector","1",-Ge_Layer[2]*0.5,Ge_Layer[2]*0.5);
 
     gRandom = new TRandom3(0);
     gRandom->SetSeed(0);
     //Choose the plane where the WIMP starts running
-    TF1 *X_Y_Z_Choose = new TF1("X_Y_Z_Choose","x",0,3);
+    TF1 *X_Y_Z_Choose = new TF1("X_Y_Z_Choose","1",0,3);
     int Plane_Chosen= X_Y_Z_Choose->GetRandom();//Give out 0,1,2;
+    cout << "Plane_Chosen: " << Plane_Chosen << endl;
     //Two sides for WIMPs
-    TF1 *Two_Sides    = new TF1("Two_Sides","x",0,2);
+    TF1 *Two_Sides    = new TF1("Two_Sides","1",0,2);
     int Side_confirmed = Two_Sides->GetRandom();//Give out 0,1;
     double Confirmed_Side[2]={1,-1};
     //Fix the point on a certain plane
+    cout << "Confirmed_Side[Side_confirmed]: " << Confirmed_Side[Side_confirmed] << endl;
     SPA[Plane_Chosen]= Confirmed_Side[Side_confirmed]*Ge_Layer[Plane_Chosen]*0.5;VR[0]=Plane_Chosen;VR[1]=Confirmed_Side[Side_confirmed];
     //Decide the rest of the coordination
-    if(SPA[0]==0)SPA[0]=X_Detector->GetRandom();if(SPA[1]==0)SPA[1]=Y_Detector->GetRandom();if(SPA[2]==0)SPA[2]=Z_Detector->GetRandom();
+    double X_Ran=X_Detector->GetRandom();
+    double Y_Ran=Y_Detector->GetRandom();
+    double Z_Ran=Z_Detector->GetRandom();
+
+    if(abs(SPA[0]-0)<1e-5){SPA[0]=X_Ran;}
+    if(abs(SPA[1]-0)<1e-5){SPA[1]=Y_Ran;}
+    if(abs(SPA[2]-0)<1e-5){SPA[2]=Z_Ran;}
 
     Return_Value[0]=SPA[0];Return_Value[1]=SPA[1];Return_Value[2]=SPA[2];
     Return_Value[3]= VR[0];Return_Value[4]= VR[1];
     return(Return_Value);
 }
 
-double Check_DR(int *ROD, double *DR)//Restriction_on_Direction
+double Check_DR(int *ROP, double *DR)//Restriction_on_Direction
 {
-    if(ROP[0]==0){DR[0]*ROP[1]>0}
-    if(DR[ROP[0]]*ROP[1]>0)cout << "Great!" << endl;
-    if(DR[ROP[0]]*ROP[1]<0)DR[ROP[0]] = -DR[ROP[0]];
+    double Sign=0;
+    for(int kkk=0; kkk<3; kkk++)
+    {
+        if(ROP[0]==kkk)
+        {
+            if(DR[kkk]*ROP[1]>0)Sign= 1;
+            if(DR[kkk]*ROP[1]<0)Sign=-1;
+        }
+    }
+    return Sign;
 }
 //Now where the particle is in the shielding
 int *Where_is_it_in_shielding(double *Position)
