@@ -1290,7 +1290,7 @@ double *Velocity_Aft_collision_Bent(int Collision_Time=0, double mx=10, double S
             DM_Velocity_Aft_Colliding=Initial_Velocity;
         }
         //cout << "Count: " << Count << endl;
-        //cout << "DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
+        cout << "Fun_DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
         RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;
         RETURN_VALUE[1]=Energy_Lost_Total;
         RETURN_VALUE[2]=Energy_DM(mx,Initial_Velocity*1e3/3e8)-Energy_DM(mx,DM_Velocity_Aft_Colliding*1e3/3e8);

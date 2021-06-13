@@ -126,7 +126,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<200)
+    while(jjj<1)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -147,7 +147,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double Random_Velocity = 0;
         Random_Velocity = Flux_HIST->GetRandom();
         V_Int_A = Random_Velocity;
-
+        cout << "Random_Velocity: " << Random_Velocity << endl;
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
         eventGenerator->GetSeed();
@@ -157,15 +157,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double V_Y =    (par[1]/Random_Velocity);
         double V_Z =    (par[2]/Random_Velocity);
         double DR[3] = {V_X,V_Y,V_Z};
-        cout << "DR[0]: " << DR[0] << endl;
-        cout << "DR[1]: " << DR[1] << endl;
-        cout << "DR[2]: " << DR[2] << endl;
 
         double *SPF  = Starting_Position();//Starting_Point_Function
         double  SP[3] = {SPF[0],SPF[1],SPF[2]};
-        cout << "SPF[0]: " << SPF[0] << endl;
-        cout << "SPF[1]: " << SPF[1] << endl;
-        cout << "SPF[2]: " << SPF[2] << endl;
         
         double ROP[2] = {SPF[3],SPF[4]};//Restriction_on_Plane
         int ROC1 = SPF[3];int ROC2 = SPF[4];
@@ -175,11 +169,12 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
             cout << "Change!" << endl;
             DR[ROC1] = -DR[ROC1];
         }
+        /*
         cout << "DR_1[0]: " << DR[0] << endl;
         cout << "DR_1[1]: " << DR[1] << endl;
         cout << "DR_1[2]: " << DR[2] << endl;
-
-        /*
+         */
+        
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 
@@ -188,7 +183,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 
         double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, Sigma_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
         Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
-         */
+         
         //Final_Length
 
         jjj = jjj + 1;

@@ -66,6 +66,11 @@ double The_smallest_in_a_vector(vector<double> Vector)
     if(Vector.size()>0)
     {
         std::sort(Vector.begin(), Vector.end());
+        for(int kkk=0; kkk<Vector.size(); kkk++)
+        {
+            cout << "kkk: " << kkk << endl;
+            cout << "Vector: " << Vector[kkk] << endl;
+        }
         Return_the_smallest_one = Vector[0];
     }
     else{Return_the_smallest_one=0;}
@@ -108,6 +113,10 @@ double *Starting_Position()
 
     Return_Value[0]=SPA[0];Return_Value[1]=SPA[1];Return_Value[2]=SPA[2];
     Return_Value[3]= VR[0];Return_Value[4]= VR[1];
+    cout << "SPA[0]: " << SPA[0] << endl;
+    cout << "SPA[1]: " << SPA[1] << endl;
+    cout << "SPA[2]: " << SPA[2] << endl;
+
     return(Return_Value);
 }
 
@@ -161,7 +170,7 @@ int *Where_is_it_in_shielding(double *Position)
     //Out of the detector
     
     if(layer_Number<4 or (layer_Number==4 and On_Surface==0) ) Yes_Or_No=1;
-    if( (layer_Number==4 and On_Surface>0) ) Yes_Or_No=2;
+    else if( (layer_Number==4 and On_Surface>0) ) Yes_Or_No=2;
     else{Yes_Or_No=0;}
     Return_Value[0]=layer_Number;Return_Value[1]=On_Surface;Return_Value[2]=Yes_Or_No;
     return(Return_Value);
@@ -173,23 +182,26 @@ double Length_to_six_planes(int Layer, double *POS, double *DR)//Position(POS),
     double POS_Aft[3];
     double ET_XYZ[3][2];//Extended_Times_XYZ
     vector<double> Find_smallest_Vector;
-    double The_final_scaling;
     double Confirmed_Side[2]={1,-1};
-
+    double The_final_scaling=0;
     // Discover the length to six places
     for(int XYZ=0; XYZ<3; XYZ++)//The Axis
     {
         for(int PorN=0; PorN<2; PorN++)//Positive Or Negative
         {
-            double ET = (Confirmed_Side[PorN]*The_Material_Layer[Layer][XYZ]-POS[XYZ])/(DR[XYZ]);//Extension_times
+            double ET = (Confirmed_Side[PorN]*The_Material_Layer[Layer][XYZ]*0.5-POS[XYZ])/(DR[XYZ]);//Extension_times
+            cout << "ET: " << ET << endl;
             for(int POS_After_Axis=0; POS_After_Axis<3; POS_After_Axis++){POS_Aft[POS_After_Axis] = POS[POS_After_Axis] + ET*DR[POS_After_Axis];}
             int *Fun_Layer_Aft= Where_is_it_in_shielding(POS_Aft);
+            cout << "Layer: " << Layer << endl;
+            cout << "Fun_Layer_Aft[0]: " << Fun_Layer_Aft[0] << endl;
             if(Fun_Layer_Aft[0]==Layer){ET_XYZ[XYZ][PorN]=ET;}else{ET_XYZ[XYZ][PorN]=0;}
-            if(Fun_Layer_Aft[0]==Layer and ET>0){Find_smallest_Vector.push_back(ET);}
+            if(Fun_Layer_Aft[0]==Layer and ET>0){Find_smallest_Vector.push_back(ET);cout << "ET1: " << ET << endl;}
         }
     }
     
     The_final_scaling = The_smallest_in_a_vector(Find_smallest_Vector);
+    cout << "The_final_scaling: " << The_final_scaling << endl;
     //The smallest one
     Find_smallest_Vector.clear();
     
@@ -225,7 +237,7 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
     int  A_Layer          = A_Position[0];
     int  A_Surface_index  = A_Position[1];
     int  DR_IN_OR_OUT = 0; double Layer_run=0;
-    
+    vector<double> Return_the_smallest_one;
 
     //In the shielding
     if(  A_Layer<4 )
@@ -235,12 +247,17 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
             DR_IN_OR_OUT = DR_In_or_Out_on_surface(A_Surface_index,DR);
             if(DR_IN_OR_OUT==1)
             {
+                cout << "L" << A_Layer << "OS OutDR" << endl;
                 RSF           = Length_to_six_planes(A_Layer+1,POS,DR);
                 Layer_run =  A_Layer+1;
             }
             if( (A_Layer>0 and DR_IN_OR_OUT==0) )
             {
-               RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
+               cout << "L" << A_Layer << "OS InDR" << endl;
+               double A1=Length_to_six_planes(A_Layer,POS,DR);
+               double A2=Length_to_six_planes(A_Layer-1,POS,DR);
+               if(A1>0) Return_the_smallest_one.push_back(A1);if(A2>0) Return_the_smallest_one.push_back(A2);
+               RSF = The_smallest_in_a_vector(Return_the_smallest_one);
                Layer_run =  A_Layer;
             }
         }
@@ -250,11 +267,16 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
             Layer_run =  A_Layer;
             if(DR_IN_OR_OUT==1)
             {
+                cout << "L" << A_Layer << "FS OutDR" << endl;
                 RSF = Length_to_six_planes(A_Layer,POS,DR);
             }
             if(DR_IN_OR_OUT==0)
             {
-                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
+                cout << "L" << A_Layer << "FS InDR" << endl;
+                double A1=Length_to_six_planes(A_Layer,POS,DR);
+                double A2=Length_to_six_planes(A_Layer-1,POS,DR);
+                if(A1>0) Return_the_smallest_one.push_back(A1);if(A2>0) Return_the_smallest_one.push_back(A2);
+                RSF = The_smallest_in_a_vector(Return_the_smallest_one);
             }
         }
     }//if(A_Layer<5)
@@ -267,7 +289,10 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
             DR_IN_OR_OUT = DR_In_or_Out_on_surface(A_Surface_index,DR);
             if(DR_IN_OR_OUT==0)
             {
-                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
+                double A1=Length_to_six_planes(A_Layer,POS,DR);
+                double A2=Length_to_six_planes(A_Layer-1,POS,DR);
+                if(A1>0) Return_the_smallest_one.push_back(A1);if(A2>0) Return_the_smallest_one.push_back(A2);
+                RSF = The_smallest_in_a_vector(Return_the_smallest_one);
             }
         }
         if(A_Surface_index==0)//Off the surface
@@ -279,12 +304,16 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
             }
             if(DR_IN_OR_OUT==0)
             {
-                RSF = std::min(Length_to_six_planes(A_Layer,POS,DR),Length_to_six_planes(A_Layer-1,POS,DR));
+                double A1=Length_to_six_planes(A_Layer,POS,DR);
+                double A2=Length_to_six_planes(A_Layer-1,POS,DR);
+                if(A1>0) Return_the_smallest_one.push_back(A1);if(A2>0) Return_the_smallest_one.push_back(A2);
+                RSF = The_smallest_in_a_vector(Return_the_smallest_one);
             }
         }
 
     }
-       
+    cout << "RSF: " << RSF << endl;
+    cout << "Layer_run: " << Layer_run << endl;
     Return_Factor[0]=RSF;Return_Factor[1]=Layer_run;
     return Return_Factor;
 }
@@ -597,10 +626,12 @@ double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
 double *VAC(double Mx, double Sigma_SI, double V, double AN)//Velocity_Aft_Collision(VAC),Mx(Mass of WIMP),Sigma_SI, V(Velocity), Atomic Number(AN)
 {
     static double Return_Value[2];
+    cout << "V: " << V << endl;
     double *V_Aft = Velocity_Aft_collision_Bent(1,Mx,Sigma_SI,V,AN);
     double Energy_Loss_to_Atom   = Energy_DM(Mx,V*1e3/3e8) - Energy_DM(Mx,V_Aft[0]*1e3/3e8);
     double Ratio_of_Energy_Loss_to_Atom = (Energy_Loss_to_Atom)/(Energy_DM(Mx,V*1e3/3e8));
     double DM_Velocity_Aft_Colliding=V_Aft[0];
+    cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
     Return_Value[0]=DM_Velocity_Aft_Colliding;Return_Value[1]=Ratio_of_Energy_Loss_to_Atom;
     
     return Return_Value;
@@ -613,31 +644,34 @@ double *DRAC(double AN, double Mx, double V_Aft, double *DR, double ROELTA)//Ang
     return DR_Aft;
 }
 
-double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Sigma_SI)//InorOut_Shieing(IorO),Next_Point_In_Shielding(NPIS)
+double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Sigma_SI, int SorT)//InorOut_Shieing(IorO),Next_Point_In_Shielding(NPIS)
 {
-    static double Return_Value[4];
+    static double Return_Value[7];
     
     double LFA=0.001;
-    double V_aft;double ROELTA=0;
+    double V_aft=V;double ROELTA=0;
     
     double *SLU;//Scaling_Length_Used,The layer a WIMP runs in
-    if(IorO==0) SLU= CID(POS_Int,DR);
-    if(IorO==1) SLU= COFD(POS_Int,DR);
+    cout << "IorO : " << IorO << endl;
+    if(IorO==0){cout << "InsideOfShielding" << endl;SLU= CID(POS_Int,DR);}
+    if(IorO==1){cout << "OutOfShieling" << endl; SLU= COFD(POS_Int,DR);}
     int Layer_run = SLU[1];
-    double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V,Sigma_SI,Density_All[IorO][Layer_run],Atomic_All[IorO][Layer_run]);//Atomic Number Of Material(ANOM)
-    
+    double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,Density_All[IorO][Layer_run],Atomic_All[IorO][Layer_run]);//Atomic Number Of Material(ANOM)
+    cout << "SLU[0]: " << SLU[0] << endl;
+    cout << "Segment: " << Segment << endl;
     if(Segment<=SLU[0])
     {
         POS_Int = PAP(Segment,POS_Int,DR);
-        double *VAC_end = VAC(Mx,Sigma_SI,V,Atomic_All[IorO][Layer_run]);//
+        double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Atomic_All[IorO][Layer_run]);//
         V_aft = VAC_end[0]; ROELTA = VAC_end[1];
-        if(IorO==1)DR = DRAC(Atomic_All[IorO][Layer_run],Mx,V_aft,DR,ROELTA);
+        if(SorT==1)DR = DRAC(Atomic_All[IorO][Layer_run],Mx,V_aft,DR,ROELTA);
     }
     if(Segment>SLU[0])  POS_Int = PAP(SLU[0],POS_Int,DR);
     
     Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
-    Return_Value[3]=V_aft;
-    
+    Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
+    Return_Value[6]=V_aft;
+    cout << "V_aft_Func: " << V_aft << endl;
     return Return_Value;
 }
 double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
@@ -647,31 +681,51 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     double Segment; //Ratio_of_Energy_Loss_to_Atom(ROELTA)
     //===========================
-    while( RTC(POS_Int)>=R_OW_KS or POS_Int[0]>=H_OCT_KS or Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    while( RTC(POS_Int)<=R_OW_KS and POS_Int[0]<=H_OCT_KS and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
+        cout << "V_aft: " << V_aft << endl;
+        cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
+        
         int *IOS_Position = Where_is_it_in_shielding(POS_Int);//Inside_Of_Shieing_Position
+        cout << "IOS_Position[0]: " << IOS_Position[0] << endl;
+        cout << "IOS_Position[1]: " << IOS_Position[1] << endl;
+        cout << "IOS_Position[2]: " << IOS_Position[2] << endl;
+
         if(IOS_Position[2]==1)
         {
-            double *NP_1 = NP(0,POS_Int,DR,Mx,V_Int,Sigma_SI);
-            DR[0]=NP_1[0];DR[1]=NP_1[1];DR[2]=NP_1[2];V_Int=NP_1[3];
+            cout << "Inside the shielding1" << endl;
+            double *NP_1 = NP(0,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+            POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
         }
         else if(IOS_Position[2]==2 and DR_In_or_Out_on_surface(IOS_Position[1],DR)==0)
         {
-            double *NP_1 = NP(0,POS_Int,DR,Mx,V_Int,Sigma_SI);
-            DR[0]=NP_1[0];DR[1]=NP_1[1];DR[2]=NP_1[2];V_Int=NP_1[3];
+            cout << "Inside the shielding2" << endl;
+            double *NP_1 = NP(0,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+            POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
         }
         else if(IOS_Position[2]==2 and DR_In_or_Out_on_surface(IOS_Position[1],DR)==1)
         {
-            double *NP_1 = NP(1,POS_Int,DR,Mx,V_Int,Sigma_SI);
-            DR[0]=NP_1[0];DR[1]=NP_1[1];DR[2]=NP_1[2];V_Int=NP_1[3];
+            cout << "Inside the shielding3" << endl;
+            double *NP_1 = NP(1,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+            POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
         }
         else
         {
-            double *NP_1 = NP(1,POS_Int,DR,Mx,V_Int,Sigma_SI);
-            DR[0]=NP_1[0];DR[1]=NP_1[1];DR[2]=NP_1[2];V_Int=NP_1[3];
+            cout << "Out the shielding" << endl;
+            double *NP_1 = NP(1,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+            POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
         }
+        cout << "V_aft: " << V_aft << endl;
+        cout << "POS_Int[0]: " << POS_Int[0] << endl;cout << "POS_Int[1]: " << POS_Int[1] << endl;cout << "POS_Int[2]: " << POS_Int[2] << endl;
+        cout << "RTC(POS_Int): " << RTC(POS_Int) << ">? " << "R_OW_KS" << R_OW_KS << endl;
+        cout << "Energy_DM(Mx,V_aft*1e3/3e8): " << Energy_DM(Mx,V_aft*1e3/3e8) << endl;
     }
     RETURN_VALUE[0]=V_aft;
+    if(RTC(POS_Int)>=R_OW_KS) cout << "Radius>Outer_Radius" << endl;
+    if(POS_Int[0]>=H_OCT_KS) cout << "High>Cement" << endl;
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<=0.01) cout << "Energy<threshold" << endl;
+
+
     return RETURN_VALUE;
 }
 
