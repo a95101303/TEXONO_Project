@@ -126,14 +126,23 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<1)
+    while(jjj<50)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
         
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+
 
         sigma_si = Sigma_SI;
         cout << "sigma_si : " << sigma_si << endl;
@@ -153,9 +162,17 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         eventGenerator->GetSeed();
         eventGenerator->Sphere(par[0],par[1],par[2],Random_Velocity);
         
+        
         double V_X =    (par[0]/Random_Velocity);
         double V_Y =    (par[1]/Random_Velocity);
         double V_Z =    (par[2]/Random_Velocity);
+         
+        
+        /*
+        double V_X =    0.0288531;
+        double V_Y =    0.303207;
+        double V_Z =    -0.952488;
+         */
         double DR[3] = {V_X,V_Y,V_Z};
 
         double *SPF  = Starting_Position();//Starting_Point_Function
@@ -188,6 +205,17 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 
         jjj = jjj + 1;
         t1->Fill();
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
 
     }
 
