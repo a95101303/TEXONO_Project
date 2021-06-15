@@ -23,7 +23,7 @@ void Overlap_Plot_NU_MD_BR_Comparison()
     //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P1"};
     //string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
     //string Mass_Point[10]={"0P1"};
-    for(int Exp=1; Exp<2; Exp++)
+    for(int Exp=; Exp<2; Exp++)
     {
         for(int Mass_INT=9; Mass_INT<10; Mass_INT++)
         {

@@ -371,10 +371,10 @@ double SFLE(double a, double b, double c) // Solution_for_Linear_Equation[a(X^2)
     Denominator = 2*a;
     Numerator1 = -b + sqrt(b*b-4*a*c);
     cout << "Numerator1: " << Numerator1 << endl;
-    if(Numerator1>0)Find_smallest_Vector.push_back(Numerator1);
+    if(Numerator1>1e-10)Find_smallest_Vector.push_back(Numerator1);
     Numerator2 = -b - sqrt(b*b-4*a*c);
     cout << "Numerator2: " << Numerator2 << endl;
-    if(Numerator2>0)Find_smallest_Vector.push_back(Numerator2);
+    if(Numerator2>1e-10)Find_smallest_Vector.push_back(Numerator2);
     
     Numerator_Final = The_smallest_in_a_vector(Find_smallest_Vector);
 
@@ -468,7 +468,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Floor" << endl;
         double DFS    = Scaling_to_others_Z(POS,DR,-1.375);//Down_floor_Scaling(DFS)
         cout << "Down_floor_Scaling: " << DFS  << endl;
-        if(Yes_123(R_IW_KS,RFC(POS,DR,DFS))==1 and DFS>0)
+        if(Yes_123(R_IW_KS,RFC(POS,DR,DFS))==1 and DFS>1e-10)
         {
             Find_smallest_Vector.push_back(DFS);
         }
@@ -477,7 +477,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Shielding" << endl;
         double SS     = Length_to_six_planes(4,POS,DR);//Shielding_Scaling(SS)
         cout << "Shielding_Scaling: " << SS << endl;
-        if(SS>0)
+        if(SS>1e-10)
         {
             Find_smallest_Vector.push_back(SS);
         }
@@ -486,7 +486,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Outer_Reactor" << endl;
         double ORS = Scaling_to_others_XY(POS,DR,R_OWALL_RE);//Outer_RE_Scaling(ORS)
         cout << "Outer_RE_Scaling: " << ORS << endl;
-        if(Yes_123(H_RE,POS[2]+ORS*DR[2])==1 and ORS>0)
+        if(Yes_123(H_RE,POS[2]+ORS*DR[2])==1 and ORS>1e-10)
         {
             Find_smallest_Vector.push_back(ORS);
         }
@@ -495,7 +495,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Inner_Reactor" << endl;
         double IRS = Scaling_to_others_XY(POS,DR,R_IWATER_RE);//Inner_RE_Scaling(IRS)
         cout << "Inner_RE_Scaling: " << IRS << endl;
-        if(Yes_123(H_RE,POS[2]+IRS*DR[2])==1 and IRS>0)
+        if(Yes_123(H_RE,POS[2]+IRS*DR[2])==1 and IRS>1e-10)
         {
             Find_smallest_Vector.push_back(IRS);
         }
@@ -504,7 +504,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Inner_Wall" << endl;
         double IWS = Scaling_to_others_XY(POS,DR,R_IW_KS);//Inner_Wall_Scaling(IWS)
         cout << "Inner_Wall_Scaling: " << IWS << endl;
-        if(Yes_123(H_ICT_KS,POS[2]+IWS*DR[2])==1 and IWS>0)
+        if(Yes_123(H_ICT_KS,POS[2]+IWS*DR[2])==1 and IWS>1e-10)
         {
             Find_smallest_Vector.push_back(IWS);
         }
@@ -513,7 +513,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Outer_Wall" << endl;
         double OWS = Scaling_to_others_XY(POS,DR,R_OW_KS);//Outer_Wall_Scaling(OWS)
         cout << "Outer_Wall_Scaling: " << OWS << endl;
-        if(Yes_123(H_OCT_KS,POS[2]+OWS*DR[2])==1 and OWS>0)
+        if(Yes_123(H_OCT_KS,POS[2]+OWS*DR[2])==1 and OWS>1e-10)
         {
             Find_smallest_Vector.push_back(OWS);
         }
@@ -522,7 +522,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Low_ceiling" << endl;
         double LCS = Scaling_to_others_Z(POS,DR,H_ICT_KS);//Low_Ceiling_Scaling(LCS)
         cout << "Low_ceiling_Scaling: " << LCS << endl;
-        if(Yes_123(R_IW_KS,RFC(POS,DR,LCS))==1 and LCS>0)
+        if(Yes_123(R_IW_KS,RFC(POS,DR,LCS))==1 and LCS>1e-10)
         {
             Find_smallest_Vector.push_back(LCS);
         }
@@ -531,7 +531,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         cout << "Top_ceiling" << endl;
         double TCS   = Scaling_to_others_Z(POS,DR,H_OCT_KS);//Top_Ceiling_Scaling(TCS)
         cout << "Top_ceiling_Scaling: " << TCS << endl;
-        if(Yes_123(R_OW_KS,RFC(POS,DR,TCS))==1 and TCS>0)
+        if(Yes_123(R_OW_KS,RFC(POS,DR,TCS))==1 and TCS>1e-10)
         {
             Find_smallest_Vector.push_back(TCS);
         }
@@ -541,7 +541,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         double TORS = Scaling_to_others_Z(POS,DR,H_RE);//Top_Outer_Reactor_Scaling(TORS)
         cout << "Top_Outer_Reactor_Scaling: " << TORS << endl;
         cout << "RFC(POS,DR,TORS): " << RFC(POS,DR,TORS) << endl;
-        if(Yes_123(R_OWALL_RE,RFC(POS,DR,TORS))==1 and Yes_123(RFC(POS,DR,TORS),R_IWATER_RE)==1 and TORS>0)
+        if(Yes_123(R_OWALL_RE,RFC(POS,DR,TORS))==1 and Yes_123(RFC(POS,DR,TORS),R_IWATER_RE)==1 and TORS>1e-10)
         {
             Find_smallest_Vector.push_back(TORS);
         }
@@ -551,7 +551,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         double TIRS = Scaling_to_others_Z(POS,DR,H_RE);//Top_Inner_Reactor_Scaling(TIRS)
         cout << "Top_Inner_Reactor_Scaling: " << TIRS << endl;
         cout << "RFC(POS,DR,TIRS): " << RFC(POS,DR,TIRS) << endl;
-        if(Yes_123(R_IWATER_RE,RFC(POS,DR,TIRS))==1 and TIRS>0)
+        if(Yes_123(R_IWATER_RE,RFC(POS,DR,TIRS))==1 and TIRS>1e-10)
         {
             Find_smallest_Vector.push_back(TIRS);
         }
