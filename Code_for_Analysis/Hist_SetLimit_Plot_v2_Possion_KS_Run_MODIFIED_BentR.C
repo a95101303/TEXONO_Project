@@ -126,7 +126,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<50)
+    while(jjj<1)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -199,8 +199,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
 
         double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, Sigma_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
-        Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
-         
+        V_End_E=Value[0];Collision_Time_Earth=Value[1];Arrival_earth=Value[2];
+        if(Value[2]>0)Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
+        if(Value[2]>0)Collision_Time_Hist_Earth->Fill(Value[1]);
         //Final_Length
 
         jjj = jjj + 1;

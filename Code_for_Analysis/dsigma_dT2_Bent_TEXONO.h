@@ -406,6 +406,7 @@ double RTC(double *POS)//Radius_To_Center(RTC) on XY plane
 
 int Yes_123(double A1, double A2)
 {
+    cout << "A1-A2: " << (A1-A2) << endl;
     if( (A1-A2)>-1e-10 )return 1;
 
     else{return 0;}
@@ -541,7 +542,7 @@ double DOLOUD(double *Component, double *POS, double *DR)//Decision_On_Length_Ou
         double TORS = Scaling_to_others_Z(POS,DR,H_RE);//Top_Outer_Reactor_Scaling(TORS)
         cout << "Top_Outer_Reactor_Scaling: " << TORS << endl;
         cout << "RFC(POS,DR,TORS): " << RFC(POS,DR,TORS) << endl;
-        if(Yes_123(R_OWALL_RE,RFC(POS,DR,TORS))==1 and Yes_123(RFC(POS,DR,TORS),R_IWATER_RE)==1 and TORS>1e-10)
+        if(Yes_123(R_OWALL_RE,RFC(POS,DR,TORS))==1 and Yes_123(R_IWATER_RE,RFC(POS,DR,TORS))==1 and TORS>1e-10)
         {
             Find_smallest_Vector.push_back(TORS);
         }
@@ -827,19 +828,22 @@ double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Si
     if(IorO==0){cout << "InsideOfShielding" << endl;SLU= CID(POS_Int,DR);}
     if(IorO==1){cout << "OutOfShieling" << endl; SLU= COFD(POS_Int,DR);}
     int Layer_run = SLU[1];
+    
+    int Times = Possion_GetRandom_Full(LFA);
     double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,Density_All[IorO][Layer_run],Atomic_All[IorO][Layer_run]);//Atomic Number Of Material(ANOM)
     cout << "SLU[0]: " << SLU[0] << endl;
     cout << "Segment: " << Segment << endl;
-    if(Segment<=SLU[0])
+    double Sprint_GO = Segment*Times;
+    if(Sprint_GO<=SLU[0])
     {
         cout << "Segment<=SLU[0]" << endl;
-        POS_Int = PAP(Segment,POS_Int,DR);
+        POS_Int = PAP(Sprint_GO,POS_Int,DR);
         double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Atomic_All[IorO][Layer_run]);//
         V_aft = VAC_end[0]; ROELTA = VAC_end[1];
         if(SorT==1)DR = DRAC(Atomic_All[IorO][Layer_run],Mx,V_aft,DR,ROELTA);
         Collision_Time=1;
     }
-    if(Segment>SLU[0])
+    if(Sprint_GO>SLU[0])
     {
         cout << "Segment>SLU[0]" << endl;
         POS_Int = PAP(SLU[0],POS_Int,DR);
@@ -870,6 +874,7 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
         cout << "IOS_Position[2]: " << IOS_Position[2] << endl;
         if(IOS_Position[0]==0 and Step!=0)
         {
+            RETURN_VALUE[2]=0;
             cout << "OKOKOKOK!!!!!" << endl;
             break;
         }
@@ -916,12 +921,28 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
         cout << "POS_Int[2]+(TCZ): " << POS_Int[2]+(TCZ) << endl;
         cout << "Energy_DM(Mx,V_aft*1e3/3e8): " << Energy_DM(Mx,V_aft*1e3/3e8) << endl;
     }
-    RETURN_VALUE[0]=V_aft;
+    RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time;
     cout << "Collision_Time: " << Collision_Time << endl;
-    if((R_OW_KS-RTC(POS_Int))<1e-10) cout << "Radius>Outer_Radius" << endl;
-    if(H_OCT_KS-POS_Int[2]<1e-10) cout << "High>Cement" << endl;
-    if(POS_Int[2]+(TCZ)<1e-10) cout << "Z at the ground" << endl;
-    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01) cout << "Energy<threshold" << endl;
+    if((R_OW_KS-RTC(POS_Int))<1e-10)
+    {
+        RETURN_VALUE[2]=1;
+        cout << "Radius>Outer_Radius" << endl;
+    }
+    if(H_OCT_KS-POS_Int[2]<1e-10)
+    {
+        RETURN_VALUE[2]=1;
+        cout << "High>Cement" << endl;
+    }
+    if(POS_Int[2]+(TCZ)<1e-10)
+    {
+        RETURN_VALUE[2]=0;
+        cout << "Z at the ground" << endl;
+    }
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
+    {
+        RETURN_VALUE[2]=0;
+        cout << "Energy<threshold" << endl;
+    }
 
 
     return RETURN_VALUE;

@@ -95,16 +95,16 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     Velocity_Y[kkk]= -0.458848;
                     Velocity_Z[kkk]= 1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk];
                      */
-                    /*
+                    
                     Velocity_X[kkk] = 0.49;
                     Velocity_Y[kkk] = -0.80;
                     Velocity_Z[kkk] = sqrt(1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
-                    */
                     
+                    /*
                     Velocity_Z[kkk]=1;//
                     Velocity_X[kkk]=0;
                     Velocity_Y[kkk]=0;
-                     
+                     */
                     /*
                     Velocity_Z[kkk]=0;//
                     Velocity_X[kkk]=0;
