@@ -12,7 +12,9 @@ void run_single_sigma_ks_modified_bent_v15_minprint_real(double mx=2.0)
     
     string Mass_Point[5]={"20","10","2","0P2","0P05"};
 
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,2,%i,1)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,2,%i,2)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,2,%i,3)",Event_Number));
+
 
 }
 
