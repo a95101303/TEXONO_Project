@@ -30,8 +30,8 @@
 //1.009keV        ==> 201.183(km/s)
 void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
 {
-    double Threshold_of_Detector = 1;//NU for TEXONO
-    //double Threshold_of_Detector = 0.035;//MD for TEXONO-Ge
+   //double Threshold_of_Detector = 1;//NU for TEXONO
+    double Threshold_of_Detector = 0.035;//MD for TEXONO-Ge
     //double Threshold_of_Detector = 0.01;//Brem for TEXONO
     
     /*
@@ -39,7 +39,7 @@ void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
     double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
       */
     const int Event_Number=1;
-    double WIMP_Mass_Array[Event_Number]={10};//17 for CDEX
+    double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
 
     /*
     const int Event_Number=15;
@@ -71,7 +71,7 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                 int Count=0;
                 cout << "Sigma_SI_Array[WIMP_Event]: " << Sigma_SI_Array[WIMP_Event] << endl;
                 if(Sigma_SI_Array[WIMP_Event]>1e-45) continue;
-                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-30) * TMath::Power(10,lll);
+                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-28) * TMath::Power(10,lll);
                 cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
                 
                 int Simulated_Event_Number=50;
