@@ -139,7 +139,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2500)
+    while(jjj<Simulated_Event_Number)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
@@ -268,14 +268,14 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
             Energy_Loss_Percentage_Hist->Fill(E_Loss_Percentage);
             MMM = MMM + 1;
             //Original_Bent_Comparison_Ratio_Earth->Fill(Earth_Value[1]);
-            Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
+            //Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
             Energy_Loss_Percentage_lf = E_Loss_Percentage;
             Collision_Time_Earth = Earth_Value[2];
             V_End_E = Earth_Value[0];
         }
         else
         {
-            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
+            //Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
             Energy_Loss_Percentage_lf = 1;
             Collision_Time_Earth = Earth_Value[2];
             V_End_E = 0;
