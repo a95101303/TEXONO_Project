@@ -34,13 +34,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 {
     //==============================Second step==============================
     //Constant
-    string Mass_Point[5]={"20","10","2","0P2","0P05"};
-    double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
+    string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05"};
+    double WIMP_Mass_Array[16]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};
 
-    double WIMP_Mass = WIMP_Mass_Array[Index_Mass];
-    double DM_mx = WIMP_Mass_Array[Index_Mass];
-    //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
-    cout << "WIMP_Mass: " << WIMP_Mass << endl;
+    //string Mass_Point[5]={"20","10","2","0P2","0P05"};
+    //double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
 
     TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TTree *T1_TREE    = (TTree*)ROOT_FILE->Get("t1");
@@ -49,6 +47,12 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     Double_t mx,sigma_si;
     T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
     T1_TREE->GetEntry(0);
+
+    double WIMP_Mass = mx;
+    double DM_mx = mx;
+    //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
+    cout << "WIMP_Mass: " << WIMP_Mass << endl;
+
 
 
     double Vecolity[2000];double Possiblity[2000];
@@ -132,7 +136,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     t1->Branch("Energy_Loss_Percentage_lf",&Energy_Loss_Percentage_lf,"Energy_Loss_Percentage_lf/D");
 
     
-    while(jjj<2500)
+    while(jjj<Simulated_Event_Number)
     //while(jjj<50)
     //while((MMM<500 and Bent_or_not_to_be_Bent==1) or (jjj<500 and Bent_or_not_to_be_Bent==0 ))
     {
