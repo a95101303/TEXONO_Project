@@ -72,6 +72,8 @@ void run_single_sigma_ks_modified_bent_v15_minprint_real(double mx=2.0)
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,12,%i,5)",Event_Number));
 
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,13,%i,1)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,13,%i,2)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,13,%i,3)",Event_Number));
 
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,13,%i,2)",Event_Number));
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(1,13,%i,3)",Event_Number));

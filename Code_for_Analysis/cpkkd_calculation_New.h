@@ -159,8 +159,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     }
     std::cout<<"-----------start-------------"<<std::endl;
     //======================For the migdal Effect======================//
+    const int interp = 50;
     //const int interp = 20;
-    const int interp = 20;
     const int n_point1 = 251*interp;
     const int dotnumber = 1e5;
 

@@ -873,6 +873,7 @@ double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Si
     cout << "V_aft_Func: " << V_aft << endl;
     return Return_Value;
 }
+//KS-Angle
 double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
 {//Straight_or_scattered(SorT)
     static double RETURN_VALUE[20];//Return the value back
