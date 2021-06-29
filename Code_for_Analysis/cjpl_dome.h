@@ -93,3 +93,70 @@ else
 return 100000.0*L_cjpl;
 }
 
+double Lcjpl_NonNL(double x_dir, double y_dir, double z_dir)
+{
+// x/x_dir = y/y_dir = z/z_dir
+double NFFCJPL = sqrt(x_dir*x_dir+y_dir*y_dir+z_dir*z_dir);
+x_dir = x_dir/NFFCJPL;y_dir = y_dir/NFFCJPL;z_dir = z_dir/NFFCJPL;
+    
+double x_solution, y_solution, z_solution;
+double L_cjpl;
+
+if(z_dir<0.0) { z_dir = abs(z_dir); }
+if(z_dir<1e-16) { z_dir = 1e-16; }
+
+if(x_dir<0.0) { x_dir = abs(x_dir); }
+if(y_dir<0.0) { y_dir = abs(y_dir); }
+
+x_solution = 0.0;
+y_solution = 0.0;
+z_solution = H;
+L_cjpl = sqrt(x_solution*x_solution+y_solution*y_solution+z_solution*z_solution);
+
+if((abs(z_dir)>=abs(x_dir))&&(abs(z_dir)>=abs(y_dir)))
+{
+  TF1 *fz = new TF1("fz",Form("domehigh(%e*x, %e*x) - x", (x_dir/z_dir), (y_dir/z_dir)),0,H);
+  z_solution = fz->GetX(0.0);
+  x_solution = z_solution*(x_dir/z_dir);
+  y_solution = z_solution*(y_dir/z_dir);
+  L_cjpl = sqrt(x_solution*x_solution+y_solution*y_solution+z_solution*z_solution);
+  fz->Delete();
+  //printf("Zsol ");
+}
+else if((abs(x_dir)>=abs(y_dir))&&(abs(x_dir)>=abs(z_dir)))
+{
+  TF1 *fx = new TF1("fx",Form("domehigh(x, %e*x) - %e*x", (y_dir/x_dir), (z_dir/x_dir)),0,Lx);
+  x_solution = fx->GetX(0.0);
+  y_solution = x_solution*(y_dir/x_dir);
+  z_solution = x_solution*(z_dir/x_dir);
+  L_cjpl = sqrt(x_solution*x_solution+y_solution*y_solution+z_solution*z_solution);
+  fx->Delete();
+  //printf("Xsol ");
+}
+else if((abs(y_dir)>=abs(x_dir))&&(abs(y_dir)>=abs(z_dir)))
+{
+  TF1 *fy = new TF1("fy",Form("domehigh(%e*x, x) - %e*x", (x_dir/y_dir), (z_dir/y_dir)),0,Ly);
+  y_solution = fy->GetX(0.0);
+  x_solution = y_solution*(x_dir/y_dir);
+  z_solution = y_solution*(z_dir/y_dir);
+  L_cjpl = sqrt(x_solution*x_solution+y_solution*y_solution+z_solution*z_solution);
+  fy->Delete();
+  //printf("Ysol ");
+}
+else
+{
+  x_solution = 0.0;
+  y_solution = 0.0;
+  z_solution = H;
+  L_cjpl = sqrt(x_solution*x_solution+y_solution*y_solution+z_solution*z_solution);
+  //printf("Nsol ");
+}
+
+//printf("%e %e %e L=%e\n",x_solution,y_solution,z_solution,L_cjpl);
+
+    //cout << "L_cjpl: " << L_cjpl << endl;
+    
+//return 1000.0*L_cjpl;//m
+    return L_cjpl;//km
+}
+

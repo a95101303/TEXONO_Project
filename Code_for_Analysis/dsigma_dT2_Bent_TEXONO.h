@@ -968,4 +968,182 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     return RETURN_VALUE;
 }
 
+double SqrtN2(double *A)
+{
+    return sqrt(A[0]*A[0]+A[1]*A[1]+A[2]*A[2]);
+}
 
+double SqrtN2_ABC(double A, double B, double C)
+{
+    //cout << "sqrt(A*A+B*B+C*C): " << sqrt(A*A+B*B+C*C) << endl;
+    return sqrt(A*A+B*B+C*C);
+}
+
+void Check_Fun(double *POS_Int, double *DR, double S)
+{
+    //cout << "Lcjpl_NonNL(POS_Int[0]+S*DR[0],POS_Int[1]+S*DR[1],POS_Int[2]+S*DR[2]): " << Lcjpl_NonNL(POS_Int[0]+S*DR[0],POS_Int[1]+S*DR[1],POS_Int[2]+S*DR[2]) << endl;
+    //cout << "SqrtN2_ABC([POS_Int[0]+S*DR[0],POS_Int[1]+S*DR[1],POS_Int[2]+S*DR[2]): " << SqrtN2_ABC(POS_Int[0]+S*DR[0],POS_Int[1]+S*DR[1],POS_Int[2]+S*DR[2]) << endl;
+                                                                                                     
+     return 0;
+}
+
+double *DAC_to_LEG(double *POS_Int, double *DR, double PL)//Direction_Aft_Collision_to_Length(PAC),Predicted_Length(PL)
+{
+    static double POS_Aft[5];
+    
+    POS_Aft[0] = POS_Int[0]+PL*DR[0];
+    POS_Aft[1] = POS_Int[1]+PL*DR[1];
+    POS_Aft[2] = POS_Int[2]+PL*DR[2];
+
+    double ML  = Lcjpl_NonNL(POS_Aft[0],POS_Aft[1],POS_Aft[2]);//Mountain_Length(ML)
+    double LML = SqrtN2(POS_Aft);//Later_Moving_Length
+    
+    double STU; int BorN=0;//Boundary Or Not
+    
+    if(0-POS_Aft[2]>=1e-10)
+    {
+        cout << "Yes1 " << endl;
+        POS_Aft[3]=0;
+    }
+    else if(LML<ML)
+    {
+        cout << "Yes2 " << endl;
+        POS_Aft[3]=PL;BorN=0;POS_Aft[4]=1;//S=Sprinth
+    }
+    else if(LML>ML)
+    {
+        cout << "Yes3 " << endl;
+        cout << "PL: " << PL << endl;
+        /*
+        TF1 *ROLTML = new TF1("ROLTML","Lcjpl_NonNL([0]+x*[1],[2]+x*[3],[4]+x*[5])/SqrtN2_ABC([0]+x*[1],[2]+x*[3],[4]+x*[5])",0,PL);//Ratio_Of_Location_to_Mountain_Length(RLTML)
+        ROLTML->SetParameter(0,POS_Int[0]);
+        ROLTML->SetParameter(1,DR[0]);
+        ROLTML->SetParameter(2,POS_Int[1]);
+        ROLTML->SetParameter(3,DR[1]);
+        ROLTML->SetParameter(4,POS_Int[2]);
+        ROLTML->SetParameter(5,DR[2]);
+        STU= ROLTML->GetX(1,0,PL);//Scaling_To_Use(STU)
+        Check_Fun(POS_Int,DR,STU);
+        cout << "DAC_to_LEG->GetX(1,0,S); " << STU << endl;
+         */
+        POS_Aft[3]=-1;BorN=1;
+    }
+            
+    return POS_Aft;
+}
+
+double *NP_CDEX(double *POS_Int, double *DR, double Mx, double V, double Sigma_SI, int SorT)//Next_Point_In_Shielding(NPIS)
+{
+    static double Return_Value[8];
+    
+    double LFA=0.001;
+    double V_aft=V;double ROELTA=0;
+    int Collision_Time=0;
+
+    int Times = Possion_GetRandom_Full(LFA);
+    //double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//Atomic Number Of Material(ANOM)
+    double Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//km, Atomic Number Of Material(ANOM)
+
+    double Sprint_GO = Segment*Times;
+    cout << "Sprint_GO: " << Sprint_GO << endl;
+    double *SLU=DAC_to_LEG(POS_Int,DR,Sprint_GO);//Scaling_Length_Used,The layer a WIMP runs in
+    cout << "NP_CDEX->Sprint_GO_STU: " << SLU[3] << endl;
+
+    if(SLU[3]>0)
+    {
+        POS_Int = PAP(Sprint_GO,POS_Int,DR);
+        if(Sprint_GO<SLU[3] or int(SLU[4])==1)
+        {
+            cout << "Sprint_GO<SLU[3] or int(SLU[4])==1 " << endl;
+            double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
+            V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+            if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
+            Collision_Time=1;
+        }
+    }
+
+    if(SLU[3]==0)
+    {
+        double Scaling = (0-POS_Int[2])/DR[2];
+        if(Sprint_GO<Scaling)
+        {
+            cout << "Sprint_GO<Scaling " << endl;
+            POS_Int = PAP(Sprint_GO,POS_Int,DR);
+            double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
+            V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+            if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
+            Collision_Time=1;
+        }
+        if(Sprint_GO>=Scaling)
+        {
+            cout << "Sprint_GO>=Scaling" << endl;
+            POS_Int = PAP(Sprint_GO,POS_Int,DR);
+        }
+    }
+    if(SLU[3]<0)
+    {
+        cout << "Out_of_the_boundary" << endl;
+        POS_Int = PAP(Sprint_GO,POS_Int,DR);
+    }
+
+
+    Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
+    Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
+    Return_Value[6]=V_aft;Return_Value[7]=Collision_Time;
+    cout << "V_aft_Func: " << V_aft << endl;
+     
+    return Return_Value;
+}
+
+int Out_or_Not(double *POS)
+{
+    int Judge=0;
+    double Length = Lcjpl_NonNL(POS[0],POS[1],POS[2]);//m
+    double NF     = SqrtN2(POS);//m
+    if(NF<Length){Judge=1;}
+    else{Judge=0;}
+    
+    return Judge;
+}
+
+double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+{//Straight_or_scattered(SorT)
+    static double RETURN_VALUE[20];//Return the value back
+    double Direction_VT[3]={0,0,0};//Used for the calculation
+    double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
+    int Step=0;int Collision_Time=0;
+    //===========================
+    while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    {
+        cout << "V_aft: " << V_aft << endl;
+        cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
+        cout << "DR[0]: " << DR[0] << "DR[1]: " << DR[1] << "DR[2]: " << DR[2] << endl;
+        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
+        double *NP_1 = NP_CDEX(POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+        POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
+        if(NP_1[7]>0)Collision_Time = Collision_Time + 1;
+    }
+    RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time;
+    cout << "Collision_Time: " << Collision_Time << endl;
+    cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
+
+    if(Out_or_Not(POS_Int)==0)
+    {
+        RETURN_VALUE[2]=1;
+        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
+        cout << "Outside" << endl;
+    }
+    if(0-POS_Int[2]>=1e-10)
+    {
+        RETURN_VALUE[2]=0;
+        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
+        cout << "Underground" << endl;
+    }
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
+    {
+        RETURN_VALUE[2]=0;
+        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
+        cout << "Energy<threshold" << endl;
+    }
+    return RETURN_VALUE;
+}

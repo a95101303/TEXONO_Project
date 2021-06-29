@@ -5,7 +5,7 @@
 //#include <sys/stat.h>
 #include "TROOT.h"
 
-void run_single_sigma_ks_modified_bent_v15_minprint_real(double mx=2.0)
+void run_single_sigma_ks_modified_bent_v15_minprint_real(double mx=2.0)//For KS
 {
     //int Event_Number=1;
     int Event_Number=5000;

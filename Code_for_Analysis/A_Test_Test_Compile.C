@@ -33,6 +33,15 @@ void A_Test_Test_Compile()
     cout << "Try_Point[1]: " << Try_Point[1] << endl;
     cout << "Try_Point[2]: " << Try_Point[2] << endl;
 
+    double BBB[2]={1,2};
+    TF1 *fa = new TF1("fa","GGG(x)",0,100000);
+    cout << "fa->GetX(1,0.1,20):" << fa->GetX(770,0,100000) << endl;
+    
+    int C=0;int D=0;
+    if(C<2) D=2;
+    if(C>-1) D=3;
+    
+    cout << "D: " << D << endl;
     return 0;
 
 }

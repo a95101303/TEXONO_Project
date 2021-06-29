@@ -1,3 +1,9 @@
+
+double GGG(double S)
+{
+    double B=S*0.5;
+    return B;
+}
 double Test3(int A)
 {
     double B;

@@ -5,7 +5,7 @@
 //#include <sys/stat.h>
 #include "TROOT.h"
 
-void run_single_sigma_cresst_modified_bent_v15_minprint_real(double mx=2.0)
+void run_single_sigma_cresst_modified_bent_v15_minprint_real(double mx=2.0)//For KS
 {//First Stage
     int Event_Number=5000;
     gROOT->ProcessLine(".L Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST.C");

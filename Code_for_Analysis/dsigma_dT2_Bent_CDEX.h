@@ -1,9 +1,7 @@
 //All values are expressed in m, need to be changed to km when using. Thanks 1e-2*1e-3=1e-5
 
-#include "cjpl_dome.h"
-
-//KS-Angle
-double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+//CDEX-Angle
+double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
 {//Straight_or_scattered(SorT)
     static double RETURN_VALUE[20];//Return the value back
     double Direction_VT[3]={0,0,0};//Used for the calculation
