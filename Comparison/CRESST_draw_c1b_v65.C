@@ -66,8 +66,8 @@ void CRESST_draw_c1b_v65()
   TH2F *frame = new TH2F("frame","",100,0.05,15,100,4e-38,1e-24);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
-  //frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
-//frame->GetYaxis()->SetTitle("#sigma_{SI} (cm^{2})");
+  frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
+frame->GetYaxis()->SetTitle("#sigma_{SI} (cm^{2})");
 
   //frame->GetXaxis()->CenterTitle();
   //frame->GetYaxis()->CenterTitle();

@@ -20,7 +20,7 @@ void Overlap_Plot_Flux()
         {
             for(int FILE=1; FILE<40; FILE++)
             {
-                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
+                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
                 TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
                 Double_t mx,sigma_si;
                 T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
@@ -36,6 +36,10 @@ void Overlap_Plot_Flux()
             Bef_Flux->SetTitle("");
             Bef_Flux->GetXaxis()->SetLimits(0,800);
             Bef_Flux->GetYaxis()->SetLimits(0,2);
+            Bef_Flux->GetXaxis()->SetTitle("V_{#chi}");
+            Bef_Flux->GetXaxis()->SetTitleSize(.04);
+            Bef_Flux->GetYaxis()->SetTitle("A.U.");
+            Bef_Flux->GetYaxis()->SetTitleSize(.04);
             Bef_Flux->Scale(1./2500.);
             
             Aft_Flux=(TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
@@ -45,7 +49,7 @@ void Overlap_Plot_Flux()
             Aft_Flux->SetLineWidth(2);
             Aft_Flux->SetTitle("");
             Aft_Flux->GetXaxis()->SetLimits(0,800);
-                Aft_Flux->GetYaxis()->SetLimits(0,2);
+            Aft_Flux->GetYaxis()->SetLimits(0,2);
             Aft_Flux->Scale(1./2500.);
 
             TCanvas *c3 = new TCanvas("c3");
@@ -68,6 +72,8 @@ void Overlap_Plot_Flux()
             leg->AddEntry(Aft_Flux,"Earth Effect Case","l");
             leg->AddEntry(MD_Line_STFlux,"Threshold","l");
 
+                Bef_Flux->Rebin(20);
+                Aft_Flux->Rebin(20);
             Bef_Flux->Draw("HIST");
             Aft_Flux->Draw("HISTsame");
             MD_Line_STFlux->Draw("Lsame");
