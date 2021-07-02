@@ -188,8 +188,8 @@ Double_t Expe_Constant[5];
 TGraphErrors *cdexdata = new TGraphErrors(257,RE_DATA,RE_Rate,RE_DATA_Err,RE_Rate_Err);
 cdexdata->SetName("cdexdata");
 cdexdata->SetLineColor(1);
-    cdexdata->GetXaxis()->SetRangeUser(0,2);//(4.5,11)(0,2)
-cdexdata->GetYaxis()->SetRangeUser(0,200);//(0,800),(0,200)
+    cdexdata->GetXaxis()->SetRangeUser(4.5,11);//(4.5,11)(0,2)
+cdexdata->GetYaxis()->SetRangeUser(0,800);//(0,800),(0,200)
 cdexdata->SetTitle("");
 cdexdata->GetXaxis()->SetTitle("Recoil Energy[keV]");
 cdexdata->GetYaxis()->SetTitle("Rate[Count/day*kg*keV]");
@@ -411,13 +411,14 @@ for(int jjj=0 ; jjj<257 ; jjj++)
 TGraphErrors *cdexdata1 = new TGraphErrors(257,RE_DATA_Aft,RE_Rate_Aft,RE_DATA_Err_Aft,RE_Rate_Err_Aft);
 cdexdata1->SetName("cdexdata1");
 cdexdata1->SetLineColor(6);
-cdexdata1->GetXaxis()->SetRangeUser(0,2.5);
-cdexdata1->GetYaxis()->SetRangeUser(-10,100);
+//cdexdata1->GetXaxis()->SetRangeUser(0,2.5);
+cdexdata1->GetXaxis()->SetRangeUser(0,11);
+cdexdata1->GetYaxis()->SetRangeUser(-10,800);
 cdexdata1->GetXaxis()->SetTitle("Recoil Energy[keV]");
 cdexdata1->GetYaxis()->SetTitle("Rate[Count/day*kg*keV]");
 cdexdata1->SetMarkerStyle(8);
 cdexdata1->SetMarkerColor(6);
-cdexdata1->Draw("PEsame");
+//cdexdata1->Draw("PEsame");
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     float Shift=0.2;
@@ -489,12 +490,12 @@ tex5->SetTextSize(0.03422619);
 tex5->SetLineWidth(2);
 
 cdexdata->Draw("apE");
-cdexdata1->Draw("pEsame");
+//cdexdata1->Draw("pEsame");
 //Gaus1->Draw("Lsame");
     
 leg->AddEntry(cdexdata,"Raw data","P");
-leg->AddEntry(cdexdata1,"L/M shells X-ray subtracted data","P");
-    /*
+//leg->AddEntry(cdexdata1,"L/M shells X-ray subtracted data","P");
+    
 Gaus1->SetLineColor(4);
 Gaus1->Draw("Lsame");
 Gaus2->SetLineColor(30);
@@ -505,8 +506,8 @@ Gaus4->SetLineColor(7);
 Gaus4->Draw("Lsame");
 Gaus5->SetLineColor(9);
 Gaus5->Draw("Lsame");
-     */
-/*
+     
+
 fitfun01->Draw("Lsame");
 fitfun02->Draw("Lsame");
 fitfun03->Draw("Lsame");
@@ -522,9 +523,9 @@ fitfun014->Draw("Lsame");
 fitfun015->Draw("Lsame");
 fitfun016->Draw("Lsame");
 fitfun017->Draw("Lsame");
- */
+ 
     
-
+/*
 fitfun018->SetLineColor(4);
 fitfun018->Draw("Lsame");
 fitfun021->SetLineColor(30);
@@ -535,7 +536,7 @@ fitfun030->SetLineColor(9);
 fitfun030->Draw("Lsame");
 fitfun033->SetLineColor(12);
 fitfun033->Draw("Lsame");
-     
+  */
     /*
 fitfun018->Draw("Lsame");
 fitfun019->Draw("Lsame");
@@ -567,5 +568,5 @@ tex44->Draw("same");
 tex55->Draw("same");
 leg->Draw("same");
     
-c1->Print("Resolution_Plot2.pdf");
+c1->Print("Resolution_Plot11.pdf");
 }
