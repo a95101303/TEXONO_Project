@@ -508,21 +508,21 @@ Gaus5->SetLineColor(9);
 Gaus5->Draw("Lsame");
      
 
-fitfun01->Draw("Lsame");
-fitfun02->Draw("Lsame");
-fitfun03->Draw("Lsame");
-fitfun05->Draw("Lsame");
-fitfun06->Draw("Lsame");
-fitfun07->Draw("Lsame");
-fitfun09->Draw("Lsame");
-fitfun010->Draw("Lsame");
-fitfun011->Draw("Lsame");
-fitfun012->Draw("Lsame");
-fitfun013->Draw("Lsame");
-fitfun014->Draw("Lsame");
-fitfun015->Draw("Lsame");
-fitfun016->Draw("Lsame");
-fitfun017->Draw("Lsame");
+//fitfun01->Draw("Lsame");
+//fitfun02->Draw("Lsame");
+//fitfun03->Draw("Lsame");
+//fitfun05->Draw("Lsame");
+//fitfun06->Draw("Lsame");
+//fitfun07->Draw("Lsame");
+//fitfun09->Draw("Lsame");
+//fitfun010->Draw("Lsame");
+//fitfun011->Draw("Lsame");
+//fitfun012->Draw("Lsame");
+//fitfun013->Draw("Lsame");
+//fitfun014->Draw("Lsame");
+//fitfun015->Draw("Lsame");
+//fitfun016->Draw("Lsame");
+//fitfun017->Draw("Lsame");
  
     
 /*
