@@ -39,15 +39,23 @@ void run_single_sigma_cdex_modified_bent_v15_minprint_real(double mx=2.0)//For K
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,4,%i,9,1e-30)",Event_Number));//
 
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,9,1e-30)",Event_Number));//
-    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,10,2//e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,10,2e-30)",Event_Number));//
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,11,3e-30)",Event_Number));//
 
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,6,%i,9,1e-30)",Event_Number));//
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,6,%i,10,2e-30)",Event_Number));//
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,6,%i,11,3e-30)",Event_Number));//
 
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,7,%i,9,1e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,7,%i,9,1e-30)",Event_Number));//
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,7,%i,10,2e-30)",Event_Number));//
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,8,%i,10,2e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,8,%i,11,3e-30)",Event_Number));//
+    
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,9,%i,10,2e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,9,%i,11,3e-30)",Event_Number));//
+
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,10,%i,11,3e-30)",Event_Number));//
 
 }
 
