@@ -55,7 +55,13 @@ void run_single_sigma_cdex_modified_bent_v15_minprint_real(double mx=2.0)//For K
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,9,%i,10,2e-30)",Event_Number));//
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,9,%i,11,3e-30)",Event_Number));//
 
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,10,%i,11,3e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,10,%i,11,3e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,10,%i,12,4e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,10,%i,13,5e-30)",Event_Number));//
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,11,%i,11,3e-30)",Event_Number));//
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,11,%i,12,4e-30)",Event_Number));//
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,11,%i,13,5e-30)",Event_Number));//
 
 }
 
