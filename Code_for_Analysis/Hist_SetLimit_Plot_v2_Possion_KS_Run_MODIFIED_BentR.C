@@ -40,7 +40,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     //string Mass_Point[5]={"20","10","2","0P2","0P05"};
     //double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
 
-    TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    TFile *ROOT_FILE;
+    
+    if(Bent_or_not==1)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not==0)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+
     TTree *T1_TREE    = (TTree*)ROOT_FILE->Get("t1");
     TH1F  *VD_Initial = (TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
 

@@ -945,8 +945,16 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     cout << "Collision_Time: " << Collision_Time << endl;
     if((R_OW_KS-RTC(POS_Int))<1e-10)
     {
+        if(POS_Int[2]<13.)
+        {
+            cout << "Through Earth: " << endl;
+            RETURN_VALUE[2]=0;
+        }
+        else
+        {
         RETURN_VALUE[2]=1;
         cout << "Radius>Outer_Radius" << endl;
+        }
     }
     if(H_OCT_KS-POS_Int[2]<1e-10)
     {
