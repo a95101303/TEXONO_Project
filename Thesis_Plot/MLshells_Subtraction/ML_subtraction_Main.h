@@ -389,7 +389,7 @@ Platform_Error    = Constant0->GetParError(0);
     
 TF1 *Constant_Draw    =new TF1("Constant1","[0]",0,2.5);
 Constant_Draw->SetParameter(0,Platform_constant);
-Constant_Draw->SetLineColor(14);
+Constant_Draw->SetLineColor(2);
 cout << "Platform_Error" << Platform_Error << endl;
 
 // The fitting in the previous region
@@ -493,7 +493,8 @@ cdexdata1->Draw("pEsame");
 //Gaus1->Draw("Lsame");
     
 leg->AddEntry(cdexdata,"Raw data","P");
-leg->AddEntry(cdexdata1,"L/M shells X-ray subtracted data","P");
+leg->AddEntry(Constant_Draw,"Horizontal Background","L");
+leg->AddEntry(cdexdata1,"Background subtracted data","P");
     /*
 Gaus1->SetLineColor(4);
 Gaus1->Draw("Lsame");
@@ -559,7 +560,7 @@ tex1->Draw("same");
 tex2->Draw("same");
 tex3->Draw("same");
 tex4->Draw("same");
-tex5->Draw("same");
+//tex5->Draw("same");
 tex11->Draw("same");
 tex22->Draw("same");
 tex33->Draw("same");

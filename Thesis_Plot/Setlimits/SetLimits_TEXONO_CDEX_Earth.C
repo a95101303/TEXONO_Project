@@ -87,8 +87,8 @@ void SetLimits_TEXONO_CDEX_Earth()
   //frame->GetYaxis()->CenterTitle();
   frame->GetXaxis()->SetMoreLogLabels();
   frame->Draw();
-    frame->GetXaxis()->SetTitle("M_{#chi}");
-    frame->GetYaxis()->SetTitle("#sigma_{SI}");
+    frame->GetXaxis()->SetTitle("M_{#chi}[GeV]");
+    frame->GetYaxis()->SetTitle("#sigma_{SI}[cm^{2}]");
   gPad->SetLogx();
   gPad->SetLogy();
 

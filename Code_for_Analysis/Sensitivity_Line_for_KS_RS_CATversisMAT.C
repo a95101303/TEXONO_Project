@@ -6,17 +6,11 @@
 #include "TLine.h"
 #include "TLegend.h"
 
-void Sensitivity_Line_for_CRESST_Recoil_Spectrum()
+void Sensitivity_Line_for_KS_RS_CATversisMAT()
 {
-
-        
-    for(int FILE=50; FILE<51; FILE++){
-        
-            
         TCanvas *c3 = new TCanvas("c3");
         gStyle->SetOptFit(0);
         gStyle->SetOptStat(0);
-        cout << "YES4" << endl;
 
         double X[1]={1};double Y[1]={2};
         TGraph *Tuned_Frame = new TGraph(1,X,Y);
@@ -35,7 +29,7 @@ void Sensitivity_Line_for_CRESST_Recoil_Spectrum()
         cout << "YES4" << endl;
 
         TGraph *The_Straight_Case;
-        TFile *The_Straight_Case_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/2GeV/Recoil_Spectrum/NU_%i_STS_Bent_Comparison.root",FILE));
+        TFile *The_Straight_Case_FILE = TFile::Open(" /Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/2GeV/6_STS_Bent_Comparison.root");
             The_Straight_Case=(TGraph*)The_Straight_Case_FILE->Get("ER_Spectrum_Aft");
             The_Straight_Case->SetLineColor(3);
             The_Straight_Case->SetLineStyle(1);
@@ -74,7 +68,7 @@ void Sensitivity_Line_for_CRESST_Recoil_Spectrum()
             cout << "YES4" << endl;
 
         c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/4_CRESST_Flux/Recoil_Spectrum/All_%i_2GeV_STS.pdf",FILE));
-    }
+    
 }
     
 

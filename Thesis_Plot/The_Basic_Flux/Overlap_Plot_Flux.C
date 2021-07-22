@@ -79,7 +79,7 @@ void Overlap_Plot_Flux()
             MD_Line_STFlux->Draw("Lsame");
             leg->Draw();
                 
-            c3->Print(Form("%i_Used.pdf",FILE));
+            c3->Print(Form("%i_Used.png",FILE));
             }
         }
     }

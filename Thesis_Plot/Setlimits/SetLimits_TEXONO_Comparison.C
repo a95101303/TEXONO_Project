@@ -78,8 +78,8 @@ void SetLimits_TEXONO_Comparison()
 
   //frame->GetXaxis()->CenterTitle();
   //frame->GetYaxis()->CenterTitle();
-    frame->GetXaxis()->SetTitle("M_{#chi}");
-    frame->GetYaxis()->SetTitle("#sigma_{SI}");
+    frame->GetXaxis()->SetTitle("M_{#chi}[GeV]");
+    frame->GetYaxis()->SetTitle("#sigma_{SI}[cm^{2}]");
   frame->GetXaxis()->SetMoreLogLabels();
   frame->Draw();
   gPad->SetLogx();

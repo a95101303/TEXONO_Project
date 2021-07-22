@@ -11,7 +11,7 @@
 void Overlap_Plot_MD_BR()
 {
     string Exp_Name[2]={"CDEX","TEXONO"};
-    string Exp_Flux[2]={"1_CDEX_Flux","2_TEXONO_Flux"};
+    string Exp_Flux[2]={"1_CDEX_Flux","2_TEXONO_Flux_CAT"};
     string Mass_Point[17]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10"};
     for(int Exp=1; Exp<2; Exp++)
     {
@@ -19,13 +19,13 @@ void Overlap_Plot_MD_BR()
         {
             for(int FILE=1; FILE<27; FILE++)
             {
-                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
+                TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
                 TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
                 Double_t mx,sigma_si;
                 T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
                 T1_TREE->GetEntry(0);
 
-    string path = Form("/Users/yehchihhsiang/Desktop//GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
+    string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/MD_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
                 ifstream fin(path);
     string path1 = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/%s/%sGeV/Recoil_Spectrum/BR_%i.root",Exp_Flux[Exp].c_str(),Mass_Point[Mass_INT].c_str(),FILE);
                 ifstream fin1(path1);
@@ -105,7 +105,7 @@ void Overlap_Plot_MD_BR()
             TEXONOData->Draw("LPsame");
 
             leg->Draw();
-            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Thesis_Plot/Recoil_Spectrum/0P2GeV_MD_BR_%i.pdf",FILE));
+            c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Thesis_Plot/Recoil_Spectrum/0P2GeV_MD_BR_%i.png",FILE));
             }
             }
         }

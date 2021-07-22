@@ -9,7 +9,7 @@
 #include "velocity_distribution_2000_Ave.h"
 #include "cpkkd_calculation_New.h"
 
-void Sensitivity_Line_for_KS_file5()//CDEX:Threshold=160eV, TEXONO:Threshold=200eV
+void Sensitivity_Line_for_KS_Bend()//CDEX:Threshold=160eV, TEXONO:Threshold=200eV
 {
     //double CPKKD_EXCLUSION[Number];
     const int Number=40;int Take_Plot=1;//Plot or not
@@ -21,7 +21,7 @@ void Sensitivity_Line_for_KS_file5()//CDEX:Threshold=160eV, TEXONO:Threshold=200
     int Bent_Type=0; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=12;kkk<13;kkk++)
+for(int kkk=0;kkk<1;kkk++)
     {
         int Mass_INT=kkk;
         string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06"};
@@ -35,16 +35,16 @@ for(int kkk=12;kkk<13;kkk++)
 
         cout << "kkk: " << kkk << endl;
         double Mass=0;
-    for(int FILE=2; FILE<7; FILE++){//Open1
-        string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Mass_INT].c_str(),FILE);
+    for(int FILE=6; FILE<7; FILE++){//Open1
+        string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
         ifstream fin(path);
         if(fin.is_open() and Check_ZERO==0){//Open
         //===============Input the ROOTFILE for all==============
-        TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Mass_INT].c_str(),FILE));
+    TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
         TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
             
-        TFile *ROOT_FILE1 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Mass_INT].c_str(),FILE));
+    TFile *ROOT_FILE1 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
         TTree *T1_TREE1 = (TTree*)ROOT_FILE1->Get("t1");
 
         Double_t mx,sigma_si;
@@ -154,7 +154,7 @@ for(int kkk=12;kkk<13;kkk++)
         c3->SetLogx();
                 cout << "=================================================================================" << endl;
             char fout_name1[300];
-            sprintf(fout_name1,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/Recoil_Spectrum/%s_%i_STS_Bent.root",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str()));
+            sprintf(fout_name1,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/Recoil_Spectrum/%s_%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
             TFile *fout1=new TFile(fout_name1,"recreate");
             ER_Spectrum_Bef->Write();
             ER_Spectrum_Aft->Write();
@@ -162,7 +162,7 @@ for(int kkk=12;kkk<13;kkk++)
                 cout << "=================================================================================" << endl;
 
         if(Take_Plot==1){
-        c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/Recoil_Spectrum/%s_%i_STS_Bent.pdf",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),FILE));
+        c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/Recoil_Spectrum/%s_%i_STS_Bent%s.pdf",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
             cout << "=================================================================================" << endl;
         }
      
@@ -234,10 +234,10 @@ for(int kkk=12;kkk<13;kkk++)
         if(Take_Plot==1)
         {
             char fout_name[300];
-            sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%s_STS.root",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str()));
+            sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%s_STS%s.root",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),Bent_or_Not_Type[Bent_Type].c_str()));
             TFile *fout=new TFile(fout_name,"recreate");
             Threshold_Plot_4->Write();
-            c4->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%s_STS.pdf",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str()));
+            c4->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%s_STS%s.pdf",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),Bent_or_Not_Type[Bent_Type].c_str()));
         }
     }
 }

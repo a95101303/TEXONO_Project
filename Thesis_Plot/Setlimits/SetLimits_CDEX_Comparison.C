@@ -79,9 +79,8 @@ void SetLimits_CDEX_Comparison()
   frame->Draw();
   gPad->SetLogx();
   gPad->SetLogy();
-  frame->GetXaxis()->SetTitle("M_{#chi}");
-  frame->GetYaxis()->SetTitle("#sigma_{SI}");
-
+  frame->GetXaxis()->SetTitle("M_{#chi}[GeV]");
+  frame->GetYaxis()->SetTitle("#sigma_{SI}[cm^{2}]");
 
     
 
