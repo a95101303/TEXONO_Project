@@ -21,7 +21,7 @@ void Sensitivity_Line_for_KS_Bend()//CDEX:Threshold=160eV, TEXONO:Threshold=200e
     int Bent_Type=0; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=0;kkk<1;kkk++)
+for(int kkk=0;kkk<1;kkk++)//Straight or bending
     {
         int Mass_INT=kkk;
         string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06"};

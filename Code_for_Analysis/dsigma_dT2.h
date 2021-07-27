@@ -2108,9 +2108,55 @@ double *KS_Collision_Time_EARTH_Aft_velocity(int index, double Sigma_SI_Default,
     return RETURN_VALUE_1;
 }
 
+double AF(double *V1, double *V2)//Angle Finding(AF), Vector1(V1), Vector2(V2)
+{
+    double V1_M        = sqrt(V1[0]*V1[0]+V1[1]*V1[1]+V1[2]*V1[2]);//V1_magnitude
+    double V2_M        = sqrt(V2[0]*V2[0]+V2[1]*V2[1]+V2[2]*V2[2]);//V2_magnitude
+    double V1_cross_V2 = V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];//Cross
+    double Cos_theta   = V1_cross_V2/(V1_M*V2_M);
+    double Angle       = TMath::ACos(Cos_theta)/Degree_to_Radian;
+    
+    return Angle;//Degree
+}
+double Z_Velocity_Projected(double *SF, double *DR)//Surface_Position(*SF), Direction toward the detector(*DR)
+{
+    double TTCOIE[3]={0-SF[0],0-SF[1],0-SF[2]};//Toward To the Central Of the Inner Earth(TTCOIE)
+    double ATE = AF(TTCOIE,DR);//Angle_To_Earth(ATE)
+    double Z_M = 1*TMath::Cos(ATE*Degree_to_Radian);//Z_Maginitude, Projected to the earth
+    
+    return Z_M;
+}
 
+double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
+{
+    static double Velocity[2];
+    cout << "VZ: " << VZ << endl;
+    
+    double X_Y_total = sqrt(1-VZ*VZ);
+    
+    TF1 *X_Random = new TF1("X_Random","1",0,X_Y_total);//Find X randomly
+    TF1 *Two_Sides    = new TF1("Two_Sides","1",0,2);
 
+    gRandom = new TRandom3(0);
+    gRandom->SetSeed(0);
 
+    int Side_confirmed_1 = Two_Sides->GetRandom();//Give out 0,1;
+    int Side_confirmed_2 = Two_Sides->GetRandom();//Give out 0,1;
+    double Confirmed_Side[2]={1,-1};
+    //Fix the point on a certain plane
+
+    double VX = Confirmed_Side[Side_confirmed_1] * X_Random->GetRandom();
+    double VY = Confirmed_Side[Side_confirmed_2] * sqrt(1-VZ*VZ-VX*VX);
+   
+    cout << "VX: " << VX << endl;
+    cout << "VY: " << VY << endl;
+
+    cout << "Check sum=1?:: " << sqrt(VX*VX+VY*VY+VZ*VZ) << endl;
+    
+    Velocity[0]=VX; Velocity[1]=VY;
+    
+    return Velocity;
+}
  double *KS_Collision_Time_ATM_Aft_velocity_with_angle(int Straight_or_scattered, int Event, int index, double Sigma_SI_Default, double PY, double PZ, double Velocity, double WIMP_Mass, double *Length_Components, double Earth_Path_Length, double *Direction) //Velocity(km/s)
  {
      //double Direction[3]   ={ 1e-50, 1e-50, PZ };

@@ -111,6 +111,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
     TTree *t1 = new TTree("t1","Information");
     double sigma_si,mx ;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
     double V_Int_A, V_End_A, V_Int_E, V_End_E;
+    double V_X, V_Y, V_Z;
+
     double Oringal_Length_Air,Path_Length_Air,Oringal_Length_Earth,Path_Length_Earth;
     double Collision_Time_Earth,Collision_Time_Air;
     double Original_Bent_Comparison_Ratio_Air_P,Original_Bent_Comparison_Ratio_Earth_P;
@@ -122,6 +124,10 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
     t1->Branch("V_End_A",&V_End_A,"V_End_A/D");
     t1->Branch("V_Int_E",&V_Int_E,"V_Int_E/D");
     t1->Branch("V_End_E",&V_End_E,"V_End_E/D");
+
+    t1->Branch("V_X",&V_X,"V_X/D");
+    t1->Branch("V_Y",&V_Y,"V_Y/D");
+    t1->Branch("V_Z",&V_Z,"V_Z/D");
 
     t1->Branch("ev",&ev,"ev/I");
     t1->Branch("Arrival_air",&Arrival_air,"Arrival_air/I");
@@ -183,17 +189,18 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
         double Velocity_Z = abs(par[2]/Random_Velocity);
         double Velocity_Matrix[3] = {Velocity_X,Velocity_Y,Velocity_Z};
         double Check_Place[3] = {0,0,-6371-80};
-
-        if( Scale_for_scattering_process(1,6371,Check_Place,Velocity_Matrix) ==0 )
+        double SFSP=Scale_for_scattering_process(1,6371,Check_Place,Velocity_Matrix);
+        
+        if( SFSP ==0 )
         {
             cout << "A piece of Junk!!" << endl;
             continue;
         }
-        double V_X =    (par[0]/Random_Velocity);
-        double V_Y =    (par[1]/Random_Velocity);
-        double V_Z = abs(par[2]/Random_Velocity);
-        double DR[3] = {Velocity_X,Velocity_Y,Velocity_Z};
-
+                
+        double DR[3]  = {Velocity_X,Velocity_Y,Velocity_Z};
+        double POE[3] = {Check_Place[0]+Velocity_X*SFSP,Check_Place[1]+Velocity_Y*SFSP,Check_Place[2]+Velocity_Z*SFSP};
+        
+        cout << "On Earth?: " <<  Length_of_vector(POE[0],POE[1],POE[2]) << endl;
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
         Flux_HIST_Random->Fill(Random_Velocity);
@@ -247,6 +254,13 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
         cout << "Arrival_air: " << Arrival_air << endl;
         double IP[3]={ATM_Value[3],ATM_Value[4],ATM_Value[5]};//Intermediate_Position
         double ID[3]={ATM_Value[7],ATM_Value[8],ATM_Value[9]};//Intermediate_Direction
+        V_Z = Z_Velocity_Projected(POE,ID);
+        
+        double *VXY = X_Y_Velocity_Projected(V_Z);
+        
+        V_X = VXY[0];V_Y = VXY[1];
+        cout << "V_X: " << V_X << "V_Y: " << V_Y << "V_Z: " << V_Z << endl;
+        cout << "V_XYZ ==1??: " << sqrt(V_X*V_X+V_Y*V_Y+V_Z*V_Z) << endl;
         cout << "ATM_Value[0]: " << ATM_Value[0] << endl;
         //Earth_Value
 

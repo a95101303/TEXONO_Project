@@ -49,7 +49,10 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     TH1F  *VD_Initial = (TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
 
     Double_t mx,sigma_si;
+    Double_t V_X, V_Y, V_Z;
     T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+    T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+    T1_TREE->SetBranchAddress("V_X",&V_X);T1_TREE->SetBranchAddress("V_Y",&V_Y);T1_TREE->SetBranchAddress("V_Z",&V_Z);
     T1_TREE->GetEntry(0);
 
     double WIMP_Mass = mx;
@@ -176,18 +179,35 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         eventGenerator->GetSeed();
         eventGenerator->Sphere(par[0],par[1],par[2],Random_Velocity);
         
+        TF1 *Two_Sides    = new TF1("Two_Sides","1",0,2);
+        gRandom = new TRandom3(0);
+        gRandom->SetSeed(0);
+        int Side_confirmed_2 = Two_Sides->GetRandom();//Give out 0,1;
+        double Confirmed_Side[2]={1,-1};
+
         
-        double V_X =    (par[0]/Random_Velocity);
-        double V_Y =    (par[1]/Random_Velocity);
-        double V_Z =    (par[2]/Random_Velocity);
-         
-        
+        if(Confirmed_Side[Side_confirmed_2]>0)
+        {
+            cout << "Earth: " << endl;
+            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
+            jjj = jjj + 1;
+            continue;
+        }
+        /*
+        double V_X1 =    (par[0]/Random_Velocity);
+        double V_Y1 =    (par[1]/Random_Velocity);
+        double V_Z1 =    (par[2]/Random_Velocity);
+         */
+        double V_X1 =    V_X;
+        double V_Y1 =    V_Y;
+        double V_Z1 =    V_Z;
+
         /*
         double V_X =    0.0288531;
         double V_Y =    0.303207;
         double V_Z =    -0.952488;
          */
-        double DR[3] = {V_X,V_Y,V_Z};
+        double DR[3] = {V_X1,V_Y1,V_Z1};
 
         double *SPF  = Starting_Position();//Starting_Point_Function
         double  SP[3] = {SPF[0],SPF[1],SPF[2]};
