@@ -1526,22 +1526,30 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     //cout << "Earth_Collision: " <<  N_Collision_Earth << endl;
     //Cement
     N_Collision_Cement =  ((Density_of_Cement)*(Length_Components[1]*1e5))/(unified_atomic_mass_g*(Weighted_Atomic_Number_Cement))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number_Cement));
-    //cout << "Cement_Collision: " <<  N_Collision_Cement << endl;
+    cout << "Cement_Collision: " <<  N_Collision_Cement << endl;
+    cout << "Length_Components[1]: " << Length_Components[1] << endl;
     //Reactor_Wall
     N_Collision_Reactor_Wall =
         (Density_of_Cement*((Length_Components[2]-Length_Components[3])*1e5))/(unified_atomic_mass_g*(Weighted_Atomic_Number_Cement))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number_Cement));
-    //cout << "Reactor_Collision_Wall: " <<  N_Collision_Reactor_Wall << endl;
+    cout << "(Length_Components[2]-Length_Components[3])*1e5): " << (Length_Components[2]-Length_Components[3])*1e3 << endl;
+    cout << "Reactor_Collision_Wall: " <<  N_Collision_Reactor_Wall << endl;
     //Reactor_Water
     N_Collision_Reactor_Water =
         (1*(Length_Components[3]*1e5))/(unified_atomic_mass_g*(AH2O))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AH2O));
-    //cout << "Reactor_Collision_Water: " <<  N_Collision_Reactor_Water << endl;//H2O density is 1g/cc
+    cout << "Length_Components[3]*1e5: " << Length_Components[3]*1e3 << endl;
+    cout << "Reactor_Collision_Water: " <<  N_Collision_Reactor_Water << endl;//H2O density is 1g/cc
     //Shielding
     N_Collision_Shielding =
     (11.34*(15))/(unified_atomic_mass_g*(APb))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,APb))
     +(7.86*(5))/(unified_atomic_mass_g*(AFe))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AFe))
     +(2.34*(25))/(unified_atomic_mass_g*(AB))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AB))
     +(8.96*(5))/(unified_atomic_mass_g*(ACu))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,ACu));
-    //cout << "N_Collision_Shielding: " <<  N_Collision_Shielding << endl;
+    cout << "N_Collision_Shielding: " <<  N_Collision_Shielding << endl;
+
+    cout << "Pb: " << (11.34*(15))/(unified_atomic_mass_g*(APb))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,APb)) << endl;
+    cout << "Fe: " << (7.86*(5))/(unified_atomic_mass_g*(AFe))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AFe)) << endl;
+    cout << "B: " << (2.34*(25))/(unified_atomic_mass_g*(AB))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AB)) << endl;
+    cout << "Cu: " << (8.96*(5))/(unified_atomic_mass_g*(ACu))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,ACu)) << endl;
 
     RETURN_VALUE[0]=Previous_Total;RETURN_VALUE[1]=N_Collision_Earth;RETURN_VALUE[2]=N_Collision_Cement;RETURN_VALUE[3]=N_Collision_Reactor_Wall;
     RETURN_VALUE[4]=N_Collision_Reactor_Water;RETURN_VALUE[5]=N_Collision_Shielding;

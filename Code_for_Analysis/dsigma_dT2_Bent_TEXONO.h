@@ -1,3 +1,22 @@
+double The_smallest_in_a_vector(vector<double> Vector)
+{
+    double Return_the_smallest_one=0;
+    if(Vector.size()>0)
+    {
+        std::sort(Vector.begin(), Vector.end());
+        for(int kkk=0; kkk<Vector.size(); kkk++)
+        {
+            cout << "kkk: " << kkk << endl;
+            cout << "Vector: " << Vector[kkk] << endl;
+        }
+        Return_the_smallest_one = Vector[0];
+        cout << "Vector[0]: " << Vector[0] << endl;
+    }
+    else{Return_the_smallest_one=0;}
+    
+    return Return_the_smallest_one;
+}
+
 //All values are expressed in m, need to be changed to km when using. Thanks 1e-2*1e-3=1e-5
 double Density_for_Material[6]={Density_of_Cement,1,11.34,7.86,2.34,8.96};// Cement,H2O,Pb,Fe,B,Cu  g/cm^3
 string ATOM_number_for_Material[6]={"Cement","AH2O","APb","AFe","AB","ACu"};
@@ -25,12 +44,37 @@ double Fe_TKN=0.05;//Steel
 double Pb_TKN=0.15;//Lead
 
 double Ge_Layer[3] ={0.8,1,0.75};//Layer0, Ge_Detector_Outmost_Layer
+double Ge_Layer_Half[3] ={0.4,0.5,0.375};//Layer0, Ge_Detector_Outmost_Layer
+
 double Cu_Layer[3]={Ge_Layer[0]+Cu_TKN*2,Ge_Layer[1]+Cu_TKN*2,Ge_Layer[2]+Cu_TKN*2};//Layer1, OFHC Cu
 double B_Layer[3] ={Cu_Layer[0]+B_TKN*2,Cu_Layer[1]+B_TKN*2,Cu_Layer[2]+B_TKN*2};//Layer2, Boron
 double Fe_Layer[3]={B_Layer[0]+Fe_TKN*2,B_Layer[1]+Fe_TKN*2,B_Layer[2]+Fe_TKN*2};//Layer3,Steel
 double Pb_Layer[3]={Fe_Layer[0]+Pb_TKN*2,Fe_Layer[1]+Pb_TKN*2,Fe_Layer[2]+Pb_TKN*2};//Layer4, Steel
 
 double TCZ= Ge_Layer[2]*0.5+Cu_TKN+B_TKN+Fe_TKN+Pb_TKN;//Thickness_Constrain_Z(TCZ)
+
+double *Starting_Point_with_DR(double *DR)
+{
+    static double Return_Value[3];
+    
+    double Nominator[5]={Ge_Layer_Half[0],-Ge_Layer_Half[0],Ge_Layer_Half[1],-Ge_Layer_Half[1],Ge_Layer_Half[2]};//X,Y and Z Plane
+    int Denominator[5]={0,0,1,1,2};//Direction
+    vector<double> Six_Values;
+
+    for(int kkk=0; kkk<5; kkk++)
+    {
+        double Ratio=(Nominator[kkk]/DR[Denominator[kkk]]);
+        if(Ratio>0)
+        {
+            Six_Values.push_back(Ratio);
+        }
+    }
+    double Scaling = The_smallest_in_a_vector(Six_Values);
+    Return_Value[0]=DR[0]*Scaling;Return_Value[1]=DR[1]*Scaling;Return_Value[2]=DR[2]*Scaling;
+    
+    return Return_Value;
+}
+
 
 double The_Material_Layer[5][3]=
 {
@@ -62,24 +106,6 @@ double H_RE        =50.-RP;//m, High_Reactor: 50m
 double R_OWALL_RE  =28.;//m, Radius_Outer_Wall_Reactor: 28m
 double R_IWATER_RE =27.;//m, Radius_Inner_Water_Reactor: 27m
 
-double The_smallest_in_a_vector(vector<double> Vector)
-{
-    double Return_the_smallest_one=0;
-    if(Vector.size()>0)
-    {
-        std::sort(Vector.begin(), Vector.end());
-        for(int kkk=0; kkk<Vector.size(); kkk++)
-        {
-            cout << "kkk: " << kkk << endl;
-            cout << "Vector: " << Vector[kkk] << endl;
-        }
-        Return_the_smallest_one = Vector[0];
-        cout << "Vector[0]: " << Vector[0] << endl;
-    }
-    else{Return_the_smallest_one=0;}
-    
-    return Return_the_smallest_one;
-}
 
 int DBT(double A1, double A2)
 {
@@ -589,7 +615,7 @@ int DIOOTC(double *POS, double *DR)//DR_In_or_Out_to_Center(DIOOTC)
 double *COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(POS),Direction(DR)
 {
     cout << "COFD_STATLE!!" << endl;
-    static double RETURN_VALUE[2];
+    static double RETURN_VALUE[3];
     int *A_Position  = Where_is_it_in_shielding(POS);
     int     A_Layer     = A_Position[0];
     int A_Surface_index = A_Position[1];
@@ -801,7 +827,7 @@ double *COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(
     }
     cout << "END2" << endl;
 
-    RETURN_VALUE[0]=Scaling_Length;RETURN_VALUE[1]=Layer_run;
+    RETURN_VALUE[0]=Scaling_Length;RETURN_VALUE[1]=Layer_run;RETURN_VALUE[2]=Compoent;
     return (RETURN_VALUE);
 }
 
@@ -837,7 +863,7 @@ double *DRAC(double AN, double Mx, double V_Aft, double *DR, double ROELTA)//Ang
 
 double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Sigma_SI, int SorT)//InorOut_Shieing(IorO),Next_Point_In_Shielding(NPIS)
 {
-    static double Return_Value[8];
+    static double Return_Value[10];
     
     double LFA=0.001;
     double V_aft=V;double ROELTA=0;
@@ -846,11 +872,15 @@ double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Si
     cout << "IorO : " << IorO << endl;
     if(IorO==0){cout << "InsideOfShielding" << endl;SLU= CID(POS_Int,DR);}
     if(IorO==1){cout << "OutOfShieling" << endl; SLU= COFD(POS_Int,DR);}
-    int Layer_run = SLU[1];
-    
+    int Layer_run = SLU[1];//Inside the shielding
+    int Compoent  = SLU[2];//Out of the shielding
+    cout << "Compoent_Check: " << Compoent << endl;
+    cout << "SLU[0]:Going Length: " << SLU[0] << endl;
+
     int Times = Possion_GetRandom_Full(LFA);
     double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,Density_All[IorO][Layer_run],Atomic_All[IorO][Layer_run]);//Atomic Number Of Material(ANOM)
-    cout << "SLU[0]: " << SLU[0] << endl;
+    cout << "IorO: " << IorO << "Layer_run: " << Layer_run << endl;
+    cout << "Atomic_All[IorO][Layer_run]: " << Atomic_All[IorO][Layer_run] << endl;
     cout << "Segment: " << Segment << endl;
     double Sprint_GO = Segment*Times;
     if(Sprint_GO<=SLU[0])
@@ -858,6 +888,7 @@ double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Si
         cout << "Segment<=SLU[0]" << endl;
         POS_Int = PAP(Sprint_GO,POS_Int,DR);
         double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Atomic_All[IorO][Layer_run]);//
+        cout << "Atomic_All[IorO][Layer_run]: " << Atomic_All[IorO][Layer_run] << endl;
         V_aft = VAC_end[0]; ROELTA = VAC_end[1];
         if(SorT==1)DR = DRAC(Atomic_All[IorO][Layer_run],Mx,V_aft,DR,ROELTA);
         Collision_Time=1;
@@ -869,29 +900,34 @@ double *NP(int IorO, double *POS_Int, double *DR, double Mx, double V, double Si
     }
     Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
     Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
-    Return_Value[6]=V_aft;Return_Value[7]=Collision_Time;
+    Return_Value[6]=V_aft;Return_Value[7]=Collision_Time;Return_Value[8]=Layer_run;Return_Value[9]=Compoent;
+    
     cout << "V_aft_Func: " << V_aft << endl;
+    cout << "Layer_run: " << Layer_run << endl;
     return Return_Value;
 }
 //KS-Angle
 double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
 {//Straight_or_scattered(SorT)
     static double RETURN_VALUE[20];//Return the value back
+    double Collision_Time1[5]={0,0,0,0,0};
+    double Collision_Time2[6]={0,0,0,0,0,0};
+
     double Direction_VT[3]={0,0,0};//Used for the calculation
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     double Segment; //Ratio_of_Energy_Loss_to_Atom(ROELTA)
     int Step=0;int Collision_Time=0;
     //===========================
-    while( (R_OW_KS-RTC(POS_Int))>1e-10 and (H_OCT_KS-POS_Int[2])>1e-10 and POS_Int[2]+(TCZ)>1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    while( (R_OW_KS-RTC(POS_Int))>1e-10 and (H_OCT_KS-POS_Int[2])>1e-10 and POS_Int[2]+(TCZ)>1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.002)
     {
         cout << "V_aft: " << V_aft << endl;
         cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
         
         int *IOS_Position = Where_is_it_in_shielding(POS_Int);//Inside_Of_Shieing_Position
         cout << "DR[0]: " << DR[0] << "DR[1]:" << DR[1] << "DR[2]:" << DR[2] << endl;
-        cout << "IOS_Position[0]: " << IOS_Position[0] << endl;
-        cout << "IOS_Position[1]: " << IOS_Position[1] << endl;
-        cout << "IOS_Position[2]: " << IOS_Position[2] << endl;
+        cout << "IOS_Position[0]: " << IOS_Position[0] << endl;//Layer
+        cout << "IOS_Position[1]: " << IOS_Position[1] << endl;//On which surface
+        cout << "IOS_Position[2]: " << IOS_Position[2] << endl;//
         if(IOS_Position[0]==0 and Step!=0)
         {
             RETURN_VALUE[2]=0;
@@ -904,7 +940,11 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
             cout << "Inside the shielding1" << endl;
             double *NP_1 = NP(0,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
             POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-            if(NP_1[7]==1)Collision_Time = Collision_Time + 1;
+            if(int(NP_1[7])==1)
+            {
+                cout << "int(NP_1[8]): " << int(NP_1[8]) << endl;
+                Collision_Time1[int(NP_1[8])] = Collision_Time1[int(NP_1[8])] + 1;
+            }
             Step = Step + 1;
         }
         else if(IOS_Position[2]==2 and DR_In_or_Out_on_surface(IOS_Position[1],DR)==0)
@@ -912,7 +952,11 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
             cout << "Inside the shielding2" << endl;
             double *NP_1 = NP(0,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
             POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-            if(NP_1[7]==1)Collision_Time = Collision_Time + 1;
+            if(int(NP_1[7])==1)
+            {
+                cout << "int(NP_1[8]): " << int(NP_1[8]) << endl;
+                Collision_Time1[int(NP_1[8])] = Collision_Time1[int(NP_1[8])] + 1;
+            }
             Step = Step + 1;
         }
         else if(IOS_Position[2]==2 and DR_In_or_Out_on_surface(IOS_Position[1],DR)==1)
@@ -920,7 +964,11 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
             cout << "Inside the shielding3" << endl;
             double *NP_1 = NP(1,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
             POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-            if(NP_1[7]==1)Collision_Time = Collision_Time + 1;
+            if(int(NP_1[7])==1)
+            {
+                cout << "int(NP_1[8]): " << int(NP_1[8]) << endl;
+                Collision_Time1[int(NP_1[8])] = Collision_Time1[int(NP_1[8])] + 1;
+            }
             Step = Step + 1;
         }
         else
@@ -928,7 +976,11 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
             cout << "Out the shielding" << endl;
             double *NP_1 = NP(1,POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
             POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-            if(NP_1[7]==1)Collision_Time = Collision_Time + 1;
+            if(int(NP_1[7])==1)
+            {
+                cout << "int(NP_1[9]): " << int(NP_1[9]) << endl;
+                Collision_Time2[int(NP_1[9])] = Collision_Time2[int(NP_1[9])] + 1;
+            }
             Step = Step + 1;
         }
         cout << "V_aft: " << V_aft << endl;
@@ -943,6 +995,7 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     }
     RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time;
     cout << "Collision_Time: " << Collision_Time << endl;
+    if(V_aft>100) cout << "YoMAN Cool!" << endl;
     if((R_OW_KS-RTC(POS_Int))<1e-10)
     {
         if(POS_Int[2]<13.)
@@ -966,11 +1019,14 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
         RETURN_VALUE[2]=0;
         cout << "Z at the ground" << endl;
     }
-    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.002)
     {
         RETURN_VALUE[2]=0;
         cout << "Energy<threshold" << endl;
     }
+
+    for(int kkk=1; kkk<5; kkk++){cout << "Collision_Time1: " << Collision_Time1[kkk] << endl;}
+    for(int jjj=1; jjj<6; jjj++){cout << "Collision_Time2: " << Collision_Time2[jjj] << endl;}
 
 
     return RETURN_VALUE;
@@ -1121,7 +1177,7 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     int Step=0;int Collision_Time=0;
     //===========================
-    while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.002)
     {
         cout << "V_aft: " << V_aft << endl;
         cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
@@ -1147,7 +1203,7 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Underground" << endl;
     }
-    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.002)
     {
         RETURN_VALUE[2]=0;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;

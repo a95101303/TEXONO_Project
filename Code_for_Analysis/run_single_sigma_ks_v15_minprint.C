@@ -7,12 +7,12 @@
 
 void run_single_sigma_ks_v15_minprint(double mx=2.0)
 {
-    int Event_Number=5000;
+    int Event_Number=1000;
     gROOT->ProcessLine(".L Hist_SetLimit_Plot_v2_Possion_KS_Run.C");
     
-    string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-    
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,50,1e-38)",Event_Number));
+    //string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
+    string Mass_Point[1]={"2"};
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,100,8e-29)",Event_Number));
     /*
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,2,1e-37)",Event_Number));
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,3,1e-36)",Event_Number));
@@ -368,11 +368,12 @@ void run_single_sigma_ks_v15_minprint(double mx=2.0)
       gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,41,8e-29)",Event_Number));
       gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,42,8.5e-29)",Event_Number));
       */
+    /*
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,43,9e-29)",Event_Number));
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,44,9.5e-29)",Event_Number));
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,45,1e-28)",Event_Number));
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(11,%i,46,1.5e-28)",Event_Number));
-
+     */
     //string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
 
     /*

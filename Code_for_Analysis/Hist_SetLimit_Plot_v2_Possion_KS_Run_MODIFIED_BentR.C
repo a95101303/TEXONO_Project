@@ -49,11 +49,13 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     TH1F  *VD_Initial = (TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
 
     Double_t mx,sigma_si;
-    Double_t V_X, V_Y, V_Z;
+    Double_t V_X, V_Y, V_Z, V_End_A;
     T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
     T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
     T1_TREE->SetBranchAddress("V_X",&V_X);T1_TREE->SetBranchAddress("V_Y",&V_Y);T1_TREE->SetBranchAddress("V_Z",&V_Z);
+    T1_TREE->SetBranchAddress("V_End_A",&V_End_A);
     T1_TREE->GetEntry(0);
+
 
     double WIMP_Mass = mx;
     double DM_mx = mx;
@@ -114,7 +116,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     int Bent_or_not_to_be_Bent=Bent_or_not;
     TTree *t1 = new TTree("t1","Information");
     double SIGMA_SI,Mx ;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
-    double V_Int_A, V_End_A, V_Int_E, V_End_E;
     double Oringal_Length_Air,Path_Length_Air,Oringal_Length_Earth,Path_Length_Earth;
     double Collision_Time_Earth,Collision_Time_Air;
     double Original_Bent_Comparison_Ratio_Air_P,Original_Bent_Comparison_Ratio_Earth_P;
@@ -122,10 +123,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     
     t1->Branch("SIGMA_SI",&SIGMA_SI,"SIGMA_SI/D");
     t1->Branch("Mx",&Mx,"Mx/D");
-    t1->Branch("V_Int_A",&V_Int_A,"V_Int_A/D");
-    t1->Branch("V_End_A",&V_End_A,"V_End_A/D");
-    t1->Branch("V_Int_E",&V_Int_E,"V_Int_E/D");
-    t1->Branch("V_End_E",&V_End_E,"V_End_E/D");
 
     t1->Branch("ev",&ev,"ev/I");
     t1->Branch("Arrival_air",&Arrival_air,"Arrival_air/I");
@@ -168,16 +165,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         ev = jjj;
         Bent_or_Not = Bent_or_not_to_be_Bent;
         
-        gRandom = new TRandom3(0);
-        gRandom->SetSeed(0);
-        double Random_Velocity = 0;
-        Random_Velocity = VD_Initial->GetRandom();
-        V_Int_A = Random_Velocity;
-        cout << "Random_Velocity: " << Random_Velocity << endl;
-        Double_t par[3];
-        TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
-        eventGenerator->GetSeed();
-        eventGenerator->Sphere(par[0],par[1],par[2],Random_Velocity);
         
         TF1 *Two_Sides    = new TF1("Two_Sides","1",0,2);
         gRandom = new TRandom3(0);
@@ -185,30 +172,68 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         int Side_confirmed_2 = Two_Sides->GetRandom();//Give out 0,1;
         double Confirmed_Side[2]={1,-1};
 
-        
         if(Confirmed_Side[Side_confirmed_2]>0)
+        {
+            cout << "Earth: " << endl;
+            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
+            //jjj = jjj + 1;
+            continue;
+        }
+
+        gRandom = new TRandom3(0);
+        gRandom->SetSeed(0);
+        double Random_Velocity = 0;
+        T1_TREE->GetEntry(jjj);
+        Random_Velocity = V_End_A;
+        cout << "V_End_A: " << V_End_A << endl;
+        
+        /*
+        double V_X1 =    (par[0]/Random_Velocity);
+        double V_Y1 =    (par[1]/Random_Velocity);
+        double V_Z1 =    (par[2]/Random_Velocity);
+         */
+        
+        double V_X1 =    V_X;
+        double V_Y1 =    V_Y;
+        double V_Z1 =    V_Z;
+        
+        /*
+        double V_X1 =    0;
+        double V_Y1 =    0;
+        double V_Z1 =    1;
+         */
+        /*
+        double V_X1 = -0.887793;
+        double V_Y1 = -0.215058;
+        double V_Z1 =  0.406908;
+        */
+        /*
+        double V_X1 = 0;
+        double V_Y1 = 1;
+        double V_Z1 = 0;
+         */
+        /*
+        if(V_Z1<0.33)
         {
             cout << "Earth: " << endl;
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
             jjj = jjj + 1;
             continue;
         }
-        /*
-        double V_X1 =    (par[0]/Random_Velocity);
-        double V_Y1 =    (par[1]/Random_Velocity);
-        double V_Z1 =    (par[2]/Random_Velocity);
-         */
-        double V_X1 =    V_X;
-        double V_Y1 =    V_Y;
-        double V_Z1 =    V_Z;
-
+        */
+        
+        cout << "V_X1: " << V_X1 << endl;
+        cout << "V_Y1: " << V_Y1 << endl;
+        cout << "V_Z1: " << V_Z1 << endl;
         /*
         double V_X =    0.0288531;
         double V_Y =    0.303207;
         double V_Z =    -0.952488;
          */
         double DR[3] = {V_X1,V_Y1,V_Z1};
-
+        double *SP=Starting_Point_with_DR(DR);
+        cout << "SP[0]: " << SP[0] << endl;cout << "SP[1]: " << SP[1] << endl;cout << "SP[2]: " << SP[2] << endl;
+        /*
         double *SPF  = Starting_Position();//Starting_Point_Function
         double  SP[3] = {SPF[0],SPF[1],SPF[2]};
         
@@ -220,12 +245,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
             cout << "Change!" << endl;
             DR[ROC1] = -DR[ROC1];
         }
-        /*
-        cout << "DR_1[0]: " << DR[0] << endl;
-        cout << "DR_1[1]: " << DR[1] << endl;
-        cout << "DR_1[2]: " << DR[2] << endl;
-         */
-        
+        */
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 
@@ -233,7 +253,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
 
         double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, SIGMA_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
-        V_End_E=Value[0];Collision_Time_Earth=Value[1];Arrival_earth=Value[2];
+        Collision_Time_Earth=Value[1];Arrival_earth=Value[2];
         if(Value[2]>0)Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
         if(Value[2]>0)Collision_Time_Hist_Earth->Fill(Value[1]);
         //Final_Length

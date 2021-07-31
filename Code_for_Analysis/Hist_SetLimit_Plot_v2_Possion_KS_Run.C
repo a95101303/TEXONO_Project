@@ -34,17 +34,17 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run(int Index, int Simulated_Event_Number,
 {
     cout << "Sigma_SI: " << Sigma_SI << endl;
     //Constant
-    string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-    double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};//12 for TEXONO
+    //string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
+    //double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};//12 for TEXONO
     
     /*
     string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
     double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
      */
-    /*
+    
     string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
     double WIMP_Mass_Array[19]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,10,5,7};
-     */
+     
     
     //Start with the DM Mass
     double WIMP_Mass = WIMP_Mass_Array[Index];
@@ -107,9 +107,19 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run(int Index, int Simulated_Event_Number,
         eventGenerator->Sphere(par[0],par[1],par[2],Velocity[kkk]);
         
         //X, Y and Z velocity
+        
         Velocity_X[kkk] = (par[0]/Velocity[kkk]);
         Velocity_Y[kkk] = (par[1]/Velocity[kkk]);
         Velocity_Z[kkk] = (par[2]/Velocity[kkk]);
+         /*
+        cout << "Velocity_X[kkk]: " << Velocity_X[kkk] << endl;
+        cout << "Velocity_Y[kkk]: " << Velocity_Y[kkk] << endl;
+        cout << "Velocity_Z[kkk]: " << Velocity_Z[kkk] << endl;
+          */
+        
+        Velocity_X[kkk] = 0;
+        Velocity_Y[kkk] = 1;
+        Velocity_Z[kkk] = 0;
          
         //DM Energy and Velocity
         double Dark_Matter_Energy = Energy_DM(DM_mx,Velocity[kkk]*1e3/3e8);//KeV
@@ -173,7 +183,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         double RCR = Collision_Expectation_Reactor_Water[kkk];//REACTOR_COLLISION_WATER_COUNT
         double AC = Collision_Expectation_ATM[kkk];//AIR_COLLISION_COUNT
         double CS = Collision_Expectation_Shielding[kkk];
-        /*
+        
         cout << "***==================================***" << endl;
         cout << "Sigma_SI_Default: " << Sigma_SI << endl;
         cout << "Velocity_X[kkk]: " << Velocity_X[kkk] << endl;
@@ -188,7 +198,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         cout << "***==================================***" << endl;
         cout << "Collision_Expectation_ATM[kkk]: " << Collision_Expectation_ATM[kkk] << endl;
         cout << "***==================================***" << endl;
-         */
+         
         if(EC>Earth_Threshold or CC>1e4 or RCL>1e4 or RCR>1e4 or AC>Air_Threshold or CS>1e4){
             cout << "OK GREAT!" << endl;
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);}
