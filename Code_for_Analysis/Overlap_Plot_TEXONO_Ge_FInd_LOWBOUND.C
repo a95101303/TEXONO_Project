@@ -12,21 +12,21 @@
 
 void Overlap_Plot_TEXONO_Ge_FInd_LOWBOUND()//CDEX:Threshold=160eV, TEXONO:Threshold=200eV
 {
-    //double WIMP_Mass_Array[16]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};//WIMP
+    double WIMP_Mass_Array[16]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};//WIMP
     //double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
     //double WIMP_Mass_Array[12]={20,18,16,14,12,10,8,7,6,4,3,2.35};
-    double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};
+    //double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};
     
     //double WIMP_Mass_Array[11]={1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,1e20};//MIMP
     double Sigma_SI[16];//WIMP
     int Bin_Dominant[16];//WIMP
     string Type_of_Model[4]={"NU","MD","BR","MDMPA"};
     //double Sigma_SI[11];//MIMP
-for(int kkk=0; kkk<12;kkk++)
+for(int kkk=0; kkk<16;kkk++)
     {
     //double CPKKD_EXCLUSION[Number];
     double Mass = WIMP_Mass_Array[kkk];//GeV
-    int Type_of_Model_INT=0;int Data_element_N =4;
+    int Type_of_Model_INT=1;int Data_element_N =4;
     //=======================Recoil Spectrum set for three processes==============================
     double T_QF_Original_Bef_Array[reso_T];double Factor1_Original_Bef_Array[reso_T];
         double Sig=1e-28;
@@ -132,6 +132,7 @@ double RE_DATA_Original[Data_element]; double RE_Rate_Original[Data_element]; do
     TEXONOData->Draw("AP");
     gcpkkdX1->Draw("LPsame");
     leg->Draw();
+        /*
     c1->Print(Form("LOW_BOUND/High_Mass_Plot/%s_%i_Bin1_TEXONO.pdf",Type_of_Model[Type_of_Model_INT].c_str(),kkk));
         
         char fout_name[300];
@@ -139,6 +140,7 @@ double RE_DATA_Original[Data_element]; double RE_Rate_Original[Data_element]; do
         TFile *fout=new TFile(fout_name,"recreate");
         gcpkkdX1->Write();
         TEXONOData->Write();
+         */
 
     }
     

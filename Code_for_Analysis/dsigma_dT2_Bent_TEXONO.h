@@ -918,7 +918,7 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     double Segment; //Ratio_of_Energy_Loss_to_Atom(ROELTA)
     int Step=0;int Collision_Time=0;
     //===========================
-    while( (R_OW_KS-RTC(POS_Int))>1e-10 and (H_OCT_KS-POS_Int[2])>1e-10 and POS_Int[2]+(TCZ)>1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.002)
+    while( (R_OW_KS-RTC(POS_Int))>1e-10 and (H_OCT_KS-POS_Int[2])>1e-10 and POS_Int[2]+(TCZ)>1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
         cout << "V_aft: " << V_aft << endl;
         cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
@@ -1019,7 +1019,7 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
         RETURN_VALUE[2]=0;
         cout << "Z at the ground" << endl;
     }
-    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.002)
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
     {
         RETURN_VALUE[2]=0;
         cout << "Energy<threshold" << endl;
@@ -1177,7 +1177,7 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     int Step=0;int Collision_Time=0;
     //===========================
-    while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.002)
+    while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
         cout << "V_aft: " << V_aft << endl;
         cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
@@ -1203,7 +1203,7 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Underground" << endl;
     }
-    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.002)
+    if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
     {
         RETURN_VALUE[2]=0;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;

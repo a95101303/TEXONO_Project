@@ -447,6 +447,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                                         if(Conventional_or_not==1)recoilX[i] = recoilX[i] + counttrans(Eee)*(Eem_keV[kkk+1]-Eem_keV[kkk])*fdsigma_dERdEEM_keV(dpdE[kkk][Number_of_Level]*(2*ER/(72.64*0.95)),WIMP_mx, Sigma_SI, v, A, ER)*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1/sum)*velo_dist_Ave[j][3];//For the normal distribution
                                     if(v*3e8/1e3<Velocity_Min)
                                     {
+                                        cout << "WIMP_mx: " << WIMP_mx << endl;
                                         cout << "Velocity_Min: " << Velocity_Min << endl;
                                         Velocity_Min=v*3e8/1e3;
                                     }
@@ -649,7 +650,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
            // cout << "Factor1: " << Factor1[i] << endl;
          
     }
-    cout << "Velocity_Min: " << Velocity_Min << endl;
+    cout << "WIMP_mx_Check: " << WIMP_mx << endl;
+    cout << "Velocity_Min_Check: " << Velocity_Min << endl;
     cout << "================================================" << endl;
     if(Option==0 and Model_of_Interaction==0)return (T_QF);
     if(Option==0 and Model_of_Interaction>0)return (T);
