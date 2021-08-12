@@ -993,6 +993,8 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
         cout << "POS_Int[2]+(TCZ): " << POS_Int[2]+(TCZ) << endl;
         cout << "Energy_DM(Mx,V_aft*1e3/3e8): " << Energy_DM(Mx,V_aft*1e3/3e8) << endl;
     }
+    
+    for(int kkk=0; kkk<5; kkk++) Collision_Time = Collision_Time + Collision_Time1[kkk];
     RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time;
     cout << "Collision_Time: " << Collision_Time << endl;
     if(V_aft>100) cout << "YoMAN Cool!" << endl;

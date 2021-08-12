@@ -42,6 +42,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 
     TFile *ROOT_FILE;
     
+    
     if(Bent_or_not==1)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     if(Bent_or_not==0)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
 
@@ -55,10 +56,10 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
     T1_TREE->SetBranchAddress("V_X",&V_X);T1_TREE->SetBranchAddress("V_Y",&V_Y);T1_TREE->SetBranchAddress("V_Z",&V_Z);
     T1_TREE->SetBranchAddress("V_End_A",&V_End_A);
     T1_TREE->GetEntry(0);
-
-
+     
     double WIMP_Mass = mx;
     double DM_mx = mx;
+     
     //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
     cout << "WIMP_Mass: " << WIMP_Mass << endl;
 
@@ -180,60 +181,49 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
             continue;
         }
 
+        double Random_Velocity = 0;
+        T1_TREE->GetEntry(jjj);
+        //Random_Velocity = V_End_A;
+        Random_Velocity = Flux_HIST->GetRandom();//Find Hits on the same page
+        
+        Double_t par[3];
+        TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
+        eventGenerator->GetSeed();
+        eventGenerator->Sphere(par[0],par[1],par[2],Random_Velocity);
+
+
+        double V_X1 =    (par[0]/Random_Velocity);
+        double V_Y1 =    (par[1]/Random_Velocity);
+        double V_Z1 =    (par[2]/Random_Velocity);
+
+        double DR[3] = {V_X1,V_Y1,V_Z1};
+
+        /*
         gRandom = new TRandom3(0);
         gRandom->SetSeed(0);
         double Random_Velocity = 0;
         T1_TREE->GetEntry(jjj);
-        Random_Velocity = V_End_A;
+        Random_Velocity = V_End_A;//Check the straight line case
+         */
         cout << "V_End_A: " << V_End_A << endl;
         
-        /*
-        double V_X1 =    (par[0]/Random_Velocity);
-        double V_Y1 =    (par[1]/Random_Velocity);
-        double V_Z1 =    (par[2]/Random_Velocity);
-         */
         
-        double V_X1 =    V_X;
-        double V_Y1 =    V_Y;
-        double V_Z1 =    V_Z;
+         
         
         /*
-        double V_X1 =    0;
-        double V_Y1 =    0;
-        double V_Z1 =    1;
-         */
-        /*
-        double V_X1 = -0.887793;
-        double V_Y1 = -0.215058;
-        double V_Z1 =  0.406908;
+         double V_X1 =    V_X;
+         double V_Y1 =    V_Y;
+         double V_Z1 =    V_Z;
+
+        double DR[3] = {V_X1,V_Y1,V_Z1};
+        double *SP=Starting_Point_with_DR(DR);
+        cout << "SP[0]: " << SP[0] << endl;cout << "SP[1]: " << SP[1] << endl;cout << "SP[2]: " << SP[2] << endl;//Check the straight line case
         */
-        /*
-        double V_X1 = 0;
-        double V_Y1 = 1;
-        double V_Z1 = 0;
-         */
-        /*
-        if(V_Z1<0.33)
-        {
-            cout << "Earth: " << endl;
-            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            jjj = jjj + 1;
-            continue;
-        }
-        */
-        
+         
         cout << "V_X1: " << V_X1 << endl;
         cout << "V_Y1: " << V_Y1 << endl;
         cout << "V_Z1: " << V_Z1 << endl;
-        /*
-        double V_X =    0.0288531;
-        double V_Y =    0.303207;
-        double V_Z =    -0.952488;
-         */
-        double DR[3] = {V_X1,V_Y1,V_Z1};
-        double *SP=Starting_Point_with_DR(DR);
-        cout << "SP[0]: " << SP[0] << endl;cout << "SP[1]: " << SP[1] << endl;cout << "SP[2]: " << SP[2] << endl;
-        /*
+
         double *SPF  = Starting_Position();//Starting_Point_Function
         double  SP[3] = {SPF[0],SPF[1],SPF[2]};
         
@@ -245,7 +235,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
             cout << "Change!" << endl;
             DR[ROC1] = -DR[ROC1];
         }
-        */
+        
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
 
@@ -254,8 +244,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
 
         double *Value = KS_Real_N_With_Angle(Bent_or_not_to_be_Bent, SIGMA_SI, Random_Velocity, DM_mx, DR, SP); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
         Collision_Time_Earth=Value[1];Arrival_earth=Value[2];
+        cout << "Collision_Time_Earth: " << Collision_Time_Earth << endl;
         if(Value[2]>0)Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
-        if(Value[2]>0)Collision_Time_Hist_Earth->Fill(Value[1]);
+        Collision_Time_Hist_Earth->Fill(Value[1]);
         //Final_Length
 
         jjj = jjj + 1;
@@ -300,8 +291,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR(int Bent_or_not, int In
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
-    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent_Hit.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent_Comparison_Hit.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();
     //Flux_HIST_Aft_Collision_Earth->Write();

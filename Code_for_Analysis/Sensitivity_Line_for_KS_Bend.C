@@ -18,10 +18,10 @@ void Sensitivity_Line_for_KS_Bend()//CDEX:Threshold=160eV, TEXONO:Threshold=200e
     //==============Exp and Model=============//
     int Experiment_Type=0;double Threshold[2]={0.2,0.3};//0 for CDEX and 1 for TEXONO, (keV)
     int Type_of_Model_INT=1;string Type_of_Model[4]={"NU","MD","BR","MDMPA"};
-    int Bent_Type=0; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
+    int Bent_Type=1; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=14;kkk<15;kkk++)//Straight or bending
+for(int kkk=5;kkk<6;kkk++)//Straight or bending
     {
         int Mass_INT=kkk;
         string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06"};
@@ -35,7 +35,7 @@ for(int kkk=14;kkk<15;kkk++)//Straight or bending
 
         cout << "kkk: " << kkk << endl;
         double Mass=0;
-    for(int FILE=0; FILE<2; FILE++){//Open1
+    for(int FILE=6; FILE<10; FILE++){//Open1
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
         ifstream fin(path);
