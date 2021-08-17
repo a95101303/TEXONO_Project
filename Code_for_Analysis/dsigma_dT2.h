@@ -1487,11 +1487,13 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     double Path_Lengths_for_earth[13];
     double Density_of_earth_Layer[13];
     double Previous_Total=0;
-    double N_Collision_Earth=0;double N_Collision_Cement=0;double N_Collision_Reactor_Wall=0;double N_Collision_Reactor_Water=0;
+    double N_Collision_Earth_NR=0;
+    double N_Collision_Earth_ER=0;
+    double N_Collision_Cement=0;double N_Collision_Reactor_Wall=0;double N_Collision_Reactor_Water=0;
     double N_Collision_Shielding=0;
     //cout << "Weighted_Atomic_Number" << Weighted_Atomic_Number << endl;
     double Check_Length_times_Density=0;
-    static double RETURN_VALUE[6];
+    static double RETURN_VALUE[7];
     /*
     cout << "Length_Components[0]: " << Length_Components[0] << endl;
     cout << "Length_Components[1]: " << Length_Components[1] << endl;
@@ -1520,8 +1522,10 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
         if(Previous_Total>=0 and Previous_Total<=6372*2)Previous_Total = Previous_Total+ Path_Lengths_for_earth[kkk];
         else{Previous_Total = Previous_Total+ 0;}
        // cout << "Previous_Total: " << Previous_Total  << endl;
-    //Earth
-    N_Collision_Earth = N_Collision_Earth + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));
+    //===============Earth_for_NR===============
+    N_Collision_Earth_NR = N_Collision_Earth_NR + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));
+    //===============Earth_for_ER===============
+    N_Collision_Earth_ER = N_Collision_Earth_ER + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(Total_Sigma_ER(1,Velocity,WIMP_Mass,Weighted_Atomic_Number));
     }
     //cout << "Earth_Collision: " <<  N_Collision_Earth << endl;
     //Cement
@@ -1551,8 +1555,8 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     cout << "B: " << (2.34*(25))/(unified_atomic_mass_g*(AB))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,AB)) << endl;
     cout << "Cu: " << (8.96*(5))/(unified_atomic_mass_g*(ACu))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,ACu)) << endl;
 
-    RETURN_VALUE[0]=Previous_Total;RETURN_VALUE[1]=N_Collision_Earth;RETURN_VALUE[2]=N_Collision_Cement;RETURN_VALUE[3]=N_Collision_Reactor_Wall;
-    RETURN_VALUE[4]=N_Collision_Reactor_Water;RETURN_VALUE[5]=N_Collision_Shielding;
+    RETURN_VALUE[0]=Previous_Total;RETURN_VALUE[1]=N_Collision_Earth_NR;RETURN_VALUE[2]=N_Collision_Cement;RETURN_VALUE[3]=N_Collision_Reactor_Wall;
+    RETURN_VALUE[4]=N_Collision_Reactor_Water;RETURN_VALUE[5]=N_Collision_Shielding;RETURN_VALUE[6]=N_Collision_Earth_ER;
     return RETURN_VALUE;
 }
 

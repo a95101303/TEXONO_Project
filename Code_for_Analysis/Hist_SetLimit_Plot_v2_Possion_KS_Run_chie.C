@@ -30,7 +30,7 @@
 //1.009keV        ==> 201.183(km/s)
 
 //Run the program for the individual index and the simulated number of events
-void Hist_SetLimit_Plot_v2_Possion_KS_Run(int Index, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
 {
     cout << "Sigma_SI: " << Sigma_SI << endl;
     //Constant
@@ -111,17 +111,17 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run(int Index, int Simulated_Event_Number,
         
         Velocity_X[kkk] = (par[0]/Velocity[kkk]);
         Velocity_Y[kkk] = (par[1]/Velocity[kkk]);
-        Velocity_Z[kkk] = (par[2]/Velocity[kkk]);
+        Velocity_Z[kkk] = -abs(par[2]/Velocity[kkk]);
          /*
         cout << "Velocity_X[kkk]: " << Velocity_X[kkk] << endl;
         cout << "Velocity_Y[kkk]: " << Velocity_Y[kkk] << endl;
         cout << "Velocity_Z[kkk]: " << Velocity_Z[kkk] << endl;
           */
-        
+        /*
         Velocity_X[kkk] = 0;
         Velocity_Y[kkk] = 1;
         Velocity_Z[kkk] = 0;
-         
+         */
         //DM Energy and Velocity
         double Dark_Matter_Energy = Energy_DM(DM_mx,Velocity[kkk]*1e3/3e8);//KeV
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
@@ -176,58 +176,17 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         cout << "===================================" << endl;
         cout << "//Event2: " << kkk << endl;
         
-        //cout << "Loop2==>EventKIND: " << jjj << endl;
-        //cout << "Loop2=>Event: " << kkk << endl;
-        double EC  = Collision_Expectation_EARTH[kkk];//EARTH_COLLISION_COUNT
-        double CC  = Collision_Expectation_Cement[kkk];//CEMENT_COLLISION_COUNT
-        double RCL = Collision_Expectation_Reactor_Wall[kkk];//REACTOR_COLLISION_WALL_COUNT
-        double RCR = Collision_Expectation_Reactor_Water[kkk];//REACTOR_COLLISION_WATER_COUNT
-        double AC = Collision_Expectation_ATM[kkk];//AIR_COLLISION_COUNT
-        double CS = Collision_Expectation_Shielding[kkk];
-        
         cout << "***==================================***" << endl;
         cout << "Sigma_SI_Default: " << Sigma_SI << endl;
         cout << "Velocity_X[kkk]: " << Velocity_X[kkk] << endl;
         cout << "Velocity_Y[kkk]: " << Velocity_Y[kkk] << endl;
         cout << "Velocity_Z[kkk]: " << Velocity_Z[kkk] << endl;
 
-        cout << "Collision_Expectation_EARTH[kkk]: " << Collision_Expectation_EARTH[kkk] << endl;
-        cout << "Collision_Expectation_Cement[kkk]: " << Collision_Expectation_Cement[kkk] << endl;
-        cout << "Collision_Expectation_Reactor_Wall[kkk]: " << Collision_Expectation_Reactor_Wall[kkk] << endl;
-        cout << "Collision_Expectation_Reactor_Water[kkk]: " << Collision_Expectation_Reactor_Water[kkk] << endl;
-        cout << "Collision_Expectation_Shielding[kkk]: " << Collision_Expectation_Shielding[kkk] << endl;
-        cout << "***==================================***" << endl;
-        cout << "Collision_Expectation_ATM[kkk]: " << Collision_Expectation_ATM[kkk] << endl;
-        cout << "***==================================***" << endl;
-         
-        if(EC>Earth_Threshold or CC>1e4 or RCL>1e4 or RCR>1e4 or AC>Air_Threshold or CS>1e4){
-            cout << "OK GREAT!" << endl;
-            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);}
+        double ECNR  = Collision_Expectation_EARTH[kkk];//EARTH_COLLISION_COUNT_NUCLEAR_RECOIL
+        double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
 
-                //====================Test_Function====================
-        //Two-stage collision
-        else
-        {//1 is earth 2 is air
-            double *V_Aft_Collision_AIR = Velocity_Aft_collision(AC,DM_mx,Sigma_SI,Velocity[kkk],2);
-            //cout << "V_Aft_AIR: " << V_Aft_Collision_AIR[0] << endl;
-
-            double *V_Aft_Collision_EARTH = Velocity_Aft_collision(EC,DM_mx,Sigma_SI,V_Aft_Collision_AIR[0],1);
-            //cout << "V_Aft_EARTH: " << V_Aft_Collision_EARTH[0] << endl;
-           
-            double *V_Aft_Collision_CEMENT = Velocity_Aft_collision(CC,DM_mx,Sigma_SI,V_Aft_Collision_EARTH[0],3);
-            //cout << "V_Aft_CEMENT: " << V_Aft_Collision_CEMENT[0] << endl;
-
-            double *V_Aft_Collision_REACTOR_WALL = Velocity_Aft_collision(RCL,DM_mx,Sigma_SI,V_Aft_Collision_CEMENT[0],3);
-            //cout << "V_Aft_REACTOR_WALL : " << V_Aft_Collision_REACTOR_WALL[0] << endl;
-
-            double *V_Aft_Collision_REACTOR_WATER = Velocity_Aft_collision(RCR,DM_mx,Sigma_SI,V_Aft_Collision_REACTOR_WALL[0],5);
-            //cout << "V_Aft_Collision_REACTOR_WATER : " << V_Aft_Collision_REACTOR_WATER[0] << endl;
-            
-            double *V_Aft_Collision_SHIELDING = Velocity_Aft_collision(CS,DM_mx,Sigma_SI,V_Aft_Collision_REACTOR_WATER[0],6);
-            cout << "V_Aft_Collision_SHIELDING : " << V_Aft_Collision_SHIELDING[0] << endl;
-
-            Flux_HIST_Aft_Collision_EARTH->Fill(V_Aft_Collision_SHIELDING[0]);
-        }
+        cout << "ECNR: " << ECNR << endl;
+        cout << "ECER: " << ECER << endl;
     }
 
     
@@ -270,7 +229,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    sprintf(fout_name,Form("2_TEXONO_Flux/%sGeV/%i.root",Mass_Point[Index].c_str(),Index_Sigma));
+    sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[Index].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();
     Flux_HIST_Aft_Collision_Earth->Write();
