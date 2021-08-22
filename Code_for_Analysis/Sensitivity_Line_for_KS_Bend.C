@@ -76,7 +76,9 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
         
         for(int i=0;i<reso_T;i++)
         {
-            
+            cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
+            cout << "Factor1_Original_Aft_Array[i]: " << Factor1_Original_Aft_Array[i] << endl;
+
             if(T_QF_Original_Bef_Array[i]>0.20)//>Threshold
             {RecoilX_Event_Original_M1  = RecoilX_Event_Original_M1 + Factor1_Original_Bef_Array[i];}
             if(T_QF_Original_Aft_Array[i]>0.20)//>Threshold

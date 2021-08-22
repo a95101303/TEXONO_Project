@@ -25,7 +25,6 @@
 #include "VrV_le_PPC103_Xenon_Subtracted_ON_NaI1_180418_190830_50eV_date20200420.h"
 #include "velocity_distribution_2000_Ave.h"
 #include "dsigma_dT2.h"
-
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
 
@@ -41,11 +40,13 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
     string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
     double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
      */
-    
+    /*
     string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
     double WIMP_Mass_Array[19]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,10,5,7};
-     
-    
+     */
+    string Mass_Point[5]={"3","4","5","10","20"};
+    double WIMP_Mass_Array[5]={3,4,5,10,20};
+
     //Start with the DM Mass
     double WIMP_Mass = WIMP_Mass_Array[Index];
     double DM_mx = WIMP_Mass_Array[Index];
@@ -83,7 +84,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
 
     double Velocity[Simulated_Event_Number];double Velocity_Z[Simulated_Event_Number];
     double Velocity_X[Simulated_Event_Number];double Velocity_Y[Simulated_Event_Number];
-    double Collision_Expectation_ATM[Simulated_Event_Number];
+    double Collision_Expectation_ATM[Simulated_Event_Number];double Collision_Expectation_ATM_ER[Simulated_Event_Number];
     double Collision_Expectation_Cement[Simulated_Event_Number];
     double Collision_Expectation_Reactor_Wall[Simulated_Event_Number];double Collision_Expectation_Reactor_Water[Simulated_Event_Number];
     double Collision_Expectation_Shielding[Simulated_Event_Number];
@@ -101,6 +102,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
         double Random_Velocity = 0;
         Random_Velocity = Flux_HIST->GetRandom();
         Velocity[kkk] = Random_Velocity;
+        //Velocity[kkk] = 232;
+        //Velocity[kkk] = 776;
         Flux_HIST_Random->Fill(Random_Velocity);//Vacuum case!
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
@@ -138,11 +141,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
         HIST_Water_Wall->Fill(Reactor_Length_Water);
         //cout << "=============Reactor_Length_Water=============: " << Reactor_Length_Water << endl;
 double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Reactor_Length_Total,Reactor_Length_Water};//1 for Air check, 2 for the Cement, 3 for the Reactor
-        double *A=KS_Collision_Time_EARTH(Sigma_SI, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components);
+        double *A=  KS_Collision_Time_EARTH(Sigma_SI, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components);
         Collision_Expectation_EARTH[kkk]=A[1];Collision_Expectation_Cement[kkk]=A[2];
         Collision_Expectation_Reactor_Wall[kkk]=A[3];Collision_Expectation_Reactor_Water[kkk]=A[4];Collision_Expectation_Shielding[kkk]=A[5];Collision_Expectation_EARTH_ER[kkk]=A[6];
-        Collision_Expectation_ATM[kkk] = KS_Collision_Time_ATM(Sigma_SI, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components,A[0]);
-        
+        double *B = KS_Collision_Time_ATM(Sigma_SI, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components,A[0]);
+        Collision_Expectation_ATM[kkk] = B[0];Collision_Expectation_ATM_ER[kkk] = B[1];
     }
     //==============================Third Step==============================
     
@@ -150,13 +153,16 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
     TH1F   *Flux_HIST_Aft_Collision_Earth = new TH1F("Flux_HIST_Aft_Collision_Earth","Flux_HIST_Aft_Collision_Earth",2000,0,791);
 
     double Scaling_Factor=0;double Scaling_Factor_1=0;
-    TH1F   *Collision_Time_Hist = new TH1F("Flux_HIST_Aft_Collision","Flux_HIST_Aft_Collision",10,0,10);
+    TH1F   *Collision_Time_Hist_NU = new TH1F("Collision_Time_Hist_NU","Collision_Time_Hist_NU",2000,0,10000);
+    TH1F   *Collision_Time_Hist_ER = new TH1F("Collision_Time_Hist_ER","Collision_Time_Hist_ER",2000,0,10000);
+
     int Event_Number_Check=0;
     TH1F   *Collision_Energy_Lost_E = new TH1F("Collision_Energy_Lost_E","Collision_Energy_Lost_E",100,0,20);
     TH1F   *Collision_Energy_Lost_V = new TH1F("Collision_Energy_Lost_V","Collision_Energy_Lost_V",100,0,20);
     double Check_ZERO_COLLISION=0;double Check_ZERO_COLLISION_1=0;
     //cout << "Function_of_material_possibility: " << Function_of_material_possibility(2) << endl;
     
+    /*
     int Earth_Threshold=0;
     int Air_Threshold=0;
     for(int EEE=0; EEE<5; EEE++)//i is earth and 2 is air
@@ -166,16 +172,17 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         int Check1 = Velocity_Aft_collision(5000,WIMP_Mass,Sigma_SI,779.135,2)[3];
         if(Air_Threshold<Check1)Air_Threshold=Check1;
     }
+     
     cout << "Earth_Threshold: " << Earth_Threshold << endl;
     cout << "Air_Threshold: "   << Air_Threshold << endl;
-
+*/
 
     for(int kkk=0; kkk<Simulated_Event_Number; kkk++)
     {
         
         cout << "===================================" << endl;
         cout << "//Event2: " << kkk << endl;
-        
+        cout << "Energy_DM: " << Energy_DM(DM_mx,Velocity[kkk]*1e3/3e8) << endl;
         cout << "***==================================***" << endl;
         cout << "Sigma_SI_Default: " << Sigma_SI << endl;
         cout << "Velocity_X[kkk]: " << Velocity_X[kkk] << endl;
@@ -184,11 +191,14 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
 
         double ECNR  = Collision_Expectation_EARTH[kkk];//EARTH_COLLISION_COUNT_NUCLEAR_RECOIL
         double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+        Collision_Time_Hist_NU->Fill(ECNR);
+        Collision_Time_Hist_ER->Fill(ECER);
 
         cout << "ECNR: " << ECNR << endl;
         cout << "ECER: " << ECER << endl;
+        
+        cout << "LOSS(keV)" << ECER*10./1e3 << endl;
     }
-
     
     TLegend *leg= new TLegend(0.5,0.7,0.9,0.9);
     leg->SetFillColor(0);
@@ -234,7 +244,9 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
     Flux_HIST_Random->Write();
     Flux_HIST_Aft_Collision_Earth->Write();
     Flux_HIST_Aft_Collision_EARTH->Write();
-    
+    Collision_Time_Hist_NU->Write();
+    Collision_Time_Hist_ER->Write();
+
     HIST_Cement_Length->Write();
     HIST_Water_Wall->Write();
     HIST_Water_Total->Write();

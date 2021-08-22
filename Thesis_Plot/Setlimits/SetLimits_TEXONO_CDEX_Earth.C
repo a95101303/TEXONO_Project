@@ -26,7 +26,7 @@
 
 void SetLimits_TEXONO_CDEX_Earth()
 {
-        TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
+    TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
     leg->SetFillColor(0);
     leg->SetFillStyle(0);
     leg->SetTextSize(0.04);

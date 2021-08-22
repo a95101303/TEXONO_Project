@@ -644,10 +644,10 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-           // cout << "T[i]: " << T[i] << endl;
+            cout << "T[i]: " << T[i] << endl;
            // cout << "T_QF[i]: " << T_QF[i] << endl;
            // cout << "RecoilX: " << recoilX[i] << endl;
-           // cout << "Factor1: " << Factor1[i] << endl;
+            cout << "Factor1: " << Factor1[i] << endl;
          
     }
     cout << "WIMP_mx_Check: " << WIMP_mx << endl;
