@@ -1056,6 +1056,7 @@ void Check_Fun(double *POS_Int, double *DR, double S)
 double *DAC_to_LEG(double *POS_Int, double *DR, double PL)//Direction_Aft_Collision_to_Length(PAC),Predicted_Length(PL)
 {
     static double POS_Aft[5];
+    //POS_Aft[3]=Count or not
     
     POS_Aft[0] = POS_Int[0]+PL*DR[0];
     POS_Aft[1] = POS_Int[1]+PL*DR[1];
@@ -1064,35 +1065,23 @@ double *DAC_to_LEG(double *POS_Int, double *DR, double PL)//Direction_Aft_Collis
     double ML  = Lcjpl_NonNL(POS_Aft[0],POS_Aft[1],POS_Aft[2]);//Mountain_Length(ML)
     double LML = SqrtN2(POS_Aft);//Later_Moving_Length
     
-    double STU; int BorN=0;//Boundary Or Not
+    double STU; //Boundary Or Not
     
     if(0-POS_Aft[2]>=1e-10)
     {
         cout << "Yes1 " << endl;
-        POS_Aft[3]=0;
+        cout << "Below the mountain^>^" << endl;
+        POS_Aft[3]=-1;//Below the mountain, counted as an event from the bottom earth and will be blocked at the boundary
     }
     else if(LML<ML)
     {
-        cout << "Yes2 " << endl;
-        POS_Aft[3]=PL;BorN=0;POS_Aft[4]=1;//S=Sprinth
+        cout << "Inside the mountain^>^ " << endl;
+        POS_Aft[3]=0;//Inside the mountain and this event has an interaction
     }
     else if(LML>ML)
     {
-        cout << "Yes3 " << endl;
-        cout << "PL: " << PL << endl;
-        /*
-        TF1 *ROLTML = new TF1("ROLTML","Lcjpl_NonNL([0]+x*[1],[2]+x*[3],[4]+x*[5])/SqrtN2_ABC([0]+x*[1],[2]+x*[3],[4]+x*[5])",0,PL);//Ratio_Of_Location_to_Mountain_Length(RLTML)
-        ROLTML->SetParameter(0,POS_Int[0]);
-        ROLTML->SetParameter(1,DR[0]);
-        ROLTML->SetParameter(2,POS_Int[1]);
-        ROLTML->SetParameter(3,DR[1]);
-        ROLTML->SetParameter(4,POS_Int[2]);
-        ROLTML->SetParameter(5,DR[2]);
-        STU= ROLTML->GetX(1,0,PL);//Scaling_To_Use(STU)
-        Check_Fun(POS_Int,DR,STU);
-        cout << "DAC_to_LEG->GetX(1,0,S); " << STU << endl;
-         */
-        POS_Aft[3]=-1;BorN=1;
+        cout << "Above the mountain^>^ " << endl;
+        POS_Aft[3]=1;//Go out of the mountain and counted as an event
     }
             
     return POS_Aft;
@@ -1113,22 +1102,19 @@ double *NP_CDEX(double *POS_Int, double *DR, double Mx, double V, double Sigma_S
     double Sprint_GO = Segment*Times;
     cout << "Sprint_GO: " << Sprint_GO << endl;
     double *SLU=DAC_to_LEG(POS_Int,DR,Sprint_GO);//Scaling_Length_Used,The layer a WIMP runs in
-    cout << "NP_CDEX->Sprint_GO_STU: " << SLU[3] << endl;
+    cout << "Below(-1), In(0) or Out(1) of the mountain: " << SLU[3] << endl;//Below(-1), In(0) or Out(1) of the mountain
 
-    if(SLU[3]>0)
+    if( int(SLU[3])==0 )
     {
         POS_Int = PAP(Sprint_GO,POS_Int,DR);
-        if(Sprint_GO<SLU[3] or int(SLU[4])==1)
-        {
-            cout << "Sprint_GO<SLU[3] or int(SLU[4])==1 " << endl;
-            double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
-            V_aft = VAC_end[0]; ROELTA = VAC_end[1];
-            if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
-            Collision_Time=1;
-        }
+        double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
+        V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+        if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
+        Collision_Time=1;
+        
     }
 
-    if(SLU[3]==0)
+    if( int(SLU[3])==-1 )
     {
         double Scaling = (0-POS_Int[2])/DR[2];
         if(Sprint_GO<Scaling)
@@ -1146,7 +1132,7 @@ double *NP_CDEX(double *POS_Int, double *DR, double Mx, double V, double Sigma_S
             POS_Int = PAP(Sprint_GO,POS_Int,DR);
         }
     }
-    if(SLU[3]<0)
+    if( int(SLU[3])==1)
     {
         cout << "Out_of_the_boundary" << endl;
         POS_Int = PAP(Sprint_GO,POS_Int,DR);
@@ -1213,3 +1199,16 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
     }
     return RETURN_VALUE;
 }
+
+/*
+TF1 *ROLTML = new TF1("ROLTML","Lcjpl_NonNL([0]+x*[1],[2]+x*[3],[4]+x*[5])/SqrtN2_ABC([0]+x*[1],[2]+x*[3],[4]+x*[5])",0,PL);//Ratio_Of_Location_to_Mountain_Length(RLTML)
+ROLTML->SetParameter(0,POS_Int[0]);
+ROLTML->SetParameter(1,DR[0]);
+ROLTML->SetParameter(2,POS_Int[1]);
+ROLTML->SetParameter(3,DR[1]);
+ROLTML->SetParameter(4,POS_Int[2]);
+ROLTML->SetParameter(5,DR[2]);
+STU= ROLTML->GetX(1,0,PL);//Scaling_To_Use(STU)
+Check_Fun(POS_Int,DR,STU);
+cout << "DAC_to_LEG->GetX(1,0,S); " << STU << endl;
+ */

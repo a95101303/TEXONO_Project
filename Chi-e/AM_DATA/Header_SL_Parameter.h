@@ -216,3 +216,8 @@ double fdsigma_dT_keV(double mx=10, double sigma_SI=1e-40, double velocity=0, do
     return (1.0/1000.0)*fdsigma_dT(mx, sigma_SI, velocity, atomic_mass, (T/1000.0));
 }
 
+double fdsigma_dT_keV_ER(double mx=10, double sigma_SI=1e-40, double velocity=0, double atomic_mass=0, double T=0)
+{
+    return (1/atomic_mass)*(1/atomic_mass)*(1./4.)*(0.5e-3)*(1./4.)*(0.5e-3)*(1.0/1000.0)*fdsigma_dT(mx, sigma_SI, velocity, atomic_mass, (T/1000.0));
+}
+

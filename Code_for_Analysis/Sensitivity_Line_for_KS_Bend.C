@@ -21,7 +21,7 @@ void Sensitivity_Line_for_KS_Bend()//CDEX:Threshold=160eV, TEXONO:Threshold=200e
     int Bent_Type=1; string Bent_or_Not_Type[2]={"_Comparison",""};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=5;kkk<6;kkk++)//Straight or bending
+for(int kkk=6;kkk<7;kkk++)//Straight or bending
     {
         int Mass_INT=kkk;
         string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06"};
@@ -35,11 +35,13 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
 
         cout << "kkk: " << kkk << endl;
         double Mass=0;
-    for(int FILE=6; FILE<10; FILE++){//Open1
+    for(int FILE=28; FILE<31; FILE++){//Open1
+        cout << "FILE: " << FILE << endl;
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
         ifstream fin(path);
-        if(fin.is_open() and Check_ZERO==0){//Open
+        if(fin.is_open()){//Open
+            cout << "FILE1: " << FILE << endl;
         //===============Input the ROOTFILE for all==============
     TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
         TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
@@ -53,6 +55,7 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
         Mass=mx;Sigma_SI_Array[Point_Number]=sigma_si;
             cout << "Mass: " << Mass << endl;
             cout << "sigma_si: " << sigma_si << endl;
+            cout << "FILE2: " << FILE << endl;
         //==============Input STandard Flux as well as the "attenuated" flux==============
         TH1F *Flux_HIST_Random;TH1F *Flux_HIST_Aft_Collision_EARTH;
         Flux_HIST_Random=(TH1F*)ROOT_FILE1->Get("Flux_HIST_Random");
@@ -73,15 +76,16 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
         //===========================Calculate the Ratio passing through====================//
         double RecoilX_Event_Original_M1=0; double RecoilX_Event_Aft_EARTH_M1=0;
         double RecoilX_Event_Original_M3=0; double RecoilX_Event_Aft_EARTH_M3=0;
-        
+        cout << "FILE3: " << FILE << endl;
+
         for(int i=0;i<reso_T;i++)
         {
             cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
             cout << "Factor1_Original_Aft_Array[i]: " << Factor1_Original_Aft_Array[i] << endl;
 
-            if(T_QF_Original_Bef_Array[i]>0.20)//>Threshold
+            if(T_QF_Original_Bef_Array[i]>0.20 and T_QF_Original_Bef_Array[i]<0.25)//>Threshold
             {RecoilX_Event_Original_M1  = RecoilX_Event_Original_M1 + Factor1_Original_Bef_Array[i];}
-            if(T_QF_Original_Aft_Array[i]>0.20)//>Threshold
+            if(T_QF_Original_Aft_Array[i]>0.20 and T_QF_Original_Aft_Array[i]<0.25)//>Threshold
             {RecoilX_Event_Aft_EARTH_M1 = RecoilX_Event_Aft_EARTH_M1 + Factor1_Original_Aft_Array[i];}
             
         }
@@ -89,11 +93,14 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
             cout << "RecoilX_Event_Original_M1: " << RecoilX_Event_Original_M1 << endl;
             cout << "RecoilX_Event_Aft_EARTH_M1: " << RecoilX_Event_Aft_EARTH_M1 << endl;
 
+            cout << "RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1: " << RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1 << endl;
+
         //Possion for >threshold
         Sigma_SI_With_Threshold_M1[Point_Number]      =Sigma_SI_Array[Point_Number]*(RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1);
-        cout << "RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1: " << RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1 << endl;
+        cout << "RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1_1: " << RecoilX_Event_Aft_EARTH_M1/RecoilX_Event_Original_M1 << endl;
         cout << "Sigma_SI_With_Threshold_M1[Point_Number]: " << Sigma_SI_With_Threshold_M1[Point_Number] << endl;
         //Possion for >threshold and <threshold+0.1
+            cout << "FILE4: " << FILE << endl;
 
      
             if(Sigma_SI_With_Threshold_M1[Point_Number]==0 or Sigma_SI_With_Threshold_M3[Point_Number]==0)
@@ -129,7 +136,8 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
         double *RE_DATA_Err_1=Hist_SetLimit_Plot_v2_Extract_Peak(2);
         double *RE_Rate_Err_1=Hist_SetLimit_Plot_v2_Extract_Peak(3);
              
-            
+            cout << "FILE5: " << FILE << endl;
+
         TGraphErrors *TEXONOData = new TGraphErrors(257,RE_DATA_1,RE_Rate_1,RE_DATA_Err_1,RE_Rate_Err_1);
         TEXONOData->SetName("TEXONOData");
              
@@ -166,6 +174,8 @@ for(int kkk=5;kkk<6;kkk++)//Straight or bending
         if(Take_Plot==1){
         c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/Recoil_Spectrum/%s_%i_STS_Bent%s.pdf",Mass_Point[Mass_INT].c_str(),Type_of_Model[Type_of_Model_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str()));
             cout << "=================================================================================" << endl;
+            cout << "FILE6: " << FILE << endl;
+
         }
      
             

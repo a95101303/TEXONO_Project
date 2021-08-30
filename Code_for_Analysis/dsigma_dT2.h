@@ -1184,6 +1184,61 @@ double *Velocity_Aft_collision_Coupled(int Collision_Time=0, double mx=10, doubl
 }
 
 */
+
+
+double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0)
+{
+    static double RETURN_VALUE[4];//(1)Final_Velocity(2)Energy_Difference(T1+T2+...)(3)Energy_Difference(E_Final-E_initial)
+    
+    // Percentage of the material of the earth
+    if(Initial_Velocity!=0)
+    {
+        int Collision_Time_Temp=Collision_Time;
+        cout << "Collision_Time_Temp: " << Collision_Time_Temp << endl;
+        double DM_Energy_Aft_Colliding=Energy_DM(mx,Initial_Velocity*1e3/3e8);
+        double DM_Velocity_Aft_Colliding=Initial_Velocity;
+        double Energy_Lost_Total=0;
+        int Count=0;
+        if(Collision_Time!=0 and DM_Velocity_Aft_Colliding>1)
+        {
+            for(int kkk=0 ; kkk<Collision_Time_Temp ; kkk++)
+            {
+                TF1 *f3 = new TF1("f3","dsigma_dT_keV_ER([0],[1],x,[2],[3])",0,0.01);
+                f3->SetParameter(0,Sigma_SI_Default);f3->SetParameter(1,1);f3->SetParameter(2,mx);f3->SetParameter(3,28);
+                double Random_Energy= f3->GetRandom();
+                Energy_Lost_Total = Energy_Lost_Total + Random_Energy;
+                cout << "Random_Energy: " << Random_Energy << endl;
+                DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Random_Energy);
+                cout << "DM_Energy_Aft_Colliding: " << DM_Energy_Aft_Colliding << endl;
+                DM_Velocity_Aft_Colliding = Velocity_DM(mx,DM_Energy_Aft_Colliding);
+                Count = Count + 1;
+                cout << "Collision_Time_Temp: " << Collision_Time_Temp << endl;
+                cout << "Count: " << Count << endl;
+                if(DM_Energy_Aft_Colliding<1e-3 or Random_Energy==0)
+                {
+                    break;
+                }
+                 
+            }
+        }
+        else
+        {
+            //cout << "GHGH: " << endl;
+            DM_Velocity_Aft_Colliding=Initial_Velocity;
+        }
+        //cout << "Count: " << Count << endl;
+        //cout << "DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
+        RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;
+        RETURN_VALUE[1]=Energy_Lost_Total;
+        RETURN_VALUE[2]=Energy_DM(mx,Initial_Velocity*1e3/3e8)-Energy_DM(mx,DM_Velocity_Aft_Colliding*1e3/3e8);
+        RETURN_VALUE[3]=Count;
+        return RETURN_VALUE;
+    }
+    else
+    { RETURN_VALUE[0]=0; RETURN_VALUE[1]=0; RETURN_VALUE[2]=0;RETURN_VALUE[3]=0;
+        return RETURN_VALUE;}
+}
+
 //Energy_Aft_multiple_collision(GOOD)
 double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0, int Earth_or_air_S=0)
 {

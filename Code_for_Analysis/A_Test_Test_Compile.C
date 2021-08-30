@@ -12,6 +12,7 @@ void A_Test_Test_Compile()
 
     TF1 *Two_Sides    = new TF1("Two_Sides","x",0,2);
     double Side_confirmed = Two_Sides->GetRandom();//Give out 0,1;
+    
     cout << "Side_confirmed: " << Side_confirmed << endl;
     
     int A=0;

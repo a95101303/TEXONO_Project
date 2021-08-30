@@ -581,6 +581,46 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
+    if(Model_of_Interaction==4)//Electronic-recoil Only
+    {
+        cout << "Electronic Recoil//(From other paper not Mukesh's)" << endl;
+        for(int i=0;i<reso_T;i++)
+        {
+            T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+            recoilX[i] = 0.0;
+            cout << "T[i]: " << T[i] << endl;
+            for(int j=0;j<2000;j++)
+            {
+                float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])*kms1_to_c;
+                float v_cm_day = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])*kms1_to_cmday1;
+
+                    if((max_recoil_A_keV(WIMP_mx, v, A))>T[i] and Model_of_Interaction==0)
+                    {
+                        //cout << "T_QF[i]: " << T_QF[i] << endl;
+                        //if(Conventional_or_not==0)recoilX[i] = recoilX[i] + (T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/5000;//Only for CRESST
+                        if(Conventional_or_not==0)recoilX[i] = recoilX[i] + rate_scale_QF(T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/1000;
+                        if(Conventional_or_not==1)recoilX[i] = recoilX[i] + rate_scale_QF(T[i])*fdsigma_dT_keV(WIMP_mx, Sigma_SI, v, A, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];
+                        //if(Conventional_or_not==2)recoilX[i] = recoilX[i] + 365*rate_scale_QF(T[i])*AAAA_keV(WIMP_mx, Sigma_SI, v, 131, T[i])*N_atom_Xe_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];//For Heavy DM
+                        if(Conventional_or_not==2)recoilX[i] = recoilX[i] + 365*rate_scale_QF(T[i])*AAAA_keV(WIMP_mx, Sigma_SI, v, 72.64, T[i])*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];//For Heavy DM
+                        /*
+                        cout << "rate_scale_QF(T[i]): " << rate_scale_QF(T[i]) << endl;
+                        cout << "WIMP_mx: " << WIMP_mx << endl;
+                        cout << "Sigma_SI: " << Sigma_SI << endl;
+                        cout << "v*3e8/1e3: " << v*3e8/1e3 << endl;
+                        cout << "T[i]: " << T[i] << endl;
+                        cout << "AAAA_keV(WIMP_mx, Sigma_SI, v, 131, T[i]): " << AAAA_keV(WIMP_mx, Sigma_SI, v, 131, T[i]) << endl;
+                        cout << "N_atom_Xe_1kg: " << N_atom_Xe_1kg << endl;
+                        cout << "rohx/WIMP_mx: " << rohx/WIMP_mx << endl;
+                        cout << "v_cm_day: " << v_cm_day << endl;
+                        cout << "v: " << v << endl;
+                        cout << "recoilX[i]: " << recoilX[i] << endl;
+                         */
+                    }
+                
+            }
+        }
+    }
+
     //===============================================================
     double sig_E; double dEx;
     static double Factor1[dm_spec_resolution];

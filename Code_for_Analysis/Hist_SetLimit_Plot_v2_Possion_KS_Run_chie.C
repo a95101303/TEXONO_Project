@@ -101,9 +101,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
         gRandom->SetSeed(0);
         double Random_Velocity = 0;
         Random_Velocity = Flux_HIST->GetRandom();
-        Velocity[kkk] = Random_Velocity;
+        //Velocity[kkk] = Random_Velocity;
         //Velocity[kkk] = 232;
-        //Velocity[kkk] = 776;
+        Velocity[kkk] = 776;
         Flux_HIST_Random->Fill(Random_Velocity);//Vacuum case!
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
@@ -190,14 +190,18 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         cout << "Velocity_Z[kkk]: " << Velocity_Z[kkk] << endl;
 
         double ECNR  = Collision_Expectation_EARTH[kkk];//EARTH_COLLISION_COUNT_NUCLEAR_RECOIL
-        double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+        //double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+        double ECER  = ECNR*(1./4.)*(0.5e-3)*(1./4.)*(0.5e-3);//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+
         Collision_Time_Hist_NU->Fill(ECNR);
         Collision_Time_Hist_ER->Fill(ECER);
 
         cout << "ECNR: " << ECNR << endl;
         cout << "ECER: " << ECER << endl;
         
-        cout << "LOSS(keV)" << ECER*10./1e3 << endl;
+        //double *A = Velocity_Aft_collision_ER(int(ECER),DM_mx,Sigma_SI,Velocity[kkk]);
+        
+        cout << "LOSS(keV)" << ECER*5/1e3 << endl;
     }
     
     TLegend *leg= new TLegend(0.5,0.7,0.9,0.9);

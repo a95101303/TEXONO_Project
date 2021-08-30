@@ -13,9 +13,24 @@ void run_single_sigma_cdex_modified_bent_v15_minprint_real(double mx=2.0)//For K
     
     string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05"};
 
-    
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(0,0,%i,0,6e-31)",Event_Number));
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(0,0,%i,1,7e-31)",Event_Number));
+    //2GeV
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,0,%i,0,1e-31)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,0,%i,1,2e-31)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,0,%i,2,3e-31)",Event_Number));
+
+    //0.6GeV
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,0,8e-31)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,1,9e-31)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,5,%i,2,1e-30)",Event_Number));
+
+    //0.05GeV
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,15,%i,0,9e-31)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,15,%i,1,1e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,15,%i,2,3e-30)",Event_Number));
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,15,%i,4,5e-30)",Event_Number));
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(1,15,%i,5,6e-30)",Event_Number));
+
+    //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(0,0,%i,1,7e-31)",Event_Number));
 
     //gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_CDEX_Run_MODIFIED_BentR(0,0,%i,2,8e-31)",Event_Number));
 
