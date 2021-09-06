@@ -29,15 +29,15 @@ void plot_DCS_LR()
  
   printf("mx = %f\n",mx);
     
-    /*
+    
   for(int rr = 0; rr<NumPt;rr++)
     {
       
       rate_factor = pow(1E-9,2)*1E-18*1E+3*86400*3E+10*(density*electron_number(AGe))/(mx);
       
       Energy[rr] = 95.0E-3 + 5.0*(double)rr/(double)NumPt;
-      JuneRate[rr] = rate_factor*LongRangeDcs_June(Energy[rr]*1E+3 , mx )*1e-29;
-      DecRate[rr]  = rate_factor*LongRangeDcs_Dec(Energy[rr]*1E+3  , mx )*1e-29;
+      JuneRate[rr] = rate_factor*LongRangeDcs_June(Energy[rr]*1E+3 , mx );
+      DecRate[rr]  = rate_factor*LongRangeDcs_Dec(Energy[rr]*1E+3  , mx );
       
       Ratio[rr]  = JuneRate[rr]-DecRate[rr];
         cout << "mx: " << mx << endl;
@@ -50,12 +50,13 @@ void plot_DCS_LR()
         cout << "JuneRate[rr]: " << JuneRate[rr] << endl;
       //printf("%f  %e \n", Energy[rr], JuneRate[rr]);
     }
-     */
+     
     
     TCanvas *plot = new TCanvas("plot");
     gPad->SetLogy(1);
     //gPad->SetLogx(1);
 
+    /*
     double X[1]={0};double Y[1]={0};
     TGraph *SetFrame = new TGraph(1,X,Y);
 
@@ -71,8 +72,6 @@ void plot_DCS_LR()
     fa2->SetParameter(1,1);
     fa2->SetParameter(2,3);
     fa2->SetParameter(3,AGe);
-
-    //fa2->Draw("Lsame");
     
     
     TF1 *fa3 = new TF1("fa3","fdsigma_dT_keV([0],[1],[2],[3],x)",1e-1,1e1);
@@ -81,8 +80,10 @@ void plot_DCS_LR()
     fa3->SetParameter(2,779.*V_to_C);
     fa3->SetParameter(3,AGe);
     fa3->Draw("Lsame");
-     
+     */
     
+    //fa2->Draw("Lsame");
+
     //cout << "Total_Sigma_ER: " << Total_Sigma_ER(1,300,10,34) << endl;
     /*
     cout << "c1: " << c_1(9e-42,0.5) << endl;
@@ -91,7 +92,7 @@ void plot_DCS_LR()
     cout << "DS_Try(): " << DS_Try(1e-9,0.5) << endl;
      */
 
-    /*
+    
   TCanvas *plot1 = new TCanvas("plot");
   gPad->SetLogy(1);
   gPad->SetLogx(1);
@@ -108,7 +109,7 @@ void plot_DCS_LR()
    grD->SetLineWidth(3);
    grD->SetLineColor(kBlue);
    grD->Draw("l");
-   */
+   
    
    /*
    TCanvas *plot1 = new TCanvas("plot1");

@@ -217,7 +217,7 @@ void Paper_SetLimits_TEXONO_Earth()
      //=====MAT
      TGraph *texono_real_brem_Bend = new TGraph(); texono_real_brem_Bend->SetName("texono_real_brem_Bend");
 
-     for(int i=0;i<2;i++)
+     for(int i=0;i<4;i++)
      {
          cout << "TEXONO_real_Brem_Upper_Bend[i][0]: " << TEXONO_real_Brem_Upper_Bend[i][0] << endl;
          cout << "TEXONO_real_Brem_Upper_Bend[i][1]: " << TEXONO_real_Brem_Upper_Bend[i][1] << endl;

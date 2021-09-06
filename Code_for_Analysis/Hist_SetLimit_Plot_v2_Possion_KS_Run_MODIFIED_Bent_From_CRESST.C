@@ -275,14 +275,14 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
         if(Arrival_earth==1)
         {
             //cout << "===============YAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYA==============================" << endl;
-            //cout << "MMM: " << MMM  << endl;
+            cout << "MMM: " << MMM  << endl;
             double E_Loss            = Energy_DM(DM_mx,Random_Velocity*1e3/3e8) - Energy_DM(DM_mx,Earth_Value[0]*1e3/3e8);
             double E_Loss_Percentage = (E_Loss) / ( Energy_DM(DM_mx,Random_Velocity*1e3/3e8) ) ;
             //cout << "E_Loss_Percentage: " << E_Loss_Percentage << endl;
             Energy_Loss_Percentage_Hist->Fill(E_Loss_Percentage);
             MMM = MMM + 1;
             //Original_Bent_Comparison_Ratio_Earth->Fill(Earth_Value[1]);
-            //Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
+            Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
             Energy_Loss_Percentage_lf = E_Loss_Percentage;
             Collision_Time_Earth = Earth_Value[2];
             V_End_E = Earth_Value[0];
@@ -334,7 +334,7 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Earth.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();

@@ -46,6 +46,8 @@ const double Electron_Mass_MeV=0.511;//MeV
 const double Me_times_alpha=3.7;//keV/c^2
 
 const double V_to_C = 1e3/3e8;//km/s to beta
+const double MeV_to_GeV = 1E-3;//
+const double GeV_to_keV = 1E+6;//
 
 double Final_Energy(int Times, double Initial_Energy)
 {
@@ -61,7 +63,7 @@ double Final_Energy(int Times, double Initial_Energy)
 double RMe(double mx)//Reduce_Mass_e(RMe)
 {
     //cout << "RMe: " << 1e-3*Electron_Mass_MeV*1e-3*1000*mx/((1e-3*Electron_Mass_MeV)+1e-3*1000*mx) << endl;
-    return 1e-3*Electron_Mass_MeV*1e-3*1000*mx/((1e-3*Electron_Mass_MeV)+1e-3*1000*mx);//GeV
+    return 1e-3*Electron_Mass_MeV*mx/((1e-3*Electron_Mass_MeV)+mx);//GeV/c^2
 }
 double max_recoil_A_for_ER_keV(double velocity, double mx)//mx(GeV/c^2),Velocity(km/s)
 {
@@ -102,12 +104,12 @@ double Max_Recoil_A_keV_ER(double V, double mx)//Electron Recoil Max recoil ener
 
 }
 
+
 double Total_Sigma_ER(double Month, double CS, double V, double mx, double A)//Total Sigma for Electron Recoil, V(km/s)
 {
     int reso_T=1000;double T[reso_T];double total_Sigma=0;
      double WIMP_max_T   = Max_Recoil_A_keV_ER(V,mx); //keV
      double WIMP_max_T_2 = max_recoil_A_for_ER_keV(V,mx);//keV
-    //cout << "WIMP_max_T: " << WIMP_max_T << endl;
     //======
     for(int i=0;i<reso_T;i++)
     {
@@ -146,4 +148,33 @@ double DS_Try(double d_1, double mx)
 {
     return d_1*d_1*RMe(mx)*RMe(mx)*hbarC_divide_GeV_cm_Square*1e24/(PI*pow(Me_times_alpha,4));
 }
+//================From paper 1905.06348v2===============//
+double Max_Recoil_A_keV_ER_Free(double mx, double V_Initial)//Electron Recoil Free electron, Max recoil energy, mx(GeV/c^2), velocity(V)
+{
+    //cout << "V_Initial: " << V_Initial << endl;
+    double V_Final = (V_Initial)*(2*mx/(mx+Electron_Mass_MeV*MeV_to_GeV));
+    //cout << "V_Final" << V_Final << endl;
+    double Beta    = (V_Final*1e3)/(3E+8);//Beta(c)
+    //cout << "Beta: " << Beta << endl;
+    //cout << "0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta): " << 0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta) << endl;
+    return 0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta);//Energy of DM basically
+}
 
+const double Alpha_FS = 1./137.;//Fine Sturcture constant
+const double q_ref    = Alpha_FS*0.511*1e-3;//GeV/c^2
+
+double q_calculate(double mx, double V)//mx(GeV/c^2),V(km/s)
+{
+    return 2*RMe(mx)*TMath::Power( (V*V_to_C), 2 );
+}
+double F_DM(double mx, double V)//mx(GeV/c^2),V(km/s)
+{
+    return (q_ref/q_calculate(mx,V))*(q_ref/q_calculate(mx,V));
+}
+double dsigma_dT_GeV_ER_2(double Sigma_SI, double mx, double V)
+{
+    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
+    return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C));
+}
+//=====================================================//
+//Find the dsigma_dT

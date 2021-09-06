@@ -4,7 +4,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "Hist_SetLimit_Plot_v2_Extract_Peak.h"
-#include "B_L_Henke_data_PE_f1_f2.h"
+//#include "B_L_Henke_data_PE_f1_f2.h"
 #include "dsigma_dT2.h"
 #include "velocity_distribution_2000_Ave.h"
 #include "cpkkd_calculation_New.h"
@@ -26,9 +26,9 @@ void Overlap_Plot_TEXONO_Ge_Test()
     double Sigma_SI_With_Threshold_M3_Error[Number];double Error_X[Number];
 
     double CPKKD_EXCLUSION[Number];
-    double Mass=1;//2.34
+    double Mass=0.2;//2.34
     int Take_Plot=0;
-    string Type_of_Model="BR"; int Type_of_Model_INT=2;
+    string Type_of_Model="ER"; int Type_of_Model_INT=4;
     cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
     
     /*
@@ -86,14 +86,14 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         
 
     //Sigma_SI_Array[Point_Number]=Multiply_Number*TMath::Power(10,-YYY);
-    Sigma_SI_Array[Point_Number] = 1e-36;
+        Sigma_SI_Array[Point_Number] = DS_Try(1e-9,0.2);
     TH1F *Flux_HIST_Random; TH1F *Flux_HIST_Aft_Collision_Earth; TH1F *Flux_HIST_Aft_Collision_EARTH;
     cout << "=======Right======== " << endl;
-    cout <<"Sigma_SI:" << YYY << endl;
+    cout <<"Sigma_SI:" << DS_Try(1e-9,0.2) << endl;
     cout <<"Multiply_Number:" << Multiply_Number << endl;
     cout << "=======Right======== " << endl;
 
-    TFile *fin = TFile::Open("/Users/yehchihhsiang/Desktop/Analysis/CDEX_Analysis_method/Codes/1_CDEX_Flux/1GeV/2.root");
+    TFile *fin = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/1_CDEX_Flux/1GeV/2.root");
     Flux_HIST_Random=(TH1F*)fin->Get("Flux_HIST_Random");
     Flux_HIST_Aft_Collision_EARTH=(TH1F*)fin->Get("Flux_HIST_Aft_Collision_EARTH");
 
@@ -224,9 +224,11 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     TGraph *ER_Spectrum_Bef = new TGraph(reso_T,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
     ER_Spectrum_Bef->GetXaxis()->SetTitle("Energy[keV]");
     ER_Spectrum_Bef->GetYaxis()->SetTitle("Count");
-    
-    ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
+        
+    ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e2);
+    //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-30,1e-3);
+    //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1,12);

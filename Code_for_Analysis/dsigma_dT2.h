@@ -682,6 +682,9 @@ double Collision_Time_Earth(double Pass_Length, double Mean_Free_Path)
 //0.5*M_Chi*(v/c)^2=Energy mx(GeV), Velocity(beta)
 double Energy_DM(double mx, double beta)
 {
+   // cout << "beta*3e8/1e3: " <<  beta*3e8/1e3 << endl;
+   // cout << "(beta)*(beta): " << (beta)*(beta) << endl;
+   // cout << "mx: " << mx << endl;
     return 0.5*(mx*1e6)*(beta)*(beta);//keV
 }
 //Inverse the Energy of DM to the velocity of DM with the formula in the previous function
@@ -777,6 +780,17 @@ double max_recoil_A(double mx, double velocity, double atomic_mass)
 double max_recoil_A_keV(double mx, double velocity, double atomic_mass)
 { return 1000.0*max_recoil_A(mx, velocity, atomic_mass); }
 //
+
+double max_recoil_Electron_keV(double mx, double velocity)//mx(GeV/c^2),Velocity(Beta)
+{
+    double reduce_mass_A = mx*1000.0*0.511/((mx*1000.0)+(0.511));
+
+    double r_A = 4.0*pow(reduce_mass_A,2.0)/(mx*1000.0*0.511);
+    
+    double max_recoil_A_0 = 0.5*mx*1e3*velocity*velocity*r_A*1e3; //keV
+    
+    return max_recoil_A_0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // no unit
@@ -1251,9 +1265,9 @@ double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_
     if(Initial_Velocity!=0)
     {
         int Collision_Time_Temp=Collision_Time;
-        //cout << "Initial_Velocity: " << Initial_Velocity << endl;
+        cout << "Initial_Velocity: " << Initial_Velocity << endl;
         double DM_Energy_Aft_Colliding=Energy_DM(mx,Initial_Velocity*1e3/3e8);
-        //cout << "DM_Energy_Bef: " << DM_Energy_Aft_Colliding << endl;
+        cout << "DM_Energy_Bef: " << DM_Energy_Aft_Colliding << endl;
         double DM_Velocity_Aft_Colliding=Initial_Velocity;
         double Energy_Lost_Total=0;
         int Count=0;
@@ -1262,8 +1276,8 @@ double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_
             for(int kkk=0 ; kkk<Collision_Time_Temp ; kkk++)
             {
                 double ATOM_KIND = Function_of_material_possibility(Earth_or_air_S);// 1 is earth 2 is air
-                //cout << "Earth_or_air_S: " << Earth_or_air_S << endl;
-                //cout << "ATOM_KIND: " << ATOM_KIND << endl;
+                cout << "Earth_or_air_S: " << Earth_or_air_S << endl;
+                cout << "ATOM_KIND: " << ATOM_KIND << endl;
                 TF1 *f3 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(mx,DM_Velocity_Aft_Colliding*1e3/3e8,ATOM_KIND));
                 f3->SetParameter(0,mx);f3->SetParameter(1,Sigma_SI_Default);f3->SetParameter(2,(DM_Velocity_Aft_Colliding*1e3/3e8));f3->SetParameter(3,ATOM_KIND);
                 double Random_Energy= f3->GetRandom();
@@ -1277,7 +1291,7 @@ double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_
                 Count = Count + 1;
                 if(DM_Energy_Aft_Colliding<1e-2 or Random_Energy==0)
                 {
-                    //cout << "BREAK: " << endl;
+                    cout << "BREAK: " << endl;
                     break;
                 }
                  
@@ -2776,7 +2790,9 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
                 cout << "Sprint: " << Sprint_Length << endl;
                 cout << "Temp_Length: " << Temp_Length << endl;
 
-                double *V_Aft_Collision_Earth = Velocity_Aft_collision(1,Sigma_SI_Default,DM_Velocity_Aft_Colliding,1);
+                cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+                double *V_Aft_Collision_Earth = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,1);
+                cout << "V_Aft_Collision_Earth[0]: " << V_Aft_Collision_Earth[0] << endl;
                 double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_Earth[0]*1e3/3e8);
                 double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
                 cout << "Ratio_of_Energy_Loss_to_Atom: " << Ratio_of_Energy_Loss_to_Atom << endl;
@@ -2789,6 +2805,8 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
                 
                 if(Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8)<0.01)
                 {
+                    cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+                    cout << "Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8): " << Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) << endl;
                     cout << "Energy Threshold" << endl;
                     break;
                 }
