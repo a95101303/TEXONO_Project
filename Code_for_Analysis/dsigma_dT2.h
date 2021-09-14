@@ -1469,8 +1469,8 @@ double *KS_Collision_Time_ATM(double Sigma_SI_Default, double PY, double PZ, dou
     double Previous_Total = ( Length_Components[1]+Length_Components[2]+Earth_Path_Length);
     static double RETURN_VALUE[2];
 
-    cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,0.8*AN+0.2*AO) << endl;
-    cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,0.8*AN+0.2*AO) << endl;
+    cout << "(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass): " << Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass) << endl;
+    //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,0.8*AN+0.2*AO) << endl;
 
     for(int kkk=0; kkk<19; kkk++)
     {
@@ -1484,7 +1484,7 @@ double *KS_Collision_Time_ATM(double Sigma_SI_Default, double PY, double PZ, dou
         //cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
         //cout << " Previous_Total_AIR: " <<  Previous_Total_AIR << endl;
         N_Collision = N_Collision + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1e5)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,0.8*AN+0.2*AO));
-        N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,0.8*AN+0.2*AO));
+        N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));
     }
     //cout << "N_Collision_AIR: " << N_Collision << endl;
     RETURN_VALUE[0]=N_Collision;RETURN_VALUE[1]=N_Collision_Air_ER;
@@ -1512,7 +1512,7 @@ double *Collision_Time_ATM(double Sigma_SI_Default, double Try_Z_direction_Unit,
         Previous_Total = Previous_Total+ Path_Lengths_for_atmosphere[kkk];
         //cout << "Previous_Total : " << Previous_Total  << endl;
         N_Collision = N_Collision + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO));
-        N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_mx,0.8*AN+0.2*AO));
+        //N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_mx,0.8*AN+0.2*AO));
     }
     RETURN_VALUE[0]=N_Collision;RETURN_VALUE[1]=N_Collision_Air_ER;
     return RETURN_VALUE;
@@ -1601,11 +1601,11 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     //N_Collision_Earth_NR = N_Collision_Earth_NR + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));
     //===============Earth_for_ER===============
     }
-    N_Collision_Earth_NR = N_Collision_Earth_NR + (1.8*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
-    N_Collision_Earth_ER = N_Collision_Earth_ER + (1.8*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number));//1km
+    N_Collision_Earth_NR = N_Collision_Earth_NR + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
+    N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number)*36)*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
 
     cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number) << endl;
-    cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number) << endl;
+    //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number) << endl;
 
     cout << "N_Collision_Earth_NR: " << N_Collision_Earth_NR << endl;
     cout << "N_Collision_Earth_ER: " << N_Collision_Earth_ER << endl;
@@ -2251,6 +2251,7 @@ double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
     
     return Velocity;
 }
+// For non-30 M.W.E
  double *KS_Collision_Time_ATM_Aft_velocity_with_angle(int Straight_or_scattered, int Event, int index, double Sigma_SI_Default, double PY, double PZ, double Velocity, double WIMP_Mass, double *Length_Components, double Earth_Path_Length, double *Direction) //Velocity(km/s)
  {
      //double Direction[3]   ={ 1e-50, 1e-50, PZ };
@@ -2274,14 +2275,14 @@ double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
      //Calculate the lengths for different layers
      for(int kkk=0; kkk<19; kkk++)
      {
-         //cout << "AIR: " << kkk << endl;
+         cout << "AIR: " << kkk << endl;
          Density_of_Atmosphere_Layer[kkk] = (atm_table[kkk][4]+atm_table[kkk+1][4])/2;
-         //cout << "Density_of_Atmosphere_Layer[kkk]: " << Density_of_Atmosphere_Layer[kkk] << endl;
+         cout << "Density_of_Atmosphere_Layer[kkk]: " << Density_of_Atmosphere_Layer[kkk] << endl;
          Path_Lengths_for_atmosphere[kkk] = KS_Air_Path_Length(PY,PZ,(atm_table[kkk+1][0]/1000),Previous_Total_AIR);
-         //cout << "(atm_table[kkk+1][0]/1000): " << (atm_table[kkk+1][0]/1000) << endl;
+         cout << "(atm_table[kkk+1][0]/1000): " << (atm_table[kkk+1][0]/1000) << endl;
          Previous_Total_AIR = Previous_Total_AIR+ Path_Lengths_for_atmosphere[kkk];
          if(kkk==0) Path_Lengths_for_atmosphere[kkk] = Path_Lengths_for_atmosphere[kkk] - Previous_Total;
-         //cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
+         cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
          //cout << " Previous_Total_AIR: " <<  Previous_Total_AIR << endl;
      }
      
@@ -2584,6 +2585,341 @@ double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
 
      return RETURN_VALUE;
  }
+
+//For Plus the 30 M.W.E
+double *KS_Collision_Time_ATM_30MWE_Aft_velocity_with_angle(int Straight_or_scattered, int Event, int index, double Sigma_SI_Default, double PY, double PZ, double Velocity, double WIMP_Mass, double *Length_Components, double Earth_Path_Length, double *Direction) //Velocity(km/s)
+{
+    //double Direction[3]   ={ 1e-50, 1e-50, PZ };
+    double Direction_VT[3]={ 0, 0, 0 };
+
+    static double RETURN_VALUE[20];
+    static int TEMP_INDEX=-1;
+    //cout << "OK! Thanks!" << endl;
+    //Theta(Between r and Z) Phi(Between r and X)
+    //cout << "PY: " << PY << "PZ: " << PZ << endl;
+    double Path_Vector[3]; double Path_Vector_Unit[3];double Scaling=0;
+    double Lab_CARC[3]={0,0,0};// Original point X,Y,Z Function=>TMath::Pi()
+    
+    double Path_Lengths_for_atmosphere[19];
+    double Density_of_Atmosphere_Layer[19];
+    double Previous_Total_AIR=0;
+    double Previous_Total = ( Length_Components[1]+Length_Components[2]+Earth_Path_Length);
+    //cout << "Earth_Path_Length: " << Earth_Path_Length  << endl;
+    //cout << "Previous_Total: " << Previous_Total << endl;
+
+    //Calculate the lengths for different layers
+    for(int kkk=0; kkk<19; kkk++)
+    {
+        //cout << "AIR: " << kkk << endl;
+        Density_of_Atmosphere_Layer[kkk] = (atm_table[kkk][4]+atm_table[kkk+1][4])/2;
+        //cout << "Density_of_Atmosphere_Layer[kkk]: " << Density_of_Atmosphere_Layer[kkk] << endl;
+        Path_Lengths_for_atmosphere[kkk] = KS_Air_Path_Length(PY,PZ,(atm_table[kkk+1][0]/1000),Previous_Total_AIR);
+        //cout << "(atm_table[kkk+1][0]/1000): " << (atm_table[kkk+1][0]/1000) << endl;
+        Previous_Total_AIR = Previous_Total_AIR+ Path_Lengths_for_atmosphere[kkk];
+        if(kkk==0) Path_Lengths_for_atmosphere[kkk] = Path_Lengths_for_atmosphere[kkk] - Previous_Total;
+        //cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
+        //cout << " Previous_Total_AIR: " <<  Previous_Total_AIR << endl;
+    }
+    
+
+    //Step-to-Step(STS) collision
+    double STS_Length[19];double STS_Density[19];
+    //Check the lengths on the path
+    for(int kkk=0; kkk<19; kkk++)
+    {
+        int OUTtoIN=18-kkk;
+        if(Path_Lengths_for_atmosphere[OUTtoIN]>0){STS_Length[kkk]=(Path_Lengths_for_atmosphere[OUTtoIN]);}
+        STS_Density[kkk]=kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[OUTtoIN]);
+        //cout << "kkk: " << kkk << endl;
+        //cout << "STS_Length[kkk]: " << STS_Length[kkk] << endl;
+        //cout << "STS_Density[kkk]: " << STS_Density[kkk] << endl;
+    }
+    
+    double DM_Velocity_Aft_Colliding=Velocity;
+    //cout << "DM_Velocity_Aft_Colliding_Air: " << DM_Velocity_Aft_Colliding << endl;
+    double Collision_TIME_Check=0;double Actual_collision=0;
+    //double *V_Aft_Collision_AIR = Velocity_Aft_collision(AC,DM_mx,Sigma_SI,Velocity[kkk],2);
+    double Temp_Length=0;
+    double Path_Length=0;
+    double Check_the_dropping_point=0;
+    double Lamda_for_Average=0.001;
+    
+    cout << "Ene_Vel_Air_Initial: " << Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) << endl;
+    cout << "Velocity_Air_Initial: " << DM_Velocity_Aft_Colliding << endl;
+
+    static int Air_Threshold=0;
+    cout << "index: " << index << endl;
+    //cout << "================Check_The_turning_Point(Air)================" << endl;
+    //cout << "=======================================================" << endl;
+
+    //===========================
+    int Check_Threshold=0;
+    int Collision_Time=0;
+    int Arrival_or_not=0;
+    /*
+    for(int kkk=0; kkk<19; kkk++)
+    {
+        double Segment_Test = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,STS_Density[kkk],14.99);
+        double Expectation_Test =  STS_Length[kkk]/Segment_Test*(Possion_GetRandom(2,Lamda_for_Average));
+        //cout << "STS_Length[kkk]/Segment_Test: " << STS_Length[kkk]/Segment_Test << endl;
+
+        if(Expectation_Test>Air_Threshold)
+        {
+            Check_Threshold  = Check_Threshold + 1;
+            DM_Velocity_Aft_Colliding=1e-5;
+        }
+    }
+     */
+    cout << "Check_threshold " << Check_Threshold << endl;
+    //
+    
+    TCanvas *c1 = new TCanvas("c1","Graph2D example",0,0,600,400);
+       TGraph2D *dt = new TGraph2D();
+
+    std::setprecision(9);
+    double Track_Point[3]={0,0,-6371-80};//Start from the bottom point
+
+    
+    double  Path_Original= 0;
+    double  Ratio_of_Energy_Loss_to_Atom = 0;
+    
+    if(Check_Threshold>-1)
+    {
+        double Center_of_Earth[3]={0,0,0};
+        double Track_Point_interim[3]={0,0,0};//Applied for checking the points after the next step
+        double Track_Point_interim_half[3]={0,0,0};//Applied for checking the points after the next "half" step to check the crossing case
+        double Length_Interval[20];double Density_Index[20];int Length_Index[20];
+        
+        Length_Interval[0] = abs(-6371-80);Density_Index[0] = 0;Length_Index[0] = 0;//The first element is the reference point
+        
+        for(int kkk=0; kkk<19; kkk++)
+        {
+            Path_Length= Path_Length + STS_Length[kkk]; //From the bottom line to sum up
+            Length_Interval[kkk+1] = abs((-6371-80)+Path_Length);
+            Length_Index[kkk+1]    = kkk+1;
+            Density_Index[kkk+1]   = STS_Density[kkk];
+            
+        }
+        Length_Interval[19] = abs(-6371);//The first element is the reference point
+
+        for(int kkk=0; kkk<20; kkk++)
+        {
+            
+            /*cout << "=================" << endl;
+            cout << "Length_Interval: " << Length_Interval[kkk] << endl;
+            cout << "Length_Index: " << Length_Index[kkk] <<endl;
+            cout << "Density_Index: " << Density_Index[kkk] << endl;
+            cout << "=================" << endl;*/
+        }
+        
+        int Step=0;
+        
+        Path_Original= Scale_for_scattering_process(1,6371,Track_Point,Direction);
+
+
+        while(Distant(Track_Point,Center_of_Earth)-6371>1e-10 and Distant(Track_Point,Center_of_Earth)-6451<=1e-10 and Path_Original!=0)
+        {
+            dt->SetPoint(Step,Track_Point[0],Track_Point[1],Track_Point[2]);
+            
+            cout << "=================Distant(Track_Point,Center_of_Earth) Started================ " << Distant(Track_Point,Center_of_Earth) << endl;
+            cout << "=========Path_Original========: " << Path_Original << endl;
+
+            cout << "Event: " << Event << endl;
+            cout << "Direction[0]: "   << Direction[0] << endl;
+            cout << "Direction[1]: "   << Direction[1] << endl;
+            cout << "Direction[2]: "   << Direction[2] << endl;
+
+            cout << "Track_Point_Now[0]: " << Track_Point[0] << endl;
+            cout << "Track_Point_Now[1]: " << Track_Point[1] << endl;
+            cout << "Track_Point_Now[2]: " << Track_Point[2] << endl;
+            
+            int Place_Now=0;
+            for(int kkk=0; kkk<20;kkk++)
+            {
+       if( Distant(Track_Point,Center_of_Earth)-Length_Interval[kkk+1]>1e-2 and (Distant(Track_Point,Center_of_Earth))-Length_Interval[kkk]<=1e-2)
+               {
+                   cout << "Distant(Track_Point,Center_of_Earth)-Length_Interval[kkk+1]" << Distant(Track_Point,Center_of_Earth)-Length_Interval[kkk+1] << endl;
+                   cout << "Length_Interval[kkk]: "   << Length_Interval[kkk] << endl;
+                   cout << "Length_Interval[kkk+1]: " << Length_Interval[kkk+1] << endl;
+                   cout << "Distant(Track_Point,Center_of_Earth): " << Distant(Track_Point,Center_of_Earth) << endl;
+
+                   cout << Length_Interval[kkk] << ">=" << Distant(Track_Point,Center_of_Earth) << "> " << Length_Interval[kkk+1] << endl;
+                   cout << "Starting_Point " << Distant(Track_Point,Center_of_Earth) << endl;
+
+                   Place_Now= Length_Index[kkk+1];
+               }
+            }
+            cout << "Place_now" << Place_Now << endl;
+
+            double Segment = Length_for_asking_the_collision(Lamda_for_Average,WIMP_Mass,DM_Velocity_Aft_Colliding,Sigma_SI_Default,Density_Index[Place_Now],14.99);
+            cout << "Lamda_for_Average: " << Lamda_for_Average << endl;
+            cout << "WIMP_Mass: " << WIMP_Mass << endl;
+            cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+            cout << "Density_Index[Place_Now]: " << Density_Index[Place_Now] << endl;
+            cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
+            cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
+            cout << "Segment:  " << Segment << endl;
+            if(Segment>=1e20) Segment=0;
+            int Times = Possion_GetRandom_Full(Lamda_for_Average);
+            double Sprint_Length = Segment*Times;
+            cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
+
+            //Toward Inner or Outer
+            double Inner_Scaling=0;double Outer_Scaling=0;
+            double Final_Length_Scaling=0;
+            
+
+            if( ((Length_Interval[Place_Now-1])-(Distant(Track_Point,Center_of_Earth)))> 1e-2 )
+            {
+                cout << "YES1" << endl;
+                Inner_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now]  ,Track_Point,Direction);
+                Outer_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now-1],Track_Point,Direction);
+            }
+            else if( ( (Length_Interval[Place_Now-1]) - (Distant(Track_Point,Center_of_Earth)) ) < 1e-2)
+            {
+                cout << "YES2" << endl;
+                if(Place_Now==1){
+                Inner_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now]  ,Track_Point,Direction);
+                Outer_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now-1],Track_Point,Direction);}
+                else{
+                    cout << "Length_Interval[Place_Now]: " << Length_Interval[Place_Now] << endl;
+                Inner_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now]  ,Track_Point,Direction);
+                Outer_Scaling = Scale_for_scattering_process(1,Length_Interval[Place_Now-2],Track_Point,Direction);}
+                
+            }
+            
+            if(Inner_Scaling>1e20)Inner_Scaling=0;
+            if(Outer_Scaling>1e20)Outer_Scaling=0;
+
+
+            Final_Length_Scaling = Selection_for_STS(Inner_Scaling,Outer_Scaling);
+                        
+            if((Inner_Scaling<0 and Outer_Scaling==0))
+            {
+                cout << "CASE5" << endl;
+                double Special_Length=0;
+                if(Place_Now==1)Special_Length = abs( (Length_Interval[Place_Now-1]) - (Distant(Track_Point,Center_of_Earth)) );
+                else{Special_Length = abs( (Length_Interval[Place_Now-2]) - (Distant(Track_Point,Center_of_Earth)) );}
+                Final_Length_Scaling = Special_Length;
+            }
+
+            else if((Inner_Scaling==0 and Outer_Scaling<0))
+            {
+                cout << "CASE6" << endl;
+                double Special_Length=0;
+                Special_Length = abs( (Length_Interval[Place_Now]) - (Distant(Track_Point,Center_of_Earth)) );
+                Final_Length_Scaling = Special_Length;
+            }
+
+            
+            cout << "Final_Length_Scaling: " << Final_Length_Scaling << endl;
+            //====See the comparison length
+            if(Sprint_Length>Final_Length_Scaling)
+            {
+                Track_Point[0] = Track_Point[0]+(Final_Length_Scaling*Direction[0]);
+                Track_Point[1] = Track_Point[1]+(Final_Length_Scaling*Direction[1]);
+                Track_Point[2] = Track_Point[2]+(Final_Length_Scaling*Direction[2]);
+
+                Temp_Length = Temp_Length + Final_Length_Scaling;
+                cout << "GAGA1" << endl;
+
+                Step = Step + 1;
+            }
+
+            else if(Sprint_Length<=Final_Length_Scaling)
+            {
+                Track_Point[0] = Track_Point[0]+(Sprint_Length*Direction[0]);
+                Track_Point[1] = Track_Point[1]+(Sprint_Length*Direction[1]);
+                Track_Point[2] = Track_Point[2]+(Sprint_Length*Direction[2]);
+                
+                Temp_Length = Temp_Length + Sprint_Length;
+
+                cout << "GAGA2" << endl;
+
+                cout << "Bef_Vel: " << DM_Velocity_Aft_Colliding << endl;
+
+                double *V_Aft_Collision_AIR = Velocity_Aft_collision(1,WIMP_Mass,Sigma_SI_Default,DM_Velocity_Aft_Colliding,2);
+                double Energy_Loss_to_Atom   = Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) - Energy_DM(WIMP_Mass,V_Aft_Collision_AIR[0]*1e3/3e8);
+                double Ratio_of_Energy_Loss_to_Atom = Energy_Loss_to_Atom/Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8);
+                cout << "Ratio_of_Energy_Loss_to_Atom: " << Ratio_of_Energy_Loss_to_Atom << endl;
+                DM_Velocity_Aft_Colliding=V_Aft_Collision_AIR[0];
+                cout << "Aft_Vel: " << DM_Velocity_Aft_Colliding << endl;
+                
+                if(Straight_or_scattered==1){
+                double *Direction_aft = Aft_scatterd_Direction(2,15,WIMP_Mass,DM_Velocity_Aft_Colliding,Direction,Ratio_of_Energy_Loss_to_Atom);
+                Direction[0] = Direction_aft[0];Direction[1] = Direction_aft[1];Direction[2] = Direction_aft[2];}
+                
+                if(Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8)<0.01)
+                {
+                    cout << "Energy Threshold" << endl;
+                    break;
+                }
+                Step = Step + 1;
+                Collision_Time = Collision_Time + 1;
+            }
+            
+
+            if( (Distant_Criteria(Track_Point,Center_of_Earth)-6371 <=1e-10) and Step!=0)
+            {
+                cout << "In La~" << endl;
+                Arrival_or_not = 1;
+                cout << "Temp_Length: " << Temp_Length << endl;
+                break;
+            }
+            else if(  (6451 - (Distant_Criteria(Track_Point,Center_of_Earth))) <=1e-10 and Step!=0)
+            {
+                cout << "Out La~" << endl;
+                Arrival_or_not = 0;
+                cout << "Temp_Length: " << Temp_Length << endl;
+                break;
+            }
+
+        }
+
+        cout << "=========Temp_Length========: " << Temp_Length << endl;
+        cout << "=========Path_Original========: " << Path_Original << endl;
+        cout << "=================Distant(Track_Point,Center_of_Earth) ended================ " << Distant(Track_Point,Center_of_Earth) << endl;
+
+        cout << "Track_Point_Now[0]: " << Track_Point[0] << endl;
+        cout << "Track_Point_Now[1]: " << Track_Point[1] << endl;
+        cout << "Track_Point_Now[2]: " << Track_Point[2] << endl;
+
+        cout << "Step: " << Step << endl;
+        if(Path_Original<=0) cout << "OK THEN THE EVENT IS OUT OF OUR CATEGORY" << endl;
+
+        //cout << "=========Temp_Length========: " << Temp_Length << endl;
+
+    }
+    /*
+    if(Temp_Length!=0)
+    {
+    gStyle->SetPalette(1);
+    dt->SetMarkerStyle(20);
+    dt->Draw("pcolLINE");
+    }
+     */
+    //=======================
+    //cout << "Ene_Vel_Air_Final: " << Energy_DM(WIMP_Mass,DM_Velocity_Aft_Colliding*1e3/3e8) << endl;
+    //cout << "Velocity_Air_Final: " << DM_Velocity_Aft_Colliding << endl;
+    //cout << "Collision_TIME_Check: " <<Collision_TIME_Check << endl;
+    //cout << " Actual_collision: " << Actual_collision << endl;
+    if(Check_Threshold==0)
+    {
+        if(Path_Original!=0){RETURN_VALUE[1]=(Temp_Length/Path_Original);}
+        else{RETURN_VALUE[1]=0;}
+    RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;RETURN_VALUE[2]=Collision_Time;
+    RETURN_VALUE[3]=Track_Point[0];RETURN_VALUE[4]=Track_Point[1];RETURN_VALUE[5]=Track_Point[2];RETURN_VALUE[6]=Arrival_or_not;
+    RETURN_VALUE[7]=Direction[0];RETURN_VALUE[8]=Direction[1];RETURN_VALUE[9]=Direction[2];
+    RETURN_VALUE[10]=Path_Original;RETURN_VALUE[11]=Temp_Length;RETURN_VALUE[12]=Collision_Time;
+    }
+
+    if(Check_Threshold!=0)
+    {
+   RETURN_VALUE[0]=0;RETURN_VALUE[1]=0;
+    }
+
+    return RETURN_VALUE;
+}
 
 
 double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattered, int Event, int index, double Sigma_SI_Default, double Velocity, double WIMP_Mass, double *Direction, double *Intermediate_Point) //Velocity(km/s)

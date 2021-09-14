@@ -10,6 +10,7 @@
 #include "cpkkd_calculation_New.h"
 void Overlap_Plot_TEXONO_Ge_Test()
 {
+
     const int Number=29;
     double Sigma_SI_Array[Number];
     //Method1 Threshold: 200eV
@@ -223,11 +224,12 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     //Energy recoil Spectrum
     TGraph *ER_Spectrum_Bef = new TGraph(reso_T,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
     ER_Spectrum_Bef->GetXaxis()->SetTitle("Energy[keV]");
-    ER_Spectrum_Bef->GetYaxis()->SetTitle("Count");
-        
-    ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e2);
+    //ER_Spectrum_Bef->GetYaxis()->SetTitle("Count");
+    ER_Spectrum_Bef->GetYaxis()->SetTitle("d<#sigma>/dT");
+
+    ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e+1);
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-30,1e-3);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-38,1e-23);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);
@@ -283,11 +285,13 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     leg->SetTextSize(0.04);
     leg->SetBorderSize(0);
     leg->SetTextFont(22);
-        leg->AddEntry("",Form("%s:#sigma_{SI}:%.2fe-%i, M_{#chi}=%.3fGeV",Type_of_Model.c_str(),Multiply_Number,YYY,Mass),"");
+        /*
+    leg->AddEntry("",Form("%s:#sigma_{SI}:%.2fe-%i, M_{#chi}=%.3fGeV",Type_of_Model.c_str(),Multiply_Number,YYY,Mass),"");
     leg->AddEntry(ER_Spectrum_Bef,"ER_Spectrum_Bef","l");
     leg->AddEntry(ER_Spectrum_Aft,"ER_Spectrum_Aft","l");
     leg->AddEntry("",Form("Ratio of >200eV: %.3f #times 10^{-%i}",Number[0],Scale[0]),"l");
     leg->AddEntry("",Form("Ratio of >200eV and <250eV: %.3f #times 10^{-%i}",Number[1],Scale[1]),"l");
+        */
         
     ER_Spectrum_Bef->Draw("ALP");
     //ER_Spectrum_Aft->Draw("ALP");
@@ -450,6 +454,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     gPad->SetLogy();
     cout << "Yes?!3" << endl;
     cout << "Point_Number: " << Point_Number << endl;
+
     //c4->Print("Recoil_Spectrum_CDEX/2P5GeV_MD_EXCLUSION_Plot_1_CDEX.pdf");
     if(Take_Plot==1)
     {

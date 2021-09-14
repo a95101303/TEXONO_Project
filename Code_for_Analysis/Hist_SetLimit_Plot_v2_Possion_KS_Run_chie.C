@@ -44,8 +44,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_chie(int Index, int Simulated_Event_Nu
     string Mass_Point[19]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05","10","5","7"};
     double WIMP_Mass_Array[19]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,10,5,7};
      */
-    string Mass_Point[5]={"3","4","5","10","20"};
-    double WIMP_Mass_Array[5]={3,4,5,10,20};
+    string Mass_Point[5]={"1","4","5","10","20"};
+    double WIMP_Mass_Array[5]={1,4,5,10,20};
 
     //Start with the DM Mass
     double WIMP_Mass = WIMP_Mass_Array[Index];
@@ -190,8 +190,9 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         cout << "Velocity_Z[kkk]: " << Velocity_Z[kkk] << endl;
 
         double ECNR  = Collision_Expectation_EARTH[kkk];//EARTH_COLLISION_COUNT_NUCLEAR_RECOIL
-        //double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
-        double ECER  = ECNR*(1./4.)*(0.5e-3)*(1./4.)*(0.5e-3);//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+        double ECER  = Collision_Expectation_EARTH_ER[kkk];//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
+        cout << "ECER: " << ECER << endl;
+        //double ECER  = ECNR*(1./4.)*(0.5e-3)*(1./4.)*(0.5e-3);//EARTH_COLLISION_COUNT_ELECTRON_RECOIL
 
         Collision_Time_Hist_NU->Fill(ECNR);
         Collision_Time_Hist_ER->Fill(ECER);
@@ -201,7 +202,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
         
         //double *A = Velocity_Aft_collision_ER(int(ECER),DM_mx,Sigma_SI,Velocity[kkk]);
         
-        cout << "LOSS(keV)" << ECER*5/1e3 << endl;
+        cout << "LOSS(keV)" << ECER*1.1/1e3 << endl;
     }
     
     TLegend *leg= new TLegend(0.5,0.7,0.9,0.9);

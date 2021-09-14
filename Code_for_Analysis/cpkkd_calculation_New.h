@@ -322,7 +322,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     if(Conventional_or_not==2){//Conventional Distribution
         WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Model_of_Interaction==4){//electron Recoil
-        WIMP_max_T = Max_Recoil_A_keV_ER_Free(WIMP_mx, MaxV)+0.02;} //keV
+        WIMP_max_T = max_recoil_A_for_ER_keV(MaxV,WIMP_mx)+0.2;} //keV
 
     double WIMP_max_T_NU = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
@@ -570,6 +570,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
+    const double M_of_DM=0;
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
         cout << "Electronic Recoil//(From other paper not Mukesh's)" << endl;
@@ -583,11 +584,11 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);
                 float v_cm_day = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])*kms1_to_cmday1;
                 
-                if((Max_Recoil_A_keV_ER_Free(WIMP_mx,0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])))>T[i])
+                if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
                     {
-                        //cout << "2*0.511*1e-3*dsigma_dT_keV_ER_2(Sigma_SI, WIMP_mx, v): " << 2*0.511*1e-3*dsigma_dT_keV_ER_2(Sigma_SI, WIMP_mx, v) << endl;
-    if(Conventional_or_not==0)recoilX[i] = recoilX[i] + 2*0.511*1e-3*dsigma_dT_GeV_ER_2(Sigma_SI, WIMP_mx, v)*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/(Flux->GetEntries());
-    if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 2*0.511*1e-3*dsigma_dT_GeV_ER_2(Sigma_SI, WIMP_mx, v)*N_atom_Ge_1kg*(rohx/WIMP_mx)*v_cm_day*(1)*(1/(sum))*velo_dist_Ave[j][3];
+//if(Conventional_or_not==0)recoilX[i] = recoilX[i] + 2*0.511*1e-3*dsigma_dT_GeV_ER_2(Sigma_SI, WIMP_mx, v)*N_atom_Ge_1kg*32*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/(Flux->GetEntries());
+              if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*(1/(sum))*velo_dist_Ave[j][3];
+          //  if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*N_atom_Ge_1kg*32*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];
                     }
             }
             

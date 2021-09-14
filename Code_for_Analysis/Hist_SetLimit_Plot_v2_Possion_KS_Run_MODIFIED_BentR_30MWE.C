@@ -30,33 +30,43 @@
 
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
-void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_not, int Index_Mass, int Simulated_Event_Number, int Index_Sigma, double Sigma_SI)
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_BentR_30MWE(int Bent_or_not, int Index_Mass, int Simulated_Event_Number, int Index_Sigma)
 {
-    cout << "Sigma_SI: " << Sigma_SI << endl;
     //==============================Second step==============================
-    
     //Constant
-    
     string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06","0P05"};
     double WIMP_Mass_Array[16]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};
-     
-    /*
-    string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-    double WIMP_Mass_Array[12]={20,19,17,15,13,11,9,7,5,4,3,2.35};//12 for TEXONO
-     */
-    //string Mass_Point[5]={"20","10","2","0P2","0P05"};
-    //double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
-
-    //string Mass_Point[4]={"15","6","0P6","0P08"};//Second round
-    //double WIMP_Mass_Array[4]={15,6,0.6,0.08};//12 for TEXONO
 
     //string Mass_Point[10]={"0P2","0P19","0P18","0P17","0P16","0P15","0P14","0P13","0P12","0P11"};
     //double WIMP_Mass_Array[10]={0.2,0.19,0.18,0.17,0.16,0.15,0.14,0.13,0.12,0.11};
-    //Start
-    double WIMP_Mass = WIMP_Mass_Array[Index_Mass];
-    double DM_mx = WIMP_Mass_Array[Index_Mass];
+
+    //string Mass_Point[5]={"20","10","2","0P2","0P05"};
+    //double WIMP_Mass_Array[5]={20,10,2,0.2,0.05};//12 for TEXONO
+
+    TFile *ROOT_FILE;
+    
+    
+    if(Bent_or_not==1)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    if(Bent_or_not==0)ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+
+    TTree *T1_TREE    = (TTree*)ROOT_FILE->Get("t1");
+    TH1F  *VD_Initial = (TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
+
+    Double_t mx,sigma_si;
+    Double_t V_X, V_Y, V_Z, V_End_A;
+    T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+    T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+    T1_TREE->SetBranchAddress("V_X",&V_X);T1_TREE->SetBranchAddress("V_Y",&V_Y);T1_TREE->SetBranchAddress("V_Z",&V_Z);
+    T1_TREE->SetBranchAddress("V_End_A",&V_End_A);
+    T1_TREE->GetEntry(0);
+     
+    double WIMP_Mass = mx;
+    double DM_mx = mx;
+     
     //Double_t WIMP_Mass_Array[13]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08};
     cout << "WIMP_Mass: " << WIMP_Mass << endl;
+
+
 
     double Vecolity[2000];double Possiblity[2000];
     double Aft_Vecolity[2000];
@@ -109,25 +119,14 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
     //{
     int Bent_or_not_to_be_Bent=Bent_or_not;
     TTree *t1 = new TTree("t1","Information");
-    double sigma_si,mx ;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
-    double V_Int_A, V_End_A, V_Int_E, V_End_E;
-    double V_X, V_Y, V_Z;
-
+    double SIGMA_SI,Mx ;int ev,Arrival_air,Arrival_earth,Bent_or_Not;
     double Oringal_Length_Air,Path_Length_Air,Oringal_Length_Earth,Path_Length_Earth;
     double Collision_Time_Earth,Collision_Time_Air;
     double Original_Bent_Comparison_Ratio_Air_P,Original_Bent_Comparison_Ratio_Earth_P;
     double Energy_Loss_Percentage_lf;
     
-    t1->Branch("sigma_si",&sigma_si,"sigma_si/D");
-    t1->Branch("mx",&mx,"mx/D");
-    t1->Branch("V_Int_A",&V_Int_A,"V_Int_A/D");
-    t1->Branch("V_End_A",&V_End_A,"V_End_A/D");
-    t1->Branch("V_Int_E",&V_Int_E,"V_Int_E/D");
-    t1->Branch("V_End_E",&V_End_E,"V_End_E/D");
-
-    t1->Branch("V_X",&V_X,"V_X/D");
-    t1->Branch("V_Y",&V_Y,"V_Y/D");
-    t1->Branch("V_Z",&V_Z,"V_Z/D");
+    t1->Branch("SIGMA_SI",&SIGMA_SI,"SIGMA_SI/D");
+    t1->Branch("Mx",&Mx,"Mx/D");
 
     t1->Branch("ev",&ev,"ev/I");
     t1->Branch("Arrival_air",&Arrival_air,"Arrival_air/I");
@@ -152,10 +151,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
         
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
-        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
@@ -165,152 +161,99 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_MODIFIED_Bent_From_CRESST(int Bent_or_
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
         cout << "//Event: " << jjj << "//Air: " << kkk << endl;
 
-        sigma_si = Sigma_SI;
+
+        SIGMA_SI = sigma_si;
         cout << "sigma_si : " << sigma_si << endl;
-        mx = WIMP_Mass;
-        cout << "mx : " << mx << endl;
+        Mx = WIMP_Mass;
+        cout << "Mx : " << Mx << endl;
         ev = jjj;
         Bent_or_Not = Bent_or_not_to_be_Bent;
         
+        
+        TF1 *Two_Sides    = new TF1("Two_Sides","1",0,2);
         gRandom = new TRandom3(0);
         gRandom->SetSeed(0);
-        double Random_Velocity = 0;
-        Random_Velocity = Flux_HIST->GetRandom();
-        V_Int_A = Random_Velocity;
-        //Random_Velocity = 799.135;
+        int Side_confirmed_2 = Two_Sides->GetRandom();//Give out 0,1;
+        double Confirmed_Side[2]={1,-1};
 
+        if(Confirmed_Side[Side_confirmed_2]>0)
+        {
+            cout << "Earth: " << endl;
+            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
+            //jjj = jjj + 1;
+            continue;
+        }
+
+        double Random_Velocity = 0;
+        T1_TREE->GetEntry(jjj);
+        //Random_Velocity = V_End_A;
+        Random_Velocity = Flux_HIST->GetRandom();//Find Hits on the same page
+        
         Double_t par[3];
         TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
         eventGenerator->GetSeed();
         eventGenerator->Sphere(par[0],par[1],par[2],Random_Velocity);
+
+
+        double V_X1 =    (par[0]/Random_Velocity);
+        double V_Y1 =    (par[1]/Random_Velocity);
+        double V_Z1 =    abs(par[2]/Random_Velocity);
+
+        double DR[3] = {V_X1,V_Y1,V_Z1};
+
+        /*
+        gRandom = new TRandom3(0);
+        gRandom->SetSeed(0);
+        double Random_Velocity = 0;
+        T1_TREE->GetEntry(jjj);
+        Random_Velocity = V_End_A;//Check the straight line case
+         */
+        cout << "V_End_A: " << V_End_A << endl;
+        
+        
+         
         
         /*
-        double Velocity_X =    (par[0]/Random_Velocity);
-        double Velocity_Y =    (par[1]/Random_Velocity);
-        double Velocity_Z = abs(par[2]/Random_Velocity);
-         */
-        double Velocity_X =    (1e-50);
-        double Velocity_Y =    (1e-50);
-        double Velocity_Z = abs(-1);
+         double V_X1 =    V_X;
+         double V_Y1 =    V_Y;
+         double V_Z1 =    V_Z;
 
-        double Velocity_Matrix[3] = {Velocity_X,Velocity_Y,Velocity_Z};
-        double Check_Place[3] = {0,0,-6371-80};
-        double SFSP=Scale_for_scattering_process(1,6371,Check_Place,Velocity_Matrix);
+        double DR[3] = {V_X1,V_Y1,V_Z1};
+        double *SP=Starting_Point_with_DR(DR);
+        cout << "SP[0]: " << SP[0] << endl;cout << "SP[1]: " << SP[1] << endl;cout << "SP[2]: " << SP[2] << endl;//Check the straight line case
+        */
+         
+        cout << "V_X1: " << V_X1 << endl;
+        cout << "V_Y1: " << V_Y1 << endl;
+        cout << "V_Z1: " << V_Z1 << endl;
+
         
-        if( SFSP ==0 )
-        {
-            cout << "A piece of Junk!!" << endl;
-            continue;
-        }
-                
-        double DR[3]  = {Velocity_X,Velocity_Y,Velocity_Z};
-        double POE[3] = {Check_Place[0]+Velocity_X*SFSP,Check_Place[1]+Velocity_Y*SFSP,Check_Place[2]+Velocity_Z*SFSP};
-        
-        cout << "On Earth?: " <<  Length_of_vector(POE[0],POE[1],POE[2]) << endl;
         //Two times
         Flux_HIST_Random->Fill(Random_Velocity);
-        Flux_HIST_Random->Fill(Random_Velocity);
 
-        /*
-        double Velocity_X = 1e-50;
-         */
         double Dark_Matter_Energy = Energy_DM(DM_mx,Random_Velocity*1e3/3e8);//KeV
         double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
 
-        cout << "Velocity_X[kkk]: " << Velocity_X << endl;
-        cout << "Velocity_Y[kkk]: " << Velocity_Y << endl;
-        cout << "Velocity_Z[kkk]: " << Velocity_Z << endl;
-        cout << "Velocity: " << Random_Velocity << endl;
-
-
-
-        double Direction_of_Velocity[3]={Velocity_X,Velocity_Y,Velocity_Z};
-        double Bool_If_Earth_Check= Bool_If_Earth( Velocity_X, Velocity_Y,  Velocity_Z);
-        double Cement_Length = KS_Cement_Path_Length( Velocity_X,  Velocity_Y,  Velocity_Z);
-        double Reactor_Length_Total = KS_Reactor_Path_Length(27.5, Velocity_X,  Velocity_Y,  Velocity_Z);
-        double Reactor_Length_Water = KS_Reactor_Path_Length(26.5, Velocity_X,  Velocity_Y,  Velocity_Z);
-        //cout << "=============Reactor_Length_Water=============: " << Reactor_Length_Water << endl;
-double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Reactor_Length_Total,Reactor_Length_Water};//1 for Air check, 2 for the Cement, 3 for the Reactor
-        double *A=KS_Collision_Time_EARTH(Sigma_SI, Velocity_Y, Velocity_Z, Random_Velocity,DM_mx,Path_Length_For_Three_Components);
-
-        //Air_Value
-double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_or_not_to_be_Bent,kkk,Index_Sigma,Sigma_SI,0,1,Random_Velocity,DM_mx,Path_Length_For_Three_Components,A[0],Direction_of_Velocity);
-        Arrival_air = ATM_Value[6];
-
-        Oringal_Length_Air = ATM_Value[10]; Path_Length_Air = ATM_Value[11];
-        if(Arrival_air==1)
-        {
-            kkk = kkk + 1;
-            Collision_Time_Hist_Air->Fill(ATM_Value[2]);
-            Collision_Time_Air = ATM_Value[2];
-            //Original_Bent_Comparison_Ratio_Air->Fill(ATM_Value[1]);
-            Flux_HIST_Aft_Collision_EARTH->Fill(ATM_Value[0]);
-            V_End_A = ATM_Value[0];
-        }
-        else{
-            Arrival_earth = 0;
-            Oringal_Length_Earth = 0; Path_Length_Earth = 0;
-            Collision_Time_Earth = 0;
-            Collision_Time_Air = ATM_Value[2];
-            cout << "Arrival_earth: " << Arrival_earth << endl;
-            Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            V_End_E = 0;
-            V_End_A = 0;
-        }
-        cout << "Arrival_air: " << Arrival_air << endl;
-        double IP[3]={ATM_Value[3],ATM_Value[4],ATM_Value[5]};//Intermediate_Position
-        double ID[3]={ATM_Value[7],ATM_Value[8],ATM_Value[9]};//Intermediate_Direction
-        V_Z = Z_Velocity_Projected(POE,ID);
-        
-        double *VXY = X_Y_Velocity_Projected(V_Z);
-        
-        V_X = VXY[0];V_Y = VXY[1];
-        cout << "V_X: " << V_X << "V_Y: " << V_Y << "V_Z: " << V_Z << endl;
-        cout << "V_XYZ ==1??: " << sqrt(V_X*V_X+V_Y*V_Y+V_Z*V_Z) << endl;
-        cout << "ATM_Value[0]: " << ATM_Value[0] << endl;
-        //Earth_Value
-
-        if(Arrival_air==1){//Arrival_air_Open
-            V_Int_E = ATM_Value[0];
-    double *Earth_Value = KS_Collision_Time_Earth_Aft_velocity_with_angle(Bent_or_not_to_be_Bent,kkk,Index_Sigma,Sigma_SI,ATM_Value[0],DM_mx,ID,IP);
-        Arrival_earth = Earth_Value[3];
-
-        Oringal_Length_Earth = Earth_Value[4]; Path_Length_Earth = Earth_Value[5];
-            Collision_Time_Hist_Earth->Fill(Earth_Value[2]);
-
-        if(Arrival_earth==1)
-        {
-            //cout << "===============YAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYAYA==============================" << endl;
-            cout << "MMM: " << MMM  << endl;
-            double E_Loss            = Energy_DM(DM_mx,Random_Velocity*1e3/3e8) - Energy_DM(DM_mx,Earth_Value[0]*1e3/3e8);
-            double E_Loss_Percentage = (E_Loss) / ( Energy_DM(DM_mx,Random_Velocity*1e3/3e8) ) ;
-            //cout << "E_Loss_Percentage: " << E_Loss_Percentage << endl;
-            Energy_Loss_Percentage_Hist->Fill(E_Loss_Percentage);
-            MMM = MMM + 1;
-            //Original_Bent_Comparison_Ratio_Earth->Fill(Earth_Value[1]);
-            Flux_HIST_Aft_Collision_EARTH->Fill(Earth_Value[0]);
-            Energy_Loss_Percentage_lf = E_Loss_Percentage;
-            Collision_Time_Earth = Earth_Value[2];
-            V_End_E = Earth_Value[0];
-        }
-        else
-        {
-            //Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            Energy_Loss_Percentage_lf = 1;
-            Collision_Time_Earth = Earth_Value[2];
-            V_End_E = 0;
-        }
-
-        cout << "Earth_Value[0]: " << Earth_Value[0] << endl;
-        cout << "Arrival_earth: " << Arrival_earth << endl;
-        }//Arrival_air_Close
-
-        //Final_Length
-
+        double *Value = KS_Real_N_With_Angle_30MWE(Bent_or_not_to_be_Bent, SIGMA_SI, Random_Velocity, DM_mx, DR); //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
+        Collision_Time_Earth=Value[1];Arrival_earth=Value[2];
+        cout << "Collision_Time_Earth: " << Collision_Time_Earth << endl;
+        if(Value[2]>0)Flux_HIST_Aft_Collision_EARTH->Fill(Value[0]);
+        Collision_Time_Hist_Earth->Fill(Value[1]);
         //Final_Length
 
         jjj = jjj + 1;
         t1->Fill();
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+        cout << "//Event: " << jjj << "//Air: " << kkk << endl;
 
     }
 
@@ -340,8 +283,8 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
        // save the Tree heade; the file will be automatically closed
        // when going out of the function scope
     char fout_name[100];
-    if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Earth.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
-    if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    //if(Bent_or_not_to_be_Bent==1)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
+    //if(Bent_or_not_to_be_Bent==0)sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Bent_MAT/%sGeV/%i_STS_Bent_Comparison.root",Mass_Point[Index_Mass].c_str(),Index_Sigma));
     TFile *fout=new TFile(fout_name,"recreate");
     Flux_HIST_Random->Write();
     //Flux_HIST_Aft_Collision_Earth->Write();

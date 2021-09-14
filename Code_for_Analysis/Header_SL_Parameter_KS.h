@@ -60,14 +60,15 @@ double Final_Energy(int Times, double Initial_Energy)
     return A;
 }
 
-double RMe(double mx)//Reduce_Mass_e(RMe)
+double RMe(double mx)//mx(GeV/c^2),Reduce_Mass_e(RMe)
 {
     //cout << "RMe: " << 1e-3*Electron_Mass_MeV*1e-3*1000*mx/((1e-3*Electron_Mass_MeV)+1e-3*1000*mx) << endl;
     return 1e-3*Electron_Mass_MeV*mx/((1e-3*Electron_Mass_MeV)+mx);//GeV/c^2
 }
 double max_recoil_A_for_ER_keV(double velocity, double mx)//mx(GeV/c^2),Velocity(km/s)
 {
-  double max_recoil_A_0 = 0.5*RMe(mx)*1e6*(velocity*V_to_C)*(velocity*V_to_C); //(keV)
+  double max_recoil_A_0 = 0.5*mx*1e6*(velocity*V_to_C)*(velocity*V_to_C); //(keV)
+    cout << "max_recoil_A_0: " << max_recoil_A_0 << endl;
   return max_recoil_A_0;
 }
 double c_1(double CS, double mx)//Cross-Section(CS) to c1
@@ -83,52 +84,20 @@ double electron_number(double A = AGe)
     return (1000.0*avogadro_number)/(A);//kg^{-1}
 }
 
+/*
 double dsigma_dT_keV_ER(double CS, double Month, double T, double mx, double A)//dsigma_dT_keV for Electron Recoil, Month1: June, Month2: Dec
 {
     double rate_factor = pow(d_1(CS,mx),2)*1E-18*1E+3*86400*3E+10*(density*electron_number(A))/(mx);
-    /*
-    cout << "d_1(CS,mx): " << d_1(CS,mx) << endl;
-    cout << "pow(d_1(CS,mx),2): " << pow(d_1(CS,mx),2) << endl;
-    cout << "rate_factor: " << rate_factor << endl;
-    cout << "LongRangeDcs_June(T*1E+3 , mx ): " << LongRangeDcs_June(T*1E+3 , mx ) << endl;
-     */
     if(Month==1)return rate_factor*LongRangeDcs_June(T*1E+3 , mx )*1e-29;
     if(Month==2)return rate_factor*LongRangeDcs_Dec(T*1E+3 , mx )*1e-29;
 }
-
+*/
 double Max_Recoil_A_keV_ER(double V, double mx)//Electron Recoil Max recoil energy, mx(GeV/c^2), velocity(V)
 {
     double Beta = (V*1e3)/(3E+8);//Beta(c)
     return 0.5*mx*(1e6)*(Beta)*(Beta);//Energy of DM basically
     //return 0.5*RMe(mx)*(1e6)*(Beta)*(Beta);//Energy of DM basically
 
-}
-
-
-double Total_Sigma_ER(double Month, double CS, double V, double mx, double A)//Total Sigma for Electron Recoil, V(km/s)
-{
-    int reso_T=1000;double T[reso_T];double total_Sigma=0;
-     double WIMP_max_T   = Max_Recoil_A_keV_ER(V,mx); //keV
-     double WIMP_max_T_2 = max_recoil_A_for_ER_keV(V,mx);//keV
-    //======
-    for(int i=0;i<reso_T;i++)
-    {
-        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
-    }
-    //======
-    double dEx=0;
-    double pEx = T[0];
-    for(int i=0;i<reso_T;i++)
-    {
-        //cout << "T[i]: " << T[i] << endl;
-        if(i==0) { dEx = T[0]; }
-        else { dEx = T[i] - pEx; }
-        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, 1, T[i], mx, A)*dEx);
-        //cout << "dsigma_dT_keV_ER(CS, 1, T[i], mx, A): " << dsigma_dT_keV_ER(CS, 1, T[i], mx, A) << endl;
-        pEx = T[i];
-    }
-    //cout << "total_Sigma: " << total_Sigma << endl;
-    return total_Sigma;
 }
 
 /*
@@ -149,6 +118,7 @@ double DS_Try(double d_1, double mx)
     return d_1*d_1*RMe(mx)*RMe(mx)*hbarC_divide_GeV_cm_Square*1e24/(PI*pow(Me_times_alpha,4));
 }
 //================From paper 1905.06348v2===============//
+/*
 double Max_Recoil_A_keV_ER_Free(double mx, double V_Initial)//Electron Recoil Free electron, Max recoil energy, mx(GeV/c^2), velocity(V)
 {
     //cout << "V_Initial: " << V_Initial << endl;
@@ -159,22 +129,58 @@ double Max_Recoil_A_keV_ER_Free(double mx, double V_Initial)//Electron Recoil Fr
     //cout << "0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta): " << 0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta) << endl;
     return 0.5*Electron_Mass_MeV*1e3*(Beta)*(Beta);//Energy of DM basically
 }
+ */
 
 const double Alpha_FS = 1./137.;//Fine Sturcture constant
-const double q_ref    = Alpha_FS*0.511*1e-3;//GeV/c^2
+const double q_ref    = Alpha_FS*0.511*1e3;//keV/c^2
 
-double q_calculate(double mx, double V)//mx(GeV/c^2),V(km/s)
+double Momentum_Transfer(double T)//T(keV)
 {
-    return 2*RMe(mx)*TMath::Power( (V*V_to_C), 2 );
+    return sqrt(2*Electron_Mass_MeV*1e3*T);//(keV/c)
 }
-double F_DM(double mx, double V)//mx(GeV/c^2),V(km/s)
+double F_DM(double T, double MA_Plus)//T(keV), MA_Plus(Mass of Dark Photon), ER_Square
 {
-    return (q_ref/q_calculate(mx,V))*(q_ref/q_calculate(mx,V));
+    cout << "T: " << T << endl;
+    double  q = Momentum_Transfer(T);
+    cout << "q: " << q << endl;
+    return (q_ref*q_ref+MA_Plus*MA_Plus)/(q*q+MA_Plus*MA_Plus);//No Unit
 }
-double dsigma_dT_GeV_ER_2(double Sigma_SI, double mx, double V)
+double dsigma_dT_keV_ERSS(double Sigma_SI, double mx, double V)//ER_Square
 {
     //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
-    return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C));
+    return Sigma_SI*(1./(4*RMe(mx)*1e6*RMe(mx)*1e6*V*V_to_C*V*V_to_C));//(cm^2*c^2/keV^2)
 }
+double dsigma_dT_keV_ER(double Sigma_SI, double mx, double V, double T, double M_DP)//Sigma_SI(cm^2), mx(GeV/c^2), V(km/s), q(momentum from above), M_DP(keV/c^2)[Dark Photon Mass], ER
+{
+    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
+    return 2*Electron_Mass_MeV*1e3*(dsigma_dT_keV_ERSS(Sigma_SI,mx,V)*F_DM(T, M_DP)*F_DM(T, M_DP));//
+}
+
+
+double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron Recoil, V(km/s)
+{
+    int reso_T=1000;double T[reso_T];double total_Sigma=0;
+     double WIMP_max_T   = max_recoil_A_for_ER_keV(V,mx); //keV
+    //======
+    for(int i=0;i<reso_T;i++)
+    {
+        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+    }
+    //======
+    double dEx=0;
+    double pEx = T[0];
+    for(int i=0;i<reso_T;i++)
+    {
+        //cout << "T[i]: " << T[i] << endl;
+        if(i==0) { dEx = T[0]; }
+        else { dEx = T[i] - pEx; }
+        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, mx, V, T[i], 1e6)*dEx);
+        pEx = T[i];
+    }
+    cout << "mx: " << mx << endl;
+    cout << "total_Sigma: " << total_Sigma << endl;
+    return total_Sigma;
+}
+
 //=====================================================//
 //Find the dsigma_dT
