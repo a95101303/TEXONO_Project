@@ -43,6 +43,13 @@ double B_TKN=0.25;//Boron
 double Fe_TKN=0.05;//Steel
 double Pb_TKN=0.15;//Lead
 
+double Cu_TKN_cm=  5;//OFHC Cu
+double B_TKN_cm = 25;//Boron
+double Fe_TKN_cm=  5;//Steel
+double Pb_TKN_cm= 15;//Lead
+
+const double Thickness_Shielding_cm = (Cu_TKN_cm*8.96+B_TKN_cm*2.34+Fe_TKN_cm*7.86+Pb_TKN_cm*11.34)/11.34;//cm
+
 double Ge_Layer[3] ={0.8,1,0.75};//Layer0, Ge_Detector_Outmost_Layer
 double Ge_Layer_Half[3] ={0.4,0.5,0.375};//Layer0, Ge_Detector_Outmost_Layer
 
@@ -1203,17 +1210,65 @@ double Radius_To_Center_of_Earth(double *POS)
 {
     return sqrt(POS[0]*POS[0]+POS[1]*POS[1]+POS[2]*POS[2]);
 }
-int In_or_Out_E(double *DR, double *POS)
+//=========================================================Two-layer material===========================================
+double The_smallest_in_a_vector_Modified(vector<double> Vector)
 {
-    int In_or_Out=0;//1 for in and 0 for out
+    double Return_the_smallest_one=0;
+    vector<double> Vector_Used;
+    if(Vector.size()>0)
+    {
+        //===========Remove the value which is zero or below=========//
+        for(int k=0; k<Vector.size(); k++)
+            {
+            if(Vector[k]>1e-20)
+                {
+                Vector_Used.push_back(Vector[k]);
+                }
+            }
+        //Sort the Vector_Used
+            if(Vector_Used.size()>0)
+            {
+                std::sort(Vector_Used.begin(), Vector_Used.end());
+                for(int kkk=0; kkk<Vector_Used.size(); kkk++)
+                {
+                    //cout << "kkk: " << kkk << endl;
+                    //cout << "Vector_Used.: " << Vector_Used[kkk] << endl;
+                }
+                Return_the_smallest_one = Vector_Used[0];
+                //cout << "Vector_Used.[0]: " << Vector_Used[0] << endl;
+            }
+    }
+    else{Return_the_smallest_one=0;}
+    return Return_the_smallest_one;
+}
+
+const double Thickness_Shielding_km = 1e-5*Thickness_Shielding_cm;//km
+double R_i = 6371.+Thickness_Shielding_km +0.01;//Starting Point
+double R_m = 6371 +Thickness_Shielding_km;//Middle Point
+double R_f = 6371.;//Final Point
+
+int Where_is_it_30WME_Shielding(double *POS)
+{
+    int Place=0;
+    
+    if( Radius_To_Center_of_Earth(POS)-R_f>1e-10 and Radius_To_Center_of_Earth(POS)-R_m<=1e-10) Place=1;
+    else if( Radius_To_Center_of_Earth(POS)-R_m>1e-10 and Radius_To_Center_of_Earth(POS)-R_i<=1e-10) Place=2;
+    else if( Radius_To_Center_of_Earth(POS)-R_f<=1e-10 ) Place=0;
+    else if( Radius_To_Center_of_Earth(POS)-R_i> 1e-10 ) Place=3;
+    cout << "Place: " << Place << endl;
+    return Place;
+}
+
+double In_or_Out_Value(double *DR, double *POS, double R)
+{
     double A=1;
     double B=2*(DR[0]*POS[0]+DR[1]*POS[1]+DR[2]*POS[2]);
-    double C=POS[0]*POS[0]+POS[1]*POS[1]+POS[2]*POS[2]-6371*6371;
-    
-    if(B*B-4*A*C>0)In_or_Out=1;
-    else In_or_Out=0;
-    
-    return In_or_Out;
+    double C=POS[0]*POS[0]+POS[1]*POS[1]+POS[2]*POS[2]-R*R;
+    double D= B*B-4*A*C;//B square minus 4 times a times c
+    double S1 = (-B+sqrt(D))/(2*A);double S2 = (-B-sqrt(D))/(2*A);
+    vector<double> Return={S1,S2};
+    double Return_Value = The_smallest_in_a_vector_Modified(Return);
+    return Return_Value;
 }
 
 double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_Collision_to_Length(PAC),Predicted_Length(PL)
@@ -1225,32 +1280,67 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
     POS_Aft[1] = POS_Int[1]+PL*DR[1];
     POS_Aft[2] = POS_Int[2]+PL*DR[2];
     
+    int Now_Place  = Where_is_it_30WME_Shielding(POS_Int);
+
     double STU; //Boundary Or Not
     cout << "POS_Aft[0]: " << POS_Aft[0] << "POS_Aft[1]: " << POS_Aft[1] << "POS_Aft[2]: " << POS_Aft[2] << endl;
-    cout << "Radius_To_Center_of_Earth(POS_Aft): " << Radius_To_Center_of_Earth(POS_Aft) << endl;
-    cout << "Radius_To_Center_of_Earth(POS_Aft)-6371.: "   << Radius_To_Center_of_Earth(POS_Aft)-6371. << endl;
-    cout << "Radius_To_Center_of_Earth(POS_Aft)-6371.01: " << Radius_To_Center_of_Earth(POS_Aft)-6371.01 << endl;
+    cout << "Now_Place:  " << sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2]) << endl;
+    cout <<  setprecision(10) << endl;
+    cout << "R_i " << R_i << endl;cout << "R_m " << R_m << endl;cout << "R_f " << R_f << endl;
+    cout << "sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_i" << sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_i << endl;
+    cout << "sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_m" << sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_m << endl;
+    cout << "sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_f" << sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2])-R_f << endl;
 
-    int Check_on_Earth = In_or_Out_E(DR,POS_Int);
-    if(Radius_To_Center_of_Earth(POS_Aft)-6371.>=1E-10 and Radius_To_Center_of_Earth(POS_Aft)-6371.01<=1E-10)
+    cout << "sqrt(POS_Aft[0]*POS_Aft[0]+POS_Aft[1]*POS_Aft[1]+POS_Aft[2]*POS_Aft[2])-R_i" << sqrt(POS_Aft[0]*POS_Aft[0]+POS_Aft[1]*POS_Aft[1]+POS_Aft[2]*POS_Aft[2])-R_i << endl;
+    cout << "Thickness_Shielding_km: " << Thickness_Shielding_km << endl;
+    double In_or_Out_Value_Inner;double In_or_Out_Value_Outer;double In_or_Out_Value_Middle;
+    vector<double> Return={0,0,0};
+
+    if( (Radius_To_Center_of_Earth(POS_Aft)-R_i>0 and Now_Place==2) or (Radius_To_Center_of_Earth(POS_Aft)-R_f<0 and Now_Place==1))
     {
-        cout << "Yes1 " << endl;
-        cout << "in the shielding^>^" << endl;
-        POS_Aft[3]=1;//in the shielding
+        cout << "Case1" << endl;
+        cout << "Radius_To_Center_of_Earth(POS_Aft)-R_i: " <<Radius_To_Center_of_Earth(POS_Aft)-R_i << endl;
+        cout << "Radius_To_Center_of_Earth(POS_Aft)-R_f: " <<Radius_To_Center_of_Earth(POS_Aft)-R_f << endl;
+
+        POS_Aft[3] = 0;
     }
-    else if(Check_on_Earth==1)
+    else if(Now_Place==1)
     {
-        cout << "Inside the earth>^ " << endl;
-        cout << "Check_on_Earth: " << Check_on_Earth << endl;
-        POS_Aft[3]=2;//Inside the mountain and this event has an interaction
+        cout << "Case2" << endl;
+        POS_Aft[3] = Now_Place;
+        In_or_Out_Value_Inner  = In_or_Out_Value(DR,POS_Int,R_f);
+        In_or_Out_Value_Middle = In_or_Out_Value(DR,POS_Int,R_m);
+        In_or_Out_Value_Outer  = In_or_Out_Value(DR,POS_Int,R_i);
+        cout << "In_or_Out_Value_Inner: "  << In_or_Out_Value_Inner << endl;
+        cout << "In_or_Out_Value_Middle: " << In_or_Out_Value_Middle << endl;
+        cout << "In_or_Out_Value_Outer: "  << In_or_Out_Value_Outer << endl;
+        Return[0]=In_or_Out_Value_Inner;Return[1]=In_or_Out_Value_Outer;Return[2]=In_or_Out_Value_Outer;
+        POS_Aft[4] = The_smallest_in_a_vector_Modified(Return);
+        
     }
-    else if(Check_on_Earth==0)
+    else if(Now_Place==2)
     {
-        cout << "out of the shielding^>^ " << endl;
-        cout << "Check_on_Earth: " << Check_on_Earth << endl;
-        POS_Aft[3]=0;//Go out of the mountain and counted as an event
+        cout << "Case3" << endl;
+        cout << "OK10 " << endl;
+        POS_Aft[3] = Now_Place;
+        In_or_Out_Value_Inner = In_or_Out_Value(DR,POS_Int,R_m);
+        cout << "In_or_Out_Value_Inner: " << In_or_Out_Value_Inner << endl;
+        In_or_Out_Value_Outer = In_or_Out_Value(DR,POS_Int,R_i);
+        cout << "In_or_Out_Value_Outer: " << In_or_Out_Value_Outer << endl;
+        cout << "OK20 " << endl;
+        Return[0]=In_or_Out_Value_Inner;Return[1]=In_or_Out_Value_Outer;
+        cout << "Return[0]: " << Return[0] << "Return[1]: " << Return[1] << endl;
+        cout << "OK30 " << endl;
+        POS_Aft[4] = The_smallest_in_a_vector_Modified(Return);
+        cout << "POS_Aft[4]: " << POS_Aft[4] << endl;
+        cout << "OK40 " << endl;
     }
-            
+    else
+    {
+        cout << "Case4" << endl;
+        cout << "OK60" << endl;
+        POS_Aft[3] = 0;
+    }
     return POS_Aft;
 }
 
@@ -1269,26 +1359,42 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
     double Sprint_GO = Segment*Times;
     cout << "Sprint_GO: " << Sprint_GO << endl;
     double *SLU=DAC_to_LEG_30MWE(POS_Int,DR,Sprint_GO);//Scaling_Length_Used,The layer a WIMP runs in
-    cout << "in(-1), Inside the earth(0) or Out of the shielding(1): " << SLU[3] << endl;//Below(-1), In(0) or Out(1) of the mountain
-
-    if( int(SLU[3])==1 )//In the shielding
+    cout << "Now_Place:  " << sqrt(POS_Int[0]*POS_Int[0]+POS_Int[1]*POS_Int[1]+POS_Int[2]*POS_Int[2]) << endl;
+    
+    if( int(SLU[3])==1 or int(SLU[3])==2 ) //In the shielding or 30WME
     {
-        POS_Int = PAP(Sprint_GO,POS_Int,DR);
-        double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
-        V_aft = VAC_end[0]; ROELTA = VAC_end[1];
-        if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
-        Collision_Time=1;
-        
+        if(Sprint_GO<SLU[4])
+        {
+            POS_Int = PAP(Sprint_GO,POS_Int,DR);
+            if(int(SLU[3])==1)
+            {
+                cout << "OK3 " << endl;
+                double *VAC_end = VAC(Mx,Sigma_SI,V_aft,APb);//
+                V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+                if(SorT==1)DR = DRAC(APb,Mx,V_aft,DR,ROELTA);
+                cout << "OK4 " << endl;
+            }
+            if(int(SLU[3])==2)
+            {
+                cout << "OK5 " << endl;
+                double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
+                V_aft = VAC_end[0]; ROELTA = VAC_end[1];
+                if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
+                cout << "OK6 " << endl;
+            }
+            Collision_Time=1;
+        }
+        else
+        {
+            cout << "OK7 " << endl;
+            POS_Int = PAP(SLU[4],POS_Int,DR);
+        }
     }
 
-    if( int(SLU[3])==2 )//Inside the earth
+    if( int(SLU[3])==0 or int(SLU[3])==4)//"Inside the earth" or "Outside of 30MWE"
     {
-        POS_Int = PAP(Sprint_GO,POS_Int,DR);
-    }
-    if( int(SLU[3])==0)//Out of the shielding(Above the air)
-    {
-        cout << "Out_of_the_boundary" << endl;
-        POS_Int = PAP(Sprint_GO,POS_Int,DR);
+        cout << "OK8 " << endl;
+        POS_Int[0] = 0;POS_Int[1] = 0;POS_Int[2] = 0;
     }
 
 
@@ -1306,11 +1412,10 @@ double *KS_Real_N_With_Angle_30MWE(int SorT, double Sigma_SI, double V_Int, doub
     double Direction_VT[3]={0,0,0};//Used for the calculation
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     int Step=0;int Collision_Time=0;
-    double POS_Int[3]={0,0,-(6371+0.01)};
-    double R_i = 6371.+0.01;//Starting Point
-    double R_f = 6371.;//Starting Point
+    double POS_Int[3]={0,0,-(R_i)};
+    cout << "KS_Real_N_With_Angle_30MWE_Function" << endl;
     //===========================
-    while( Radius_To_Center_of_Earth(POS_Int)-6371.>1e-10 and Radius_To_Center_of_Earth(POS_Int)-(6371.+0.01) <1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
+    while( Radius_To_Center_of_Earth(POS_Int)-R_f>1e-10 and Radius_To_Center_of_Earth(POS_Int)-(R_i) <=1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
         cout << "V_aft: " << V_aft << endl;
         cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
@@ -1324,13 +1429,13 @@ double *KS_Real_N_With_Angle_30MWE(int SorT, double Sigma_SI, double V_Int, doub
     cout << "Collision_Time: " << Collision_Time << endl;
     cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
 
-    if(Radius_To_Center_of_Earth(POS_Int)- 6371.<=1e-10)
+    if(Radius_To_Center_of_Earth(POS_Int)- R_f<=1e-10)
     {
         RETURN_VALUE[2]=1;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Inside the earth" << endl;
     }
-    if(Radius_To_Center_of_Earth(POS_Int)-(6371.+0.01)>=1e-10)
+    if(Radius_To_Center_of_Earth(POS_Int)-(R_i)>=1e-10)
     {
         RETURN_VALUE[2]=0;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;

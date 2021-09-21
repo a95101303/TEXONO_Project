@@ -1602,7 +1602,7 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     //===============Earth_for_ER===============
     }
     N_Collision_Earth_NR = N_Collision_Earth_NR + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
-    N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number)*36)*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
+    N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(100))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
 
     cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number) << endl;
     //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number) << endl;
@@ -2275,14 +2275,14 @@ double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
      //Calculate the lengths for different layers
      for(int kkk=0; kkk<19; kkk++)
      {
-         cout << "AIR: " << kkk << endl;
+         //cout << "AIR: " << kkk << endl;
          Density_of_Atmosphere_Layer[kkk] = (atm_table[kkk][4]+atm_table[kkk+1][4])/2;
-         cout << "Density_of_Atmosphere_Layer[kkk]: " << Density_of_Atmosphere_Layer[kkk] << endl;
+         //cout << "Density_of_Atmosphere_Layer[kkk]: " << Density_of_Atmosphere_Layer[kkk] << endl;
          Path_Lengths_for_atmosphere[kkk] = KS_Air_Path_Length(PY,PZ,(atm_table[kkk+1][0]/1000),Previous_Total_AIR);
-         cout << "(atm_table[kkk+1][0]/1000): " << (atm_table[kkk+1][0]/1000) << endl;
+         //cout << "(atm_table[kkk+1][0]/1000): " << (atm_table[kkk+1][0]/1000) << endl;
          Previous_Total_AIR = Previous_Total_AIR+ Path_Lengths_for_atmosphere[kkk];
          if(kkk==0) Path_Lengths_for_atmosphere[kkk] = Path_Lengths_for_atmosphere[kkk] - Previous_Total;
-         cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
+         //cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
          //cout << " Previous_Total_AIR: " <<  Previous_Total_AIR << endl;
      }
      
@@ -2974,12 +2974,13 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
 
         for(int kkk=0; kkk<14; kkk++)
         {
-            
+            /*
             cout << "=================" << endl;
             cout << "Length_Interval: " << Length_Interval[kkk] << endl;
             cout << "Length_Index: " << Length_Index[kkk] <<endl;
             cout << "Density_Index: " << Density_Index[kkk] << endl;
             cout << "=================" << endl;
+             */
         }
         
         int Step=0;

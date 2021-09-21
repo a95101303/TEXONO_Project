@@ -99,7 +99,13 @@ double Max_Recoil_A_keV_ER(double V, double mx)//Electron Recoil Max recoil ener
     //return 0.5*RMe(mx)*(1e6)*(Beta)*(Beta);//Energy of DM basically
 
 }
+double Max_Recoil_A_keV_ER_Free(double V, double mx)//Electron Recoil Max recoil energy, mx(GeV/c^2), velocity(V)
+{
+    double Beta = (V*1e3)/(3E+8);//Beta(c)
+    return 0.5*0.511*(1e3)*(Beta)*(Beta);//Energy of DM basically
+    //return 0.5*RMe(mx)*(1e6)*(Beta)*(Beta);//Energy of DM basically
 
+}
 /*
 double
 {
@@ -140,9 +146,8 @@ double Momentum_Transfer(double T)//T(keV)
 }
 double F_DM(double T, double MA_Plus)//T(keV), MA_Plus(Mass of Dark Photon), ER_Square
 {
-    cout << "T: " << T << endl;
     double  q = Momentum_Transfer(T);
-    cout << "q: " << q << endl;
+    //cout << "F: " << (q_ref*q_ref+MA_Plus*MA_Plus)/(q*q+MA_Plus*MA_Plus) << endl;
     return (q_ref*q_ref+MA_Plus*MA_Plus)/(q*q+MA_Plus*MA_Plus);//No Unit
 }
 double dsigma_dT_keV_ERSS(double Sigma_SI, double mx, double V)//ER_Square
@@ -153,14 +158,21 @@ double dsigma_dT_keV_ERSS(double Sigma_SI, double mx, double V)//ER_Square
 double dsigma_dT_keV_ER(double Sigma_SI, double mx, double V, double T, double M_DP)//Sigma_SI(cm^2), mx(GeV/c^2), V(km/s), q(momentum from above), M_DP(keV/c^2)[Dark Photon Mass], ER
 {
     //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
-    return 2*Electron_Mass_MeV*1e3*(dsigma_dT_keV_ERSS(Sigma_SI,mx,V)*F_DM(T, M_DP)*F_DM(T, M_DP));//
+    double Result = 2*Electron_Mass_MeV*1e3*(dsigma_dT_keV_ERSS(Sigma_SI,mx,V)*F_DM(T, M_DP)*F_DM(T, M_DP));
+    if( Max_Recoil_A_keV_ER_Free(V,mx) < T)
+    {
+        Result = 0;
+    }
+    return Result;//
 }
 
 
 double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron Recoil, V(km/s)
 {
     int reso_T=1000;double T[reso_T];double total_Sigma=0;
-     double WIMP_max_T   = max_recoil_A_for_ER_keV(V,mx); //keV
+     //double WIMP_max_T   = max_recoil_A_for_ER_keV(V,mx); //keV
+    double WIMP_max_T   = Max_Recoil_A_keV_ER_Free(V,mx); //keV
+    cout << "WIMP_max_T: " << WIMP_max_T << endl;
     //======
     for(int i=0;i<reso_T;i++)
     {
@@ -171,13 +183,11 @@ double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron 
     double pEx = T[0];
     for(int i=0;i<reso_T;i++)
     {
-        //cout << "T[i]: " << T[i] << endl;
         if(i==0) { dEx = T[0]; }
         else { dEx = T[i] - pEx; }
-        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, mx, V, T[i], 1e6)*dEx);
+        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, mx, V, T[i], 1e9)*dEx);
         pEx = T[i];
     }
-    cout << "mx: " << mx << endl;
     cout << "total_Sigma: " << total_Sigma << endl;
     return total_Sigma;
 }
