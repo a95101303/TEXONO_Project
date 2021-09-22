@@ -248,9 +248,9 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
             cout << "Arrival_earth: " << Arrival_earth << endl;
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
             Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
-            V_End_E = 0;
-            V_End_A = 0;
-            V_End_S = 0;
+            V_End_E = -1;
+            V_End_A = -1;
+            V_End_S = -1;
         }
         cout << "Arrival_air: " << Arrival_air << endl;
         double IP[3]={ATM_Value[3],ATM_Value[4],ATM_Value[5]};//Intermediate_Position
@@ -281,8 +281,8 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
             }
             if(int(Arrival_30MWE)==0)
             {
-                V_End_S = 0;
-                V_End_E = 0;
+                V_End_S = -1;
+                V_End_E = -1;
                 Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
             }
             //===============================================================Earth===============================================================
@@ -312,14 +312,23 @@ double *ATM_Value =         KS_Collision_Time_ATM_Aft_velocity_with_angle(Bent_o
                 {
                     Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);
                     Collision_Time_Earth = Earth_Value[2];
-                    V_End_E = 0;
+                    V_End_E = -1;
                 }
             }
         }//Arrival_air_Close
 
         //Energy Loss
-        double *Energy_Loss_Percentage = Energy_Dif(DM_mx,V_Int_A,V_End_A,V_End_S,V_End_E);
-        Energy_Loss_A = Energy_Loss_Percentage[0];Energy_Loss_S = Energy_Loss_Percentage[1];Energy_Loss_E = Energy_Loss_Percentage[2];
+        
+        if( (V_End_A)>0 and (V_End_S)>0 and (V_End_E)>0  )
+        {
+            cout << "//Event: " << jjj << "//Air: " << kkk << endl;
+            double *Energy_Loss_Percentage = Energy_Dif(DM_mx,V_Int_A,V_End_A,V_End_S,V_End_E);
+            Energy_Loss_A = Energy_Loss_Percentage[0];Energy_Loss_S = Energy_Loss_Percentage[1];Energy_Loss_E = Energy_Loss_Percentage[2];
+        }
+        else
+        {
+            Energy_Loss_A = 0;Energy_Loss_S = 0;Energy_Loss_E = 0;
+        }
         if(Energy_Loss_S<0) cout << "Weird! Check" << endl;
         //Final_Length
         jjj = jjj + 1;

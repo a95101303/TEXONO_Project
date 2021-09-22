@@ -36,8 +36,8 @@ const int n_point = Number_for_Brem ;
 */
 
 
-const int reso_T=251;
-const int dm_spec_resolution=251;
+const int reso_T=2510;
+const int dm_spec_resolution=2510;
 const int n_point = 251;
 
 

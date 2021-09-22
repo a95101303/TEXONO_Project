@@ -1296,13 +1296,19 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
     double In_or_Out_Value_Inner;double In_or_Out_Value_Outer;double In_or_Out_Value_Middle;
     vector<double> Return={0,0,0};
 
-    if( (Radius_To_Center_of_Earth(POS_Aft)-R_i>0 and Now_Place==2) or (Radius_To_Center_of_Earth(POS_Aft)-R_f<0 and Now_Place==1))
+    if( (Radius_To_Center_of_Earth(POS_Aft)-R_i>0 and Now_Place==2) )
     {
         cout << "Case1" << endl;
         cout << "Radius_To_Center_of_Earth(POS_Aft)-R_i: " <<Radius_To_Center_of_Earth(POS_Aft)-R_i << endl;
-        cout << "Radius_To_Center_of_Earth(POS_Aft)-R_f: " <<Radius_To_Center_of_Earth(POS_Aft)-R_f << endl;
 
         POS_Aft[3] = 0;
+    }
+    else if( (Radius_To_Center_of_Earth(POS_Aft)-R_f<0 and Now_Place==1) )
+    {
+        cout << "Case4" << endl;
+        cout << "Radius_To_Center_of_Earth(POS_Aft)-R_f: " <<Radius_To_Center_of_Earth(POS_Aft)-R_f << endl;
+        POS_Aft[3] = 3;
+
     }
     else if(Now_Place==1)
     {
@@ -1352,10 +1358,14 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
     double V_aft=V;double ROELTA=0;
     int Collision_Time=0;
 
+    int Now_Place  = Where_is_it_30WME_Shielding(POS_Int);
+
     int Times = Possion_GetRandom_Full(LFA);
     //double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//Atomic Number Of Material(ANOM)
-    double Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//km, Atomic Number Of Material(ANOM)
-
+    double Segment;
+    if(Now_Place==1)Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,11.34,APb);
+    if(Now_Place==2)Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,Density_of_Cement,Weighted_Atomic_Number);
+    
     double Sprint_GO = Segment*Times;
     cout << "Sprint_GO: " << Sprint_GO << endl;
     double *SLU=DAC_to_LEG_30MWE(POS_Int,DR,Sprint_GO);//Scaling_Length_Used,The layer a WIMP runs in
@@ -1390,10 +1400,16 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
         }
     }
 
-    if( int(SLU[3])==0 or int(SLU[3])==4)//"Inside the earth" or "Outside of 30MWE"
+    if( int(SLU[3])==3 )//"Inside the earth" or "Outside of 30MWE"
     {
         cout << "OK8 " << endl;
         POS_Int[0] = 0;POS_Int[1] = 0;POS_Int[2] = 0;
+    }
+
+    if( int(SLU[3])==0 )//"Inside the earth" or "Outside of 30MWE"
+    {
+        cout << "OK8 " << endl;
+        POS_Int[0] = 0;POS_Int[1] = 0;POS_Int[2] = -7000;
     }
 
 
@@ -1460,6 +1476,8 @@ double *Energy_Dif(double Mx, double V_Int, double V_A, double V_S, double V_E)
     double Loss_in_E   = (Energy_DM(Mx,V_S*1e3/3e8)-Energy_DM(Mx,V_E*1e3/3e8))/Total_Loss;//Percentage
     cout << "Total loss==1?" << Loss_in_A+Loss_in_S+Loss_in_E << endl;
     RETURN_VALUE[0] = Loss_in_A;RETURN_VALUE[1] = Loss_in_S;RETURN_VALUE[2] = Loss_in_E;
+    if(V_Int==V_E){RETURN_VALUE[0] = 0;RETURN_VALUE[1] = 0;RETURN_VALUE[2] = 0;}
+    
     return RETURN_VALUE;
 }
 /*
