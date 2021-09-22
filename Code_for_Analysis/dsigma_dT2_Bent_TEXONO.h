@@ -1382,7 +1382,6 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
                 if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
                 cout << "OK6 " << endl;
             }
-            Collision_Time=1;
         }
         else
         {
@@ -1400,7 +1399,7 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
 
     Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
     Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
-    Return_Value[6]=V_aft;Return_Value[7]=Collision_Time;
+    Return_Value[6]=V_aft;Return_Value[7]=SLU[3];
     cout << "V_aft_Func: " << V_aft << endl;
      
     return Return_Value;
@@ -1411,7 +1410,7 @@ double *KS_Real_N_With_Angle_30MWE(int SorT, double Sigma_SI, double V_Int, doub
     static double RETURN_VALUE[20];//Return the value back
     double Direction_VT[3]={0,0,0};//Used for the calculation
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
-    int Step=0;int Collision_Time=0;
+    int Step=0;double Collision_Time[2]={0,0};
     double POS_Int[3]={0,0,-(R_i)};
     cout << "KS_Real_N_With_Angle_30MWE_Function" << endl;
     //===========================
@@ -1423,33 +1422,46 @@ double *KS_Real_N_With_Angle_30MWE(int SorT, double Sigma_SI, double V_Int, doub
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         double *NP_1 = NP_30MWE(POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
         POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-        if(NP_1[7]>0)Collision_Time = Collision_Time + 1;
+        if( int(NP_1[7])==1 or int(NP_1[7])==2 )Collision_Time[int(NP_1[7])-1] = Collision_Time[int(NP_1[7])-1] + 1;
     }
-    RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time;
+    RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time[0];RETURN_VALUE[2]=Collision_Time[1];
     cout << "Collision_Time: " << Collision_Time << endl;
     cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
 
     if(Radius_To_Center_of_Earth(POS_Int)- R_f<=1e-10)
     {
-        RETURN_VALUE[2]=1;
+        RETURN_VALUE[3]=1;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Inside the earth" << endl;
     }
     if(Radius_To_Center_of_Earth(POS_Int)-(R_i)>=1e-10)
     {
-        RETURN_VALUE[2]=0;
+        RETURN_VALUE[3]=0;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Out of the shielding" << endl;
     }
     if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
     {
-        RETURN_VALUE[2]=0;
+        RETURN_VALUE[3]=0;
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         cout << "Energy<threshold" << endl;
     }
     return RETURN_VALUE;
 }
 
+double *Energy_Dif(double Mx, double V_Int, double V_A, double V_S, double V_E)
+{
+    static double RETURN_VALUE[3];//Return the value back
+    cout << "V_Int: " << V_Int << endl;
+    cout << "V_A: " << V_A << endl;cout << "V_S: " << V_S << endl;cout << "V_E: " << V_E << endl;
+    double Total_Loss  = Energy_DM(Mx,V_Int*1e3/3e8)-Energy_DM(Mx,V_E*1e3/3e8);
+    double Loss_in_A   = (Energy_DM(Mx,V_Int*1e3/3e8)-Energy_DM(Mx,V_A*1e3/3e8))/Total_Loss;//Percentage
+    double Loss_in_S   = (Energy_DM(Mx,V_A*1e3/3e8)-Energy_DM(Mx,V_S*1e3/3e8))/Total_Loss;//Percentage
+    double Loss_in_E   = (Energy_DM(Mx,V_S*1e3/3e8)-Energy_DM(Mx,V_E*1e3/3e8))/Total_Loss;//Percentage
+    cout << "Total loss==1?" << Loss_in_A+Loss_in_S+Loss_in_E << endl;
+    RETURN_VALUE[0] = Loss_in_A;RETURN_VALUE[1] = Loss_in_S;RETURN_VALUE[2] = Loss_in_E;
+    return RETURN_VALUE;
+}
 /*
 TF1 *ROLTML = new TF1("ROLTML","Lcjpl_NonNL([0]+x*[1],[2]+x*[3],[4]+x*[5])/SqrtN2_ABC([0]+x*[1],[2]+x*[3],[4]+x*[5])",0,PL);//Ratio_Of_Location_to_Mountain_Length(RLTML)
 ROLTML->SetParameter(0,POS_Int[0]);
