@@ -49,6 +49,11 @@ int Possion_GetRandom_Full(double Lamda)
         Smaller_than_1 = Smaller_than_1 + 1;
     }
     
+    if(Smaller_than_1==0)
+    {
+        cout << "Umm...Great!" << endl;
+        Smaller_than_1=1;
+    }
     
     return Smaller_than_1;
 }
@@ -2424,8 +2429,9 @@ double *X_Y_Velocity_Projected(double VZ)//Velocity_Z(VZ)
              cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
              cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
              cout << "Segment:  " << Segment << endl;
-             if(Segment>=1e20) Segment=0;
+             //if(Segment>=1e20) Segment=0;
              int Times = Possion_GetRandom_Full(Lamda_for_Average);
+             cout << "Times: " << Times << endl;
              double Sprint_Length = Segment*Times;
              cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
 
@@ -2759,8 +2765,9 @@ double *KS_Collision_Time_ATM_30MWE_Aft_velocity_with_angle(int Straight_or_scat
             cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
             cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
             cout << "Segment:  " << Segment << endl;
-            if(Segment>=1e20) Segment=0;
+            //if(Segment>=1e20) Segment=0;
             int Times = Possion_GetRandom_Full(Lamda_for_Average);
+            cout << "Times: " << Times << endl;
             double Sprint_Length = Segment*Times;
             cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
 
@@ -3031,9 +3038,9 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
             cout << "Weighted_Atomic_Number: " << Weighted_Atomic_Number << endl;
             cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
             cout << "Segment:  " << Segment << endl;
-            if(Segment>=1e20) Segment=0;
+            //if(Segment>=1e20) Segment=0;
             int Times = Possion_GetRandom_Full(Lamda_for_Average);
-
+            cout << "Times: " << Times << endl;
             double Sprint_Length = Segment*Times;
             cout << "Sprint_Length: " << Sprint_Length << "WIMP_Mass: " << WIMP_Mass << endl;
             //Toward Inner or Outer
@@ -3123,7 +3130,7 @@ double *KS_Collision_Time_Earth_Aft_velocity_with_angle(int Straight_or_scattere
                 
                 Temp_Length = Temp_Length + Sprint_Length;
 
-                cout << "CASE2" << endl;
+                cout << "Earth_CASE2" << endl;
                 cout << "Sprint: " << Sprint_Length << endl;
                 cout << "Temp_Length: " << Temp_Length << endl;
 

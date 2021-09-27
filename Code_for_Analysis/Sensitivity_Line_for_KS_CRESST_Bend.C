@@ -37,7 +37,7 @@ for(int kkk=9;kkk<10;kkk++)//Straight or bending
 
         cout << "kkk: " << kkk << endl;
         double Mass=0;
-    for(int FILE=49; FILE<50; FILE++){//Open1
+    for(int FILE=31; FILE<54; FILE++){//Open1
         cout << "FILE: " << FILE << endl;
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_30MWE_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;

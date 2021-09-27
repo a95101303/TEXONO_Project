@@ -13,12 +13,16 @@ double Mass_to_Nucleon(double DM_mx, int Earth_or_Air, double Atomic_Number)
 }
 double Theta_in_center_of_mass(double DM_mx, int Earth_or_Air, double Atomic_Number, double RELA)
 {
+    if(RELA>1)cout << "Weird_RELA: " << RELA << endl;
     double Current_M;
     if(Earth_or_Air==1)Current_M=35.;if(Earth_or_Air==2)Current_M=15.;//1 is earth, 2 is air
     if(Earth_or_Air> 2)Current_M=Atomic_Number ;//Cement
-
     double Numerator_Over_Denominator = (2*DM_mx*Current_M)/(TMath::Power(DM_mx+Current_M,2));
-    double theta = TMath::ACos(1-(RELA)/(Numerator_Over_Denominator))/Degree_to_Radian;
+    double B = 1-(RELA)/(Numerator_Over_Denominator);
+    if( B <-1) B=-1;
+    if( B > 1) B= 1;
+
+    double theta = TMath::ACos(B)/Degree_to_Radian;
     cout << "1-(RELA)/(Numerator_Over_Denominator): " << 1-(RELA)/(Numerator_Over_Denominator) << endl;
     cout << "DM_mx: " << DM_mx << endl;
     cout << "theta: " << theta << endl;
@@ -51,6 +55,7 @@ double Distant_Criteria(double *The_first_point, double *The_second_point)
 double Phi_Rest_Frame(int Earth_or_Air, double DM_mx, double RELA, double Atomic_Number)
 {
     double Theta = Theta_in_center_of_mass(DM_mx,Earth_or_Air,Atomic_Number,RELA);
+    cout << "Theta: " << Theta << endl;
     double tanPhi = TMath::Sin(Theta*Degree_to_Radian)/(TMath::Cos(Theta*Degree_to_Radian)* Mass_to_Nucleon(DM_mx,Earth_or_Air,Atomic_Number));
     double Phi = TMath::ATan(tanPhi)/Degree_to_Radian;
     cout << "Phi: " << Phi << endl;

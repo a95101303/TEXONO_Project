@@ -1271,6 +1271,17 @@ double In_or_Out_Value(double *DR, double *POS, double R)
     return Return_Value;
 }
 
+double Angle_Finding(double *V1, double *V2)//Angle Finding(AF), Vector1(V1), Vector2(V2)
+{
+    double V1_M        = sqrt(V1[0]*V1[0]+V1[1]*V1[1]+V1[2]*V1[2]);//V1_magnitude
+    double V2_M        = sqrt(V2[0]*V2[0]+V2[1]*V2[1]+V2[2]*V2[2]);//V2_magnitude
+    double V1_cross_V2 = V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];//Cross
+    double Cos_theta   = V1_cross_V2/(V1_M*V2_M);
+    double Angle       = TMath::ACos(Cos_theta)/Degree_to_Radian;
+    cout << "Angle: " << Angle << endl;
+    return Angle;//Degree
+}
+
 double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_Collision_to_Length(PAC),Predicted_Length(PL)
 {
     static double POS_Aft[5];
@@ -1279,6 +1290,9 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
     POS_Aft[0] = POS_Int[0]+PL*DR[0];
     POS_Aft[1] = POS_Int[1]+PL*DR[1];
     POS_Aft[2] = POS_Int[2]+PL*DR[2];
+    
+    double A1[3]={0-POS_Int[0],0-POS_Int[1],0-POS_Int[2]};
+    double Angle_between_DR_and_to_central=Angle_Finding(A1,DR);
     
     int Now_Place  = Where_is_it_30WME_Shielding(POS_Int);
 
@@ -1296,6 +1310,7 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
     double In_or_Out_Value_Inner;double In_or_Out_Value_Outer;double In_or_Out_Value_Middle;
     vector<double> Return={0,0,0};
 
+    /*
     if( (Radius_To_Center_of_Earth(POS_Aft)-R_i>0 and Now_Place==2) )
     {
         cout << "Case1" << endl;
@@ -1303,12 +1318,20 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
 
         POS_Aft[3] = 0;
     }
+     */
+    /*
     else if( (Radius_To_Center_of_Earth(POS_Aft)-R_f<0 and Now_Place==1) )
     {
         cout << "Case4" << endl;
         cout << "Radius_To_Center_of_Earth(POS_Aft)-R_f: " <<Radius_To_Center_of_Earth(POS_Aft)-R_f << endl;
         POS_Aft[3] = 3;
 
+    }
+     */
+    if(Now_Place==2 and abs(Radius_To_Center_of_Earth(POS_Int)-R_i)<1e-10 and Angle_between_DR_and_to_central>90)
+    {
+        cout << "Out!" << endl;
+        POS_Aft[3] = 0;
     }
     else if(Now_Place==1)
     {
@@ -1352,12 +1375,12 @@ double *DAC_to_LEG_30MWE(double *POS_Int, double *DR, double PL)//Direction_Aft_
 
 double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_SI, int SorT)//Next_Point_In_Shielding(NPIS)
 {
-    static double Return_Value[8];
+    static double Return_Value[9];
     
     double LFA=0.001;
     double V_aft=V;double ROELTA=0;
     int Collision_Time=0;
-
+    double Collision_or_not=0;
     int Now_Place  = Where_is_it_30WME_Shielding(POS_Int);
 
     int Times = Possion_GetRandom_Full(LFA);
@@ -1378,44 +1401,44 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
             POS_Int = PAP(Sprint_GO,POS_Int,DR);
             if(int(SLU[3])==1)
             {
-                cout << "OK3 " << endl;
+                cout << "Collider!1 " << endl;
                 double *VAC_end = VAC(Mx,Sigma_SI,V_aft,APb);//
                 V_aft = VAC_end[0]; ROELTA = VAC_end[1];
                 if(SorT==1)DR = DRAC(APb,Mx,V_aft,DR,ROELTA);
-                cout << "OK4 " << endl;
+                Collision_or_not=1;
             }
             if(int(SLU[3])==2)
             {
-                cout << "OK5 " << endl;
+                cout << "Collider!2 " << endl;
                 double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
                 V_aft = VAC_end[0]; ROELTA = VAC_end[1];
                 if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
-                cout << "OK6 " << endl;
+                Collision_or_not=1;
             }
         }
         else
         {
-            cout << "OK7 " << endl;
+            cout << "Collider!3 " << endl;
             POS_Int = PAP(SLU[4],POS_Int,DR);
         }
     }
 
     if( int(SLU[3])==3 )//"Inside the earth" or "Outside of 30MWE"
     {
-        cout << "OK8 " << endl;
+        cout << "Collider!4 " << endl;
         POS_Int[0] = 0;POS_Int[1] = 0;POS_Int[2] = 0;
     }
 
     if( int(SLU[3])==0 )//"Inside the earth" or "Outside of 30MWE"
     {
-        cout << "OK8 " << endl;
+        cout << "Collider!5 " << endl;
         POS_Int[0] = 0;POS_Int[1] = 0;POS_Int[2] = -7000;
     }
 
 
     Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
     Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
-    Return_Value[6]=V_aft;Return_Value[7]=SLU[3];
+    Return_Value[6]=V_aft;Return_Value[7]=SLU[3];Return_Value[8]=Collision_or_not;
     cout << "V_aft_Func: " << V_aft << endl;
      
     return Return_Value;
@@ -1438,7 +1461,7 @@ double *KS_Real_N_With_Angle_30MWE(int SorT, double Sigma_SI, double V_Int, doub
         cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
         double *NP_1 = NP_30MWE(POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
         POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
-        if( int(NP_1[7])==1 or int(NP_1[7])==2 )Collision_Time[int(NP_1[7])-1] = Collision_Time[int(NP_1[7])-1] + 1;
+        if( (int(NP_1[7])==1 or int(NP_1[7])==2) and (int(NP_1[8])==1) )Collision_Time[int(NP_1[7])-1] = Collision_Time[int(NP_1[7])-1] + 1;
     }
     RETURN_VALUE[0]=V_aft;RETURN_VALUE[1]=Collision_Time[0];RETURN_VALUE[2]=Collision_Time[1];
     cout << "Collision_Time: " << Collision_Time << endl;
