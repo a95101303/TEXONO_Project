@@ -21,7 +21,7 @@ void Sensitivity_Line_for_KS_CRESST_Bend()//CDEX:Threshold=160eV, TEXONO:Thresho
     int Bent_Type=1; string Bent_or_Not_Type[2]={"_Comparison","_Earth"};string Bent_or_Not_Type_Final[2]={"","Bent"};
 
     //==============Mass==============//
-for(int kkk=9;kkk<10;kkk++)//Straight or bending
+for(int kkk=0;kkk<1;kkk++)//Straight or bending
     {
         int Mass_INT=kkk;
         string Mass_Point[16]={"2","1","0P9","0P8","0P7","0P6","0P5","0P4","0P3","0P2","0P1","0P09","0P08","0P07","0P06"};
@@ -37,7 +37,7 @@ for(int kkk=9;kkk<10;kkk++)//Straight or bending
 
         cout << "kkk: " << kkk << endl;
         double Mass=0;
-    for(int FILE=31; FILE<54; FILE++){//Open1
+    for(int FILE=31; FILE<59; FILE++){//Open1
         cout << "FILE: " << FILE << endl;
         string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_30MWE_MAT/%sGeV/%i_STS_Bent%s.root",Mass_Point[Mass_INT].c_str(),FILE,Bent_or_Not_Type[Bent_Type].c_str());
         //cout << "path: " << path << endl;
