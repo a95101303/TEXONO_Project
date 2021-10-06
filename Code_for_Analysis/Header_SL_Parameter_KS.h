@@ -28,7 +28,11 @@ const int DataBin = 255;
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/DataJune_ShortRange/DataJune_20_0GeV_c1_dcs.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/Header_LR_DCS_June.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/Header_LR_DCS_Dec.h"
+#include <iostream>
+#include <fstream>
 
+const double GeV = 1.0;
+const double eV     = 1.0e-9 * GeV;
 
 //These parameters are for calculating the sigma_e(Unit transformation!)
 const double hbar_eV_s = 6.582119569E-16;//(eV*s)
@@ -140,6 +144,7 @@ double Max_Recoil_A_keV_ER_Free(double mx, double V_Initial)//Electron Recoil Fr
 const double Alpha_FS = 1./137.;//Fine Sturcture constant
 const double q_ref    = Alpha_FS*0.511*1e3;//keV/c^2
 
+
 double Momentum_Transfer(double T)//T(keV)
 {
     return sqrt(2*Electron_Mass_MeV*1e3*T);//(keV/c)
@@ -191,6 +196,140 @@ double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron 
     cout << "total_Sigma: " << total_Sigma << endl;
     return total_Sigma;
 }
+double F_total(double F1, double F2)
+{
+    return sqrt(F1*F1+F2*F2);
+}
 
 //=====================================================//
+double v_min_DM(double Ee, double q, double Mx)//All in GeV
+{
+    double Delta_Ee = Ee + 10;// eV (Free-electron Energy + Binding Energy)
+    return (Delta_Ee/q)+(q/(2*Mx));
+}
+//=====================================================//
+double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity(km/s)
+{
+    const int Ei_Number=500;const int qi_Number=900;
+    double v_beta  = velocity*1e3/3e8;
+    //static double form_factor_table[qi_Number][Ei_Number];
+    vector<double> aux_list;
+    vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
+    vector<double> Ee_List(500,0);vector<double> q_List(900,0);
+    //Get the form factor
+    std::ifstream input("C_Si137.txt");//Input the auxiliary file
+    int Element_Number=-1;double data;
+    while(Element_Number<Ei_Number*qi_Number)//
+    {
+        Element_Number = Element_Number + 1;
+        input >> data;
+        aux_list.push_back(data);
+    }
+    //All the necessary parameters
+    double prefactor = 2.0 * eV;
+    double wk        = 2.0 / 137.0;
+    double dE        = 0.1 * eV;
+    unsigned int i = 0;
+
+    const double MeV       = 1.0e-3 * 1;//MeV to GeV
+    const double mElectron = 0.5109989461 * MeV;//GeV
+    const double aEM       = 1.0 / 137.035999139;
+    const double dq        = 0.02 * aEM * mElectron;
+
+    TH2F   *HIST_q_E = new TH2F("HIST_q_E","HIST_q_E",500,0,50,900,0,9);
+    HIST_q_E->GetZaxis()->SetRangeUser(1e-3,100);
+    HIST_q_E->GetYaxis()->SetRangeUser(0,8);
+
+    for(int Ei = 0; Ei < 500; Ei++)
+        for(int qi = 0; qi < 900; qi++)
+        {
+            form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
+            double Ee = Ei * 1e-1;//The energy of electron recoil(eV)
+            double Unit_Y = 2 * (qi+1) * 1e-2;//?(Alpha*Me)
+            cout << "Unit_Y: " << Unit_Y << endl;
+            double q  = Unit_Y * dq;// momentum transfer(GeV/c)
+            cout << "q: " << q << endl;
+            Ee_List[Ei] = Ei * 1e-1;
+            q_List[Ei]  = q ;
+            /*
+            cout << "Ei*1e-1: " << Ei*1e-1 << endl;
+            cout << "qi*1e-2: " << 2*qi*1e-2 << endl;
+            cout << "form_factor_table: " << form_factor_table[qi][Ei]*form_factor_table[qi][Ei] << endl;
+             */
+            HIST_q_E->Fill(Ee,Unit_Y,form_factor_table[qi][Ei]*form_factor_table[qi][Ei]);//
+        }
+    
+    
+    double reduce_mass_Si_N = (mx)*(1e-3*unified_atomic_mass_MeV*28)/((mx)+(1e-3*unified_atomic_mass_MeV*28));// (GeV/c^2)
+    double reduce_mass_Si_e = (mx)*(0.511*1e-3)/((mx)+(0.511*1e-3)); // (GeV/c^2)
+    
+    double q_max                 = 2*reduce_mass_Si_N*(velocity*1e3/3e8);// (GeV/c)
+    double Max_Recoil_Energy     = 0.5*(mx)*(v_beta)*(v_beta);//GeV
+    cout << "q_max: " << q_max << endl;
+    
+    //========================Prefactor============================
+    //Parameter: Si_Number_density
+    //The number density of Silicon: 5e22(atoms/cm^2)
+    double Prefactor = (4e22*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_beta*v_beta);
+    cout << "Prefactor: " << Prefactor << endl;
+    //=======================The rest of the integration=======================
+    double Ee_array[Ei_Number];const double Ethr = 3.6*eV;
+    for(int i=Ethr/dE;i<Ei_Number;i++)
+    {
+        double sum=0.0;
+        for(int qi=0;qi<900;qi++)
+        {
+            sum+=0.1*Ee_List[i]*(1.0/(qi+1)/(qi+1)*F_DM()*F_DM()*
+        }
+    }
+     
+    //Check the form facotr
+    
+    TCanvas *c3 = new TCanvas("c3");
+    gStyle->SetOptFit(0);
+    gStyle->SetOptStat(0);
+
+    HIST_q_E->Draw("colz");
+    c3->SetLogz();
+    c3->Print("Check_qE.pdf");
+    
+    return 0;
+}
+
+/*
+double From_Factor_Si_e()
+{
+    const int reso_mx = 150;
+    double Ee[reso_mx];
+    double P_f1[reso_mx];double P_f2[reso_mx];
+    
+    double Ee_f1_V, P_f1_V;
+    double Ee_f2_V, P_f2_V;
+
+    //=======================
+    TGraph *Si_f1 = new TGraph("Si_f1.txt","%lg  %lg");
+    TGraph *Si_f2 = new TGraph("Si_f2.txt","%lg  %lg");
+    //=======================F1 and F2=======================//
+    for(int i=0;i<reso_mx;i++)
+    {
+      Si_f1->GetPoint(i,Ee_f1_V,P_f1_V);
+      Ee[i]   = Ee_f1_V;
+      P_f1[i]    = P_f1_V;
+      cout << "P_f1[i]: " << P_f1[i] << endl;
+    }
+    for(int i=0;i<reso_mx;i++)
+    {
+      Si_f2->GetPoint(i,Ee_f2_V,P_f2_V);
+      P_f2[i]    = P_f2_V;;
+      cout << "P_f2[i]: " << P_f1[i] << endl;
+    }
+    //=========================F_total=========================//
+    for(int i=0; i<reso_mx;i++)
+    {
+        cout << "Ee: " << Ee[i]*1e3 << endl;
+        cout << "F: "  << F_total(P_f1[i],P_f2[i]) << endl;
+    }
+    return 0;
+}
+ */
 //Find the dsigma_dT

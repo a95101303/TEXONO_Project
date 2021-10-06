@@ -44,6 +44,7 @@ const double r_e = r_e_m*100.0*cm_MeV1;
 const double MM = 1e-10;
 const double R2 = 1e-32/pow(cm1_MeV,2);
 
+const double ASi = 28.0855;
 const double AGe = 72.64;
 const double AXe = 131.293 ;
 const double AAL2O3 = 19.4;
@@ -60,6 +61,9 @@ const double unified_atomic_mass_GeV = 0.931494013; // GeV
 
 const double atom_mass_Ge_g = unified_atomic_mass_g*AGe; // g
 const double atom_mass_Xe_g = unified_atomic_mass_g*AXe; // g
+const double atom_mass_Si_g = unified_atomic_mass_g*ASi; // g
+
+const double Si_Number_density = 2.33/(atom_mass_Si_g);
 const double atom_mass_Ge_MeV = unified_atomic_mass_MeV*AGe; // MeV
 const double MNGe = atom_mass_Ge_MeV;
 // number of atom in 1kg of Ge
@@ -98,7 +102,6 @@ const double AO = 15.99 ;
 const double AN = 14.0;
 //Cement
 const double AFe = 55.854;
-const double ASi = 28.085;
 const double ACa = 40.078;
 const double AAl = 26.982;
 const double AH2O = 18;
@@ -110,7 +113,6 @@ const double ACu = 63.546;
 //
 const double atom_mass_Fe_g = unified_atomic_mass_g*AFe; // g
 const double atom_mass_O_g = unified_atomic_mass_g*AO; // g
-const double atom_mass_Si_g = unified_atomic_mass_g*ASi; // g
 const double atom_mass_N_g = unified_atomic_mass_g*AN; // g
 
 

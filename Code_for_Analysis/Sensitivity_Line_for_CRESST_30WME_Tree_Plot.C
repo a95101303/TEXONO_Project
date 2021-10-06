@@ -15,14 +15,15 @@ void Sensitivity_Line_for_CRESST_30WME_Tree_Plot()//
     double Mass[2]={2,0.2};
     int Bent_or_Not=1;
     string Type[2]={"_Comparison",""};
-    vector<double> A;vector<double> B;vector<double> C;vector<double> AC; vector<double> EC;
+    vector<double> A;vector<double> B;vector<double> C;vector<double> D;vector<double> AC; vector<double> EC;
     vector<double> Energy_Loss_A_all_Array;vector<double> Energy_Loss_S_all_Array;vector<double> Energy_Loss_E_all_Array;
     vector<double> Sigma_SI_Array;
     
 for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
     {
-        for(int Mass_INT=1; Mass_INT<2; Mass_INT++)
+        for(int Mass_INT=0; Mass_INT<1; Mass_INT++)
         {
+            int Total_FILE=0;
             for(int FILE=30; FILE<60; FILE++)
             {
             string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_30MWE_MAT/%sGeV/%i_STS_Bent_Earth.root",Mass_Point[Mass_INT].c_str(),FILE);
@@ -31,6 +32,7 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
             cout << "FILE1: " << FILE << endl;
             if(fin.is_open())
                 {
+                    Total_FILE = Total_FILE + 1;
                     cout << "FILE2: " << FILE << endl;
                     TFile *ROOT_FILE = TFile::Open(path.c_str());
                     TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
@@ -93,18 +95,19 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                             Energy_Loss_S_all = Energy_Loss_S_all + (Energy_Aft_A-Energy_Aft_S)/Initial_Energy;
                             Energy_Loss_E_all = Energy_Loss_E_all + (Energy_Aft_S-Energy_Aft_E)/Initial_Energy;
 
-                            cout << "V_Int_A: " << V_Int_A << endl;
-                            cout << "V_End_A: " << V_End_A << endl;
-                            cout << "(Initial_Energy-Energy_Aft_A)/Initial_Energy : " << (Initial_Energy-Energy_Aft_A)/Initial_Energy << endl;
-                            cout << "Collision_Time_Air: " << Collision_Time_Air << endl;
-                            cout << "Path_Length_Air/Collision_Time_Air: " << Path_Length_Air/Collision_Time_Air << endl;
-                            cout << "(Energy_Aft_A-Energy_Aft_S)/Initial_Energy: "    << (Energy_Aft_A-Energy_Aft_S)/Initial_Energy << endl;
-                            cout << "(Energy_Aft_S-Energy_Aft_E)/Initial_Energy: " << (Energy_Aft_S-Energy_Aft_E)/Initial_Energy << endl;
-                            cout << "Path_Length_Earth/Collision_Time_Earth: " << Path_Length_Earth/Collision_Time_Earth << endl;
-                            cout << "Collision_Time_Earth: " << Collision_Time_Earth << endl;
 
-                            if(kkk>-1)
+                            if(V_End_A>0 and V_End_E>0)
                             {
+                                cout << "V_Int_A: " << V_Int_A << endl;
+                                cout << "V_End_A: " << V_End_A << endl;
+                                cout << "(Initial_Energy-Energy_Aft_A)/Initial_Energy : " << (Initial_Energy-Energy_Aft_A)/Initial_Energy << endl;
+                                cout << "Collision_Time_Air: " << Collision_Time_Air << endl;
+                                cout << "Path_Length_Air/Collision_Time_Air: " << Path_Length_Air/Collision_Time_Air << endl;
+                                cout << "(Energy_Aft_A-Energy_Aft_S)/Initial_Energy: "    << (Energy_Aft_A-Energy_Aft_S)/Initial_Energy << endl;
+                                cout << "(Energy_Aft_S-Energy_Aft_E)/Initial_Energy: " << (Energy_Aft_S-Energy_Aft_E)/Initial_Energy << endl;
+                                cout << "Path_Length_Earth/Collision_Time_Earth: " << Path_Length_Earth/Collision_Time_Earth << endl;
+                                cout << "Collision_Time_Earth: " << Collision_Time_Earth << endl;
+
                                 H_Energy_Loss_A->Fill( (Initial_Energy-Energy_Aft_A)/Initial_Energy );
                                 H_Energy_Loss_S->Fill( (Energy_Aft_A-Energy_Aft_S)/Initial_Energy );
                                 H_Energy_Loss_E->Fill( (Energy_Aft_S-Energy_Aft_E)/Initial_Energy   );
@@ -115,9 +118,11 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                     Energy_Loss_A_all_Array.push_back(Energy_Loss_A_all/5000.);
                     Energy_Loss_S_all_Array.push_back(Energy_Loss_S_all/5000.);
                     Energy_Loss_E_all_Array.push_back(Energy_Loss_E_all/5000.);
-                    A.push_back(H_Energy_Loss_A->GetMean());
-                    B.push_back(H_Energy_Loss_S->GetMean());
-                    C.push_back(H_Energy_Loss_E->GetMean());
+                    A.push_back(100*H_Energy_Loss_A->GetMean());
+                    B.push_back(100*H_Energy_Loss_S->GetMean());
+                    cout << "100*H_Energy_Loss_S->GetMean(): " << 100*H_Energy_Loss_S->GetMean() << endl;
+                    C.push_back(100*H_Energy_Loss_E->GetMean());
+                    D.push_back(100*H_Energy_Loss_A->GetMean()+100*H_Energy_Loss_S->GetMean()+100*H_Energy_Loss_E->GetMean());
                     AC.push_back(Air_Length_per_collision->GetMean());
                     EC.push_back(Earth_Length_per_collision->GetMean());
 
@@ -148,7 +153,53 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                 //cout << "EC: " << EC[kkk] << endl;
                 cout << "=========================" << endl;
             }
+        //===================================================
+        TCanvas *c3 = new TCanvas("c3");
+        gStyle->SetOptFit(0);
+        gStyle->SetOptStat(0);
+
+        TGraph *Energy_Loss_A_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&A[0]);
+                Energy_Loss_A_Line->GetXaxis()->SetTitle("#sigma_{SI}");
+                Energy_Loss_A_Line->GetYaxis()->SetTitle("Energy loss(%)");
+                Energy_Loss_A_Line->GetXaxis()->SetLimits(1e-37,3e-29);
+                Energy_Loss_A_Line->GetYaxis()->SetRangeUser(0,100);
+                Energy_Loss_A_Line->SetLineColor(2);
+                Energy_Loss_A_Line->SetMarkerColor(2);
+                Energy_Loss_A_Line->SetLineWidth(4);
+        TGraph *Energy_Loss_S_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&B[0]);
+            Energy_Loss_S_Line->SetLineColor(3);
+            Energy_Loss_S_Line->SetMarkerColor(3);
+            Energy_Loss_S_Line->SetLineWidth(4);
+        TGraph *Energy_Loss_E_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&C[0]);
+            Energy_Loss_E_Line->SetLineColor(4);
+            Energy_Loss_E_Line->SetMarkerColor(4);
+            Energy_Loss_E_Line->SetLineWidth(4);
+        TGraph *Energy_Loss_total_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&D[0]);
+            Energy_Loss_total_Line->SetLineColor(7);
+            Energy_Loss_total_Line->SetMarkerColor(7);
+            Energy_Loss_total_Line->SetLineWidth(4);
+            Energy_Loss_total_Line->SetLineStyle(6);
+
+            Energy_Loss_A_Line->Draw();
+            Energy_Loss_S_Line->Draw("same");
+            Energy_Loss_E_Line->Draw("same");
+            Energy_Loss_total_Line->Draw("same");
             
+            TLegend *leg = new TLegend(0.1,0.5,0.4,0.8);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(Energy_Loss_E_Line,"Earth","lP");
+            leg->AddEntry(Energy_Loss_S_Line,"Shielding","lP");
+            leg->AddEntry(Energy_Loss_A_Line,"Air","lP");
+
+            leg->Draw();
+            c3->SetLogx();
+        c3->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_30MWE_MAT/%sGeV/Energy_Loss.pdf",Mass_Point[Mass_INT].c_str()));
+            //===================================================
+
         }//for(int Mass_INT=0; Mass_INT<4; Mass_INT++)
     }
     
