@@ -141,71 +141,52 @@ double Max_Recoil_A_keV_ER_Free(double mx, double V_Initial)//Electron Recoil Fr
 }
  */
 
-const double Alpha_FS = 1./137.;//Fine Sturcture constant
-const double q_ref    = Alpha_FS*0.511*1e3;//keV/c^2
 
+const double MeV       = 1.0e-3 * 1;//MeV to GeV
+const double mElectron = 0.5109989461 * MeV;//GeV
+const double aEM       = 1.0 / 137.035999139;
+const double qRef      = aEM*mElectron;//GeV/c^2
 
-double Momentum_Transfer(double T)//T(keV)
+double F_DM(int Option, double q, double mMediator)//
 {
-    return sqrt(2*Electron_Mass_MeV*1e3*T);//(keV/c)
+    //Contact interactions
+        if(Option==0) return 1.0;
+    //General dark photon
+        else if(Option==1)    return (qRef*qRef+mMediator*mMediator)/(q*q+mMediator*mMediator);
+    //Long range interaction
+        else if (Option==2)    return qRef*qRef/q/q;
+    //Electric dipole interaction
+        else if (Option==3)        return qRef/q;
+    //Error
+        else
+        {
+            cout << "Something wrong from F_DM" << endl;
+            return 0;
+        }
 }
-double F_DM(double T, double MA_Plus)//T(keV), MA_Plus(Mass of Dark Photon), ER_Square
-{
-    double  q = Momentum_Transfer(T);
-    //cout << "F: " << (q_ref*q_ref+MA_Plus*MA_Plus)/(q*q+MA_Plus*MA_Plus) << endl;
-    return (q_ref*q_ref+MA_Plus*MA_Plus)/(q*q+MA_Plus*MA_Plus);//No Unit
-}
-double dsigma_dT_keV_ERSS(double Sigma_SI, double mx, double V)//ER_Square
-{
-    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
-    return Sigma_SI*(1./(4*RMe(mx)*1e6*RMe(mx)*1e6*V*V_to_C*V*V_to_C));//(cm^2*c^2/keV^2)
-}
-double dsigma_dT_keV_ER(double Sigma_SI, double mx, double V, double T, double M_DP)//Sigma_SI(cm^2), mx(GeV/c^2), V(km/s), q(momentum from above), M_DP(keV/c^2)[Dark Photon Mass], ER
-{
-    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
-    double Result = 2*Electron_Mass_MeV*1e3*(dsigma_dT_keV_ERSS(Sigma_SI,mx,V)*F_DM(T, M_DP)*F_DM(T, M_DP));
-    if( Max_Recoil_A_keV_ER_Free(V,mx) < T)
-    {
-        Result = 0;
-    }
-    return Result;//
-}
-
-
-double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron Recoil, V(km/s)
-{
-    int reso_T=1000;double T[reso_T];double total_Sigma=0;
-     //double WIMP_max_T   = max_recoil_A_for_ER_keV(V,mx); //keV
-    double WIMP_max_T   = Max_Recoil_A_keV_ER_Free(V,mx); //keV
-    cout << "WIMP_max_T: " << WIMP_max_T << endl;
-    //======
-    for(int i=0;i<reso_T;i++)
-    {
-        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
-    }
-    //======
-    double dEx=0;
-    double pEx = T[0];
-    for(int i=0;i<reso_T;i++)
-    {
-        if(i==0) { dEx = T[0]; }
-        else { dEx = T[i] - pEx; }
-        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, mx, V, T[i], 1e9)*dEx);
-        pEx = T[i];
-    }
-    cout << "total_Sigma: " << total_Sigma << endl;
-    return total_Sigma;
-}
-double F_total(double F1, double F2)
-{
-    return sqrt(F1*F1+F2*F2);
-}
-
 //=====================================================//
-double v_min_DM(double Ee, double q, double Mx)//All in GeV
+double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV
 {
-    double Delta_Ee = Ee + 10;// eV (Free-electron Energy + Binding Energy)
-    return (Delta_Ee/q)+(q/(2*Mx));
+    double Delta_Ee = Ee;// eV (Free-electron Energy + Binding Energy)
+    
+    cout << "=============================================" << endl;
+    cout << "Delta_Ee: " << Delta_Ee << endl;
+    cout << "q: " << q << endl;
+    cout << "Mx: " << Mx << endl;
+    cout << "Delta_Ee/(q*1e9): " << Delta_Ee/(q*1e9) << endl;
+    cout << "q/(2*Mx): " << q/(2*Mx) << endl;
+    cout << "Delta_Ee/(q*1e9)*(3e8/1e3): " << Delta_Ee/(q*1e9)*(3e8/1e3) << endl;
+    cout << "(q/(2*Mx)*(3e8/1e3): " << (q/(2*Mx))*(3e8/1e3) << endl;
+    cout << "=============================================" << endl;
+     
+    double v_min_beta = (Delta_Ee*1e-9/(q)) + (q/(2*Mx));
+    double v_min      = v_min_beta*(3e8/1e3);
+    if(v_min<800)cout << "v_min: " << v_min << "km/s" << endl;
+    
+    double Bool_for_truncate = 0;
+    if(v_int>v_min) Bool_for_truncate=1;
+    else Bool_for_truncate=0;
+    return Bool_for_truncate;
 }
 //=====================================================//
 double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity(km/s)
@@ -234,7 +215,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     const double MeV       = 1.0e-3 * 1;//MeV to GeV
     const double mElectron = 0.5109989461 * MeV;//GeV
     const double aEM       = 1.0 / 137.035999139;
-    const double dq        = 0.02 * aEM * mElectron;
+    const double dq        = aEM * mElectron;
 
     TH2F   *HIST_q_E = new TH2F("HIST_q_E","HIST_q_E",500,0,50,900,0,9);
     HIST_q_E->GetZaxis()->SetRangeUser(1e-3,100);
@@ -245,12 +226,12 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
         {
             form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
             double Ee = Ei * 1e-1;//The energy of electron recoil(eV)
-            double Unit_Y = 2 * (qi+1) * 1e-2;//?(Alpha*Me)
-            cout << "Unit_Y: " << Unit_Y << endl;
+            double Unit_Y = 0.02 * (qi+1) ;//?(Alpha*Me)
+            //cout << "Unit_Y: " << Unit_Y << endl;
             double q  = Unit_Y * dq;// momentum transfer(GeV/c)
-            cout << "q: " << q << endl;
+            //cout << "q: " << q << endl;
             Ee_List[Ei] = Ei * 1e-1;
-            q_List[Ei]  = q ;
+            q_List[qi]  = q ;
             /*
             cout << "Ei*1e-1: " << Ei*1e-1 << endl;
             cout << "qi*1e-2: " << 2*qi*1e-2 << endl;
@@ -265,24 +246,24 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     
     double q_max                 = 2*reduce_mass_Si_N*(velocity*1e3/3e8);// (GeV/c)
     double Max_Recoil_Energy     = 0.5*(mx)*(v_beta)*(v_beta);//GeV
-    cout << "q_max: " << q_max << endl;
+    //cout << "q_max: " << q_max << endl;
     
     //========================Prefactor============================
     //Parameter: Si_Number_density
     //The number density of Silicon: 5e22(atoms/cm^2)
     double Prefactor = (4e22*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_beta*v_beta);
-    cout << "Prefactor: " << Prefactor << endl;
+    //cout << "Prefactor: " << Prefactor << endl;
     //=======================The rest of the integration=======================
     double Ee_array[Ei_Number];const double Ethr = 3.6*eV;
+    double sum=0.0;
     for(int i=Ethr/dE;i<Ei_Number;i++)
     {
-        double sum=0.0;
         for(int qi=0;qi<900;qi++)
         {
-            sum+=0.1*Ee_List[i]*(1.0/(qi+1)/(qi+1)*F_DM()*F_DM()*
+            sum+=0.1*Ee_List[i]*(1.0/(q_List[qi])/(q_List[qi]))*TMath::Power(F_DM(2,q_List[qi],0),2)*TMath::Power(form_factor_table[qi][i],2)*v_min_DM(Ee_List[i],q_List[qi],mx,velocity);
         }
     }
-     
+    double dEdX = Prefactor*sum;
     //Check the form facotr
     
     TCanvas *c3 = new TCanvas("c3");
@@ -333,3 +314,50 @@ double From_Factor_Si_e()
 }
  */
 //Find the dsigma_dT
+/*
+double dsigma_dT_keV_ERSS(double Sigma_SI, double mx, double V)//ER_Square
+{
+    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
+    return Sigma_SI*(1./(4*RMe(mx)*1e6*RMe(mx)*1e6*V*V_to_C*V*V_to_C));//(cm^2*c^2/keV^2)
+}
+double dsigma_dT_keV_ER(double Sigma_SI, double mx, double V, double T, double M_DP)//Sigma_SI(cm^2), mx(GeV/c^2), V(km/s), q(momentum from above), M_DP(keV/c^2)[Dark Photon Mass], ER
+{
+    //return Sigma_SI*(1./(4*RMe(mx)*RMe(mx)*V*V_to_C*V*V_to_C))*F_DM(mx,V)*F_DM(mx,V);
+    double Result = 2*Electron_Mass_MeV*1e3*(dsigma_dT_keV_ERSS(Sigma_SI,mx,V)*F_DM(T, M_DP)*F_DM(T, M_DP));
+    if( Max_Recoil_A_keV_ER_Free(V,mx) < T)
+    {
+        Result = 0;
+    }
+    return Result;//
+}
+
+
+double Total_Sigma_ER(double CS, double V, double mx)//Total Sigma for Electron Recoil, V(km/s)
+{
+    int reso_T=1000;double T[reso_T];double total_Sigma=0;
+     //double WIMP_max_T   = max_recoil_A_for_ER_keV(V,mx); //keV
+    double WIMP_max_T   = Max_Recoil_A_keV_ER_Free(V,mx); //keV
+    cout << "WIMP_max_T: " << WIMP_max_T << endl;
+    //======
+    for(int i=0;i<reso_T;i++)
+    {
+        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+    }
+    //======
+    double dEx=0;
+    double pEx = T[0];
+    for(int i=0;i<reso_T;i++)
+    {
+        if(i==0) { dEx = T[0]; }
+        else { dEx = T[i] - pEx; }
+        total_Sigma = total_Sigma + (dsigma_dT_keV_ER(CS, mx, V, T[i], 1e9)*dEx);
+        pEx = T[i];
+    }
+    cout << "total_Sigma: " << total_Sigma << endl;
+    return total_Sigma;
+}
+double F_total(double F1, double F2)
+{
+    return sqrt(F1*F1+F2*F2);
+}
+*/

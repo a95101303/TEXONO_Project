@@ -1474,7 +1474,7 @@ double *KS_Collision_Time_ATM(double Sigma_SI_Default, double PY, double PZ, dou
     double Previous_Total = ( Length_Components[1]+Length_Components[2]+Earth_Path_Length);
     static double RETURN_VALUE[2];
 
-    cout << "(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass): " << Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass) << endl;
+    //cout << "(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass): " << Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass) << endl;
     //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,0.8*AN+0.2*AO) << endl;
 
     for(int kkk=0; kkk<19; kkk++)
@@ -1489,7 +1489,7 @@ double *KS_Collision_Time_ATM(double Sigma_SI_Default, double PY, double PZ, dou
         //cout << "Path_Lengths_for_atmosphere[kkk]: " << Path_Lengths_for_atmosphere[kkk] << "km " << endl;
         //cout << " Previous_Total_AIR: " <<  Previous_Total_AIR << endl;
         N_Collision = N_Collision + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1e5)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,0.8*AN+0.2*AO));
-        N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));
+        //N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));
     }
     //cout << "N_Collision_AIR: " << N_Collision << endl;
     RETURN_VALUE[0]=N_Collision;RETURN_VALUE[1]=N_Collision_Air_ER;
@@ -1607,7 +1607,7 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     //===============Earth_for_ER===============
     }
     N_Collision_Earth_NR = N_Collision_Earth_NR + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
-    N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(100))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
+    //N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(100))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
 
     cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number) << endl;
     //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number) << endl;

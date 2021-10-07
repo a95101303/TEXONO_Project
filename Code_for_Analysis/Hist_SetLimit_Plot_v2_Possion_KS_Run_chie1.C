@@ -181,7 +181,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
     
     for(int kkk=0; kkk<Simulated_Event_Number; kkk++)
     {
-        dE_dX_Crystal(2,2,799);
+        dE_dX_Crystal(1e-28,2,799);
         /*
         cout << "===================================" << endl;
         cout << "//Event2: " << kkk << endl;
