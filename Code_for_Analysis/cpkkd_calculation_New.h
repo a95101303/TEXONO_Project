@@ -570,6 +570,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
+    /*
     const double M_of_DM=1e6;
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
@@ -596,7 +597,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
             
         }
     }
-
+     */
     //===============================================================
     double sig_E; double dEx;
     static double Factor1[dm_spec_resolution];

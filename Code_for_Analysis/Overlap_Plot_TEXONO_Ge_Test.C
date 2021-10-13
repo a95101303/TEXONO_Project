@@ -27,9 +27,9 @@ void Overlap_Plot_TEXONO_Ge_Test()
     double Sigma_SI_With_Threshold_M3_Error[Number];double Error_X[Number];
 
     double CPKKD_EXCLUSION[Number];
-    double Mass=0.2;//2.34
+    double Mass=1;//2.34
     int Take_Plot=0;
-    string Type_of_Model="ER"; int Type_of_Model_INT=4;
+    string Type_of_Model="MD"; int Type_of_Model_INT=1;
     cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
     
     /*
@@ -87,10 +87,9 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         
 
     //Sigma_SI_Array[Point_Number]=Multiply_Number*TMath::Power(10,-YYY);
-        Sigma_SI_Array[Point_Number] = DS_Try(1e-9,0.2);
+        Sigma_SI_Array[Point_Number] = 1e-36;
     TH1F *Flux_HIST_Random; TH1F *Flux_HIST_Aft_Collision_Earth; TH1F *Flux_HIST_Aft_Collision_EARTH;
     cout << "=======Right======== " << endl;
-    cout <<"Sigma_SI:" << DS_Try(1e-9,0.2) << endl;
     cout <<"Multiply_Number:" << Multiply_Number << endl;
     cout << "=======Right======== " << endl;
 
@@ -229,7 +228,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
 
     ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e+1);
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-38,1e-23);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-5,1e7);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);
@@ -241,7 +240,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     ER_Spectrum_Aft->GetXaxis()->SetTitle("Energy[keV]");
     ER_Spectrum_Aft->GetYaxis()->SetTitle("Count");
     ER_Spectrum_Aft->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Aft->GetYaxis()->SetRangeUser(1e-7,1e+7);
+    ER_Spectrum_Aft->GetYaxis()->SetRangeUser(1e-5,1e+7);
     ER_Spectrum_Aft->SetLineColor(3);
 
  /*

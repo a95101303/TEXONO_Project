@@ -167,22 +167,10 @@ double F_DM(int Option, double q, double mMediator)//
 //=====================================================//
 double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV
 {
-    double Delta_Ee = Ee;// eV (Free-electron Energy + Binding Energy)
-    
-    cout << "=============================================" << endl;
-    cout << "Delta_Ee: " << Delta_Ee << endl;
-    cout << "q: " << q << endl;
-    cout << "Mx: " << Mx << endl;
-    cout << "Delta_Ee/(q*1e9): " << Delta_Ee/(q*1e9) << endl;
-    cout << "q/(2*Mx): " << q/(2*Mx) << endl;
-    cout << "Delta_Ee/(q*1e9)*(3e8/1e3): " << Delta_Ee/(q*1e9)*(3e8/1e3) << endl;
-    cout << "(q/(2*Mx)*(3e8/1e3): " << (q/(2*Mx))*(3e8/1e3) << endl;
-    cout << "=============================================" << endl;
-     
-    double v_min_beta = (Delta_Ee*1e-9/(q)) + (q/(2*Mx));
+    double Delta_Ee = 10+Ee;// eV (Free-electron Energy + Binding Energy)
+    double v_min_beta = (Delta_Ee*1e-9/(q)) + (q/(2*Mx));//All in GeV
     double v_min      = v_min_beta*(3e8/1e3);
-    if(v_min<800)cout << "v_min: " << v_min << "km/s" << endl;
-    
+    //cout << "v_min: " << v_min << endl;
     double Bool_for_truncate = 0;
     if(v_int>v_min) Bool_for_truncate=1;
     else Bool_for_truncate=0;
@@ -244,26 +232,58 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     double reduce_mass_Si_N = (mx)*(1e-3*unified_atomic_mass_MeV*28)/((mx)+(1e-3*unified_atomic_mass_MeV*28));// (GeV/c^2)
     double reduce_mass_Si_e = (mx)*(0.511*1e-3)/((mx)+(0.511*1e-3)); // (GeV/c^2)
     
+    double v_rel                 = 1.;
     double q_max                 = 2*reduce_mass_Si_N*(velocity*1e3/3e8);// (GeV/c)
+    double Max_Energy_e          = 0.5*(reduce_mass_Si_N)*(v_beta)*(v_beta)*1e9;//eV
     double Max_Recoil_Energy     = 0.5*(mx)*(v_beta)*(v_beta);//GeV
     //cout << "q_max: " << q_max << endl;
-    
+    double m_cell = 4*72./ 6.02e23;    //each unit cell has 4 Fe and 4 O
+    //double n_cell = 2.7/m_cell;
+    double n_cell = 4.9e+22;
+
+    double Max_beta = 784.*1e3/3e8;
     //========================Prefactor============================
     //Parameter: Si_Number_density
-    //The number density of Silicon: 5e22(atoms/cm^2)
-    double Prefactor = (4e22*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_beta*v_beta);
+    //The number density of Silicon: 5e22(atoms/cm^3)
     //cout << "Prefactor: " << Prefactor << endl;
     //=======================The rest of the integration=======================
-    double Ee_array[Ei_Number];const double Ethr = 3.6*eV;
-    double sum=0.0;
-    for(int i=Ethr/dE;i<Ei_Number;i++)
+    const double Ethr = 1.1*eV;
+    double sum_L=0.0;
+    double DM_Max_Energy = 0.5*mx*Max_beta*Max_beta;//GeV
+    int   Edm_Bin_Number = 25;
+    double dE_DM         = DM_Max_Energy/Edm_Bin_Number;
+    double dE_dX         = 0;
+    
+    //for(int i=Ethr/dE;i<Ei_Number;i++)
+    for(int kkk=0; kkk<Edm_Bin_Number; kkk++)//Energy of DM
     {
-        for(int qi=0;qi<900;qi++)
+        //cout << "kkk: " << kkk << endl;
+        double E_DM_now = dE_DM*kkk;//GeV
+        double V_DM_now = sqrt((E_DM_now*2)/(mx))*(3e8/1e3);//km/s
+        double v_beta   = sqrt((E_DM_now*2)/(mx));
+        for(int i=0;i<Ei_Number;i++)//Energy of electrons
         {
-            sum+=0.1*Ee_List[i]*(1.0/(q_List[qi])/(q_List[qi]))*TMath::Power(F_DM(2,q_List[qi],0),2)*TMath::Power(form_factor_table[qi][i],2)*v_min_DM(Ee_List[i],q_List[qi],mx,velocity);
+            double V_min_T = sqrt((2*Ee_List[i]*1e-9)/(mx));
+            for(int qi=0;qi<900;qi++)//Momentum transfer
+            {
+                if( V_DM_now > v_min_DM(Ee_List[i],q_List[qi],mx,V_DM_now) and V_DM_now >V_min_T and V_DM_now <544 and E_DM_now>1.1*1e-9 and q_List[qi]<q_max)
+                {
+                    double Prefactor = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_beta*v_rel);
+                    double sum_L = ( (0.1*1e-9*Ee_List[i]*1e-9)* ( 0.02*dq*(1.0/(q_List[qi])/(q_List[qi]))*1*TMath::Power(form_factor_table[qi][i],2) ) );
+                    dE_dX = dE_dX + Prefactor*sum_L;
+                }
+            }
         }
     }
-    double dEdX = Prefactor*sum;
+    cout << "dE_dX " << (dE_dX) << endl;
+    cout << "1/dE_dX " << (1./dE_dX) << endl;
+    cout << "(1/dE_dX)*dE_DM " << (1./dE_dX)*dE_DM*1e5 << endl;
+
+    //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*1e5*1e6 << endl;//keV
+    //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*2e5*1e6 << endl;//keV
+    //cout << "Energy_Loss(keV): " << (dEdX_M)*2e5*1e6 << endl;//keV
+
+    cout << "Energy_DM(keV): " << 0.5*(mx*1e6)*(v_beta)*(v_beta);//keV
     //Check the form facotr
     
     TCanvas *c3 = new TCanvas("c3");
