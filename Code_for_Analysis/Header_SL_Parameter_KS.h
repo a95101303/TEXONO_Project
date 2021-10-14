@@ -213,12 +213,11 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
         for(int qi = 0; qi < 900; qi++)
         {
             form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
-            double Ee = Ei * 1e-1;//The energy of electron recoil(eV)
-            double Unit_Y = 0.02 * (qi+1) ;//?(Alpha*Me)
-            //cout << "Unit_Y: " << Unit_Y << endl;
+            double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
+            double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
             double q  = Unit_Y * dq;// momentum transfer(GeV/c)
             //cout << "q: " << q << endl;
-            Ee_List[Ei] = Ei * 1e-1;
+            Ee_List[Ei] = Ee;
             q_List[qi]  = q ;
             /*
             cout << "Ei*1e-1: " << Ei*1e-1 << endl;
@@ -235,7 +234,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     double v_rel                 = 1.;
     double q_max                 = 2*reduce_mass_Si_N*(velocity*1e3/3e8);// (GeV/c)
     double Max_Energy_e          = 0.5*(reduce_mass_Si_N)*(v_beta)*(v_beta)*1e9;//eV
-    double Max_Recoil_Energy     = 0.5*(mx)*(v_beta)*(v_beta);//GeV
+    double Max_Recoil_Energy     = 0.5*(mx)*1e9*(v_beta)*(v_beta);//GeV
     //cout << "q_max: " << q_max << endl;
     double m_cell = 4*72./ 6.02e23;    //each unit cell has 4 Fe and 4 O
     //double n_cell = 2.7/m_cell;
@@ -250,7 +249,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     const double Ethr = 1.1*eV;
     double sum_L=0.0;
     double DM_Max_Energy = 0.5*mx*Max_beta*Max_beta;//GeV
-    int   Edm_Bin_Number = 25;
+    int   Edm_Bin_Number = 100;
     double dE_DM         = DM_Max_Energy/Edm_Bin_Number;
     double dE_dX         = 0;
     
@@ -260,24 +259,28 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
         //cout << "kkk: " << kkk << endl;
         double E_DM_now = dE_DM*kkk;//GeV
         double V_DM_now = sqrt((E_DM_now*2)/(mx))*(3e8/1e3);//km/s
-        double v_beta   = sqrt((E_DM_now*2)/(mx));
+        //double v_beta   = sqrt((E_DM_now*2)/(mx));
+        double v_beta   = 220.*1e3/3e8;
+
         for(int i=0;i<Ei_Number;i++)//Energy of electrons
         {
-            double V_min_T = sqrt((2*Ee_List[i]*1e-9)/(mx));
-            for(int qi=0;qi<900;qi++)//Momentum transfer
+            double V_min_T = sqrt((2*Ee_List[i]*1e-9)/(mx))*(3e8/1e3);
+            for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
             {
-                if( V_DM_now > v_min_DM(Ee_List[i],q_List[qi],mx,V_DM_now) and V_DM_now >V_min_T and V_DM_now <544 and E_DM_now>1.1*1e-9 and q_List[qi]<q_max)
+               //if( V_DM_now > v_min_DM(Ee_List[i],q_List[qi],mx,0) and V_DM_now >V_min_T and V_DM_now <544 and E_DM_now>1.1*1e-9 and q_List[qi]<q_max)
+                if( V_DM_now > 0 )
                 {
                     double Prefactor = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_beta*v_rel);
-                    double sum_L = ( (0.1*1e-9*Ee_List[i]*1e-9)* ( 0.02*dq*(1.0/(q_List[qi])/(q_List[qi]))*1*TMath::Power(form_factor_table[qi][i],2) ) );
+                    double sum_L = ( (dE*Ee_List[i]*1e-9)* ( 0.02*dq*(1.0/(q_List[qi]*q_List[qi])) )*1*TMath::Power(form_factor_table[qi][i],2) );
                     dE_dX = dE_dX + Prefactor*sum_L;
+              //cout << "dE_dX " << (dE_dX) << endl;
                 }
             }
         }
     }
     cout << "dE_dX " << (dE_dX) << endl;
     cout << "1/dE_dX " << (1./dE_dX) << endl;
-    cout << "(1/dE_dX)*dE_DM " << (1./dE_dX)*dE_DM*1e5 << endl;
+    cout << "(1/dE_dX)*dE_DM " << (1./dE_dX)*dE_DM*1e-5 << endl;
 
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*1e5*1e6 << endl;//keV
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*2e5*1e6 << endl;//keV
