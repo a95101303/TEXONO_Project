@@ -21,13 +21,15 @@ void Sensitivity_Line_for_CRESST_30WME_Tree_Plot()//
     
 for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
     {
-        for(int Mass_INT=0; Mass_INT<1; Mass_INT++)
+        for(int Mass_INT=1; Mass_INT<2; Mass_INT++)
         {
             int Total_FILE=0;
-            vector<double>  N_Particle_No_Energy_Loss_array;//Energy loss<0.01
-            vector<double>  N_Particle_Big_Energy_Loss_array;//Energy<0.01keV
+            vector<double>  N_Particle_No_Energy_Loss_A_array;//Energy loss<0.01
+            vector<double>  N_Particle_No_Energy_Loss_B_array;//Energy<0.01keV
+            vector<double>  N_Particle_No_Energy_Loss_C_array;//Energy<0.01keV
+            vector<double>  N_Particle_No_Energy_Loss_total;//Energy<0.01keV
 
-            for(int FILE=30; FILE<60; FILE++)
+            for(int FILE=31; FILE<49; FILE++)
             {
             string path = Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_CRESST_30MWE_MAT/%sGeV/%i_STS_Bent_Earth.root",Mass_Point[Mass_INT].c_str(),FILE);
             cout << path << endl;
@@ -84,7 +86,7 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
 
                     double Energy_Loss_A_all=0;double Energy_Loss_S_all=0;double Energy_Loss_E_all=0;
                     int Total_Event_Number=0;
-                    double N_Particle_No_Energy_Loss=0;double N_Particle_Big_Energy_Loss=0;
+                    double N_Particle_No_Energy_Loss_A=0;double N_Particle_No_Energy_Loss_B=0;double N_Particle_No_Energy_Loss_C=0;
                     
                     for(int Entry=0; Entry<T1_TREE->GetEntries(); Entry++)
                     {
@@ -95,17 +97,42 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                         double Energy_Aft_S  =Energy_DM(mx,V_End_S*(1e3/3e8) );//keV
                         double Energy_Aft_E  =Energy_DM(mx,V_End_E*(1e3/3e8) );//keV
                         
-                        Total_Event_Number = Total_Event_Number + 1;
+                        //Total_Event_Number = Total_Event_Number + 1;
                         Energy_Loss_A_all = Energy_Loss_A_all + (Initial_Energy-Energy_Aft_A)/Initial_Energy;
                         Energy_Loss_S_all = Energy_Loss_S_all + (Energy_Aft_A-Energy_Aft_S)/Initial_Energy;
                         Energy_Loss_E_all = Energy_Loss_E_all + (Energy_Aft_S-Energy_Aft_E)/Initial_Energy;
 
-                        if(  (Initial_Energy-Energy_Aft_A-Energy_Aft_S)/Initial_Energy<0.01  )
-                        {N_Particle_No_Energy_Loss = N_Particle_No_Energy_Loss + 1;}
-                        if(   Energy_Aft_E < 1e-2  )
-                        {N_Particle_Big_Energy_Loss= N_Particle_Big_Energy_Loss + 1;}
+                        int check1=0; int check2=0;
+                        if(Initial_Energy>0.01 and V_End_A>0 and V_End_E>0 )
+                        {
+                            cout << "V_End_S: " << V_End_S << endl;
+                            cout << "(Initial_Energy-Energy_Aft_A)/Initial_Energy : " << (Initial_Energy-Energy_Aft_S)/Initial_Energy << endl;
+                            cout << "============= " << endl;
+                            Total_Event_Number = Total_Event_Number + 2;
+                            if(  (Initial_Energy-Energy_Aft_S)/Initial_Energy<0.1  )
+                            {N_Particle_No_Energy_Loss_A = N_Particle_No_Energy_Loss_A + 1;check1 = check1 + 1;
+                                cout << "Initial_Energy" << Initial_Energy << endl;cout << "Energy Loss" << Initial_Energy-Energy_Aft_A-Energy_Aft_S << endl;}
+                            if(  (Initial_Energy-Energy_Aft_E)/Initial_Energy<0.1  )
+                            {N_Particle_No_Energy_Loss_A = N_Particle_No_Energy_Loss_A + 1;check2 = check2 + 1;}
+                            
+                            if(  (Initial_Energy-Energy_Aft_S)/Initial_Energy>0.1 and (Initial_Energy-Energy_Aft_S)/Initial_Energy<0.9  )
+                            {N_Particle_No_Energy_Loss_B = N_Particle_No_Energy_Loss_B + 1;check1 = check1 + 1;cout << "Yes2" << endl;}
+                            if(  (Initial_Energy-Energy_Aft_E)/Initial_Energy>0.1 and (Initial_Energy-Energy_Aft_E)/Initial_Energy<0.9  )
+                            {N_Particle_No_Energy_Loss_B = N_Particle_No_Energy_Loss_B + 1;check2 = check2 + 1;}
+                            
+                            if(  (Initial_Energy-Energy_Aft_S)/Initial_Energy>0.9)
+                            {N_Particle_No_Energy_Loss_C = N_Particle_No_Energy_Loss_C + 1;check1 = check1 + 1;cout << "Yes3" << endl;}
+                            if(  (Initial_Energy-Energy_Aft_E)/Initial_Energy>0.9)
+                            {N_Particle_No_Energy_Loss_C = N_Particle_No_Energy_Loss_C + 1;check2 = check2 + 1;}
+                            
+                            if(check1!=1) {cout << "WeirdFuck" << endl;
+                                cout << "check1: " << check1 << endl;
+                                cout << "(Initial_Energy-Energy_Aft_A-Energy_Aft_S)/Initial_Energy: " << (Initial_Energy-Energy_Aft_A-Energy_Aft_S)/Initial_Energy << endl;
+                            }
+                            cout << "============= " << endl;
+                        }
 
-
+                        /*
                         if(V_End_A>0 and V_End_E>0)
                         {
                             cout << "V_Int_A: " << V_Int_A << endl;
@@ -125,10 +152,12 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                             if(Collision_Time_Earth>0)Earth_Length_per_collision->Fill(Path_Length_Earth/Collision_Time_Earth);//EC
                             
                         }
+                         */
                     }//for(int Entry=0; Entry<T1_TREE->GetEntries(); Entry++)
-                    N_Particle_No_Energy_Loss_array.push_back(N_Particle_No_Energy_Loss /Total_Event_Number*100);
-                    N_Particle_Big_Energy_Loss_array.push_back(N_Particle_Big_Energy_Loss/Total_Event_Number*100);
-
+                    N_Particle_No_Energy_Loss_A_array.push_back(N_Particle_No_Energy_Loss_A/Total_Event_Number*100);
+                    N_Particle_No_Energy_Loss_B_array.push_back(N_Particle_No_Energy_Loss_B/Total_Event_Number*100);
+                    N_Particle_No_Energy_Loss_C_array.push_back(N_Particle_No_Energy_Loss_C/Total_Event_Number*100);
+    N_Particle_No_Energy_Loss_total.push_back(N_Particle_No_Energy_Loss_A/Total_Event_Number*100+N_Particle_No_Energy_Loss_B/Total_Event_Number*100+N_Particle_No_Energy_Loss_C/Total_Event_Number*100);
                     Energy_Loss_A_all_Array.push_back(Energy_Loss_A_all/5000.);
                     Energy_Loss_S_all_Array.push_back(Energy_Loss_S_all/5000.);
                     Energy_Loss_E_all_Array.push_back(Energy_Loss_E_all/5000.);
@@ -159,8 +188,9 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
                 //cout << "Energy_loss_all_A: " << Energy_Loss_A_all_Array[kkk] << endl;
                 //cout << "Energy_loss_all_S: " << Energy_Loss_S_all_Array[kkk] << endl;
                 //cout << "Energy_loss_all_E: " << Energy_Loss_E_all_Array[kkk] << endl;
-                cout << "N_Particle_No_Energy_Loss_array: "  << N_Particle_No_Energy_Loss_array[kkk] << endl;
-                cout << "N_Particle_Big_Energy_Loss_array: " << N_Particle_Big_Energy_Loss_array[kkk] << endl;
+                cout << "N_Particle_No_Energy_Loss_A_array: " << N_Particle_No_Energy_Loss_A_array[kkk] << endl;
+                cout << "N_Particle_No_Energy_Loss_B_array: " << N_Particle_No_Energy_Loss_B_array[kkk] << endl;
+                cout << "N_Particle_No_Energy_Loss_C_array: " << N_Particle_No_Energy_Loss_C_array[kkk] << endl;
 
                 cout << "Sigma_SI_Array: " << Sigma_SI_Array[kkk] << endl;
                 cout << "A: " << A[kkk] << endl;
@@ -204,21 +234,32 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
             Energy_Loss_total_Line->Draw("same");
             
          */
-            TGraph *Energy_Loss_A_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_No_Energy_Loss_array[0]);
+            TGraph *Energy_Loss_A_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_No_Energy_Loss_A_array[0]);
                     Energy_Loss_A_Line->GetXaxis()->SetTitle("#sigma_{SI}");
                     Energy_Loss_A_Line->GetYaxis()->SetTitle("Selected Particle Number/Total Particle Number");
-                    Energy_Loss_A_Line->GetXaxis()->SetLimits(1e-37,3e-29);
+                    //Energy_Loss_A_Line->GetXaxis()->SetLimits(1e-37,3e-29);2GeV
+                    Energy_Loss_A_Line->GetXaxis()->SetLimits(1e-37,2e-28);//0.2GeV
                     Energy_Loss_A_Line->GetYaxis()->SetRangeUser(0,100);
                     Energy_Loss_A_Line->SetLineColor(2);
                     Energy_Loss_A_Line->SetMarkerColor(2);
                     Energy_Loss_A_Line->SetLineWidth(4);
-            TGraph *Energy_Loss_S_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_Big_Energy_Loss_array[0]);
-                Energy_Loss_S_Line->SetLineColor(3);
-                Energy_Loss_S_Line->SetMarkerColor(3);
-                Energy_Loss_S_Line->SetLineWidth(4);
+            TGraph *Energy_Loss_B_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_No_Energy_Loss_B_array[0]);
+                Energy_Loss_B_Line->SetLineColor(3);
+                Energy_Loss_B_Line->SetMarkerColor(3);
+                Energy_Loss_B_Line->SetLineWidth(4);
+            TGraph *Energy_Loss_C_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_No_Energy_Loss_C_array[0]);
+                Energy_Loss_C_Line->SetLineColor(4);
+                Energy_Loss_C_Line->SetMarkerColor(4);
+                Energy_Loss_C_Line->SetLineWidth(4);
+            TGraph *Energy_Loss_D_Line = new TGraph(Total_FILE,&Sigma_SI_Array[0],&N_Particle_No_Energy_Loss_total[0]);
+                Energy_Loss_D_Line->SetLineColor(5);
+                Energy_Loss_D_Line->SetMarkerColor(5);
+                Energy_Loss_D_Line->SetLineWidth(4);
 
             Energy_Loss_A_Line->Draw();
-            Energy_Loss_S_Line->Draw("same");
+            Energy_Loss_B_Line->Draw("same");
+            Energy_Loss_C_Line->Draw("same");
+            Energy_Loss_D_Line->Draw("same");
 
             TLegend *leg = new TLegend(0.1,0.5,0.4,0.8);
             leg->SetFillColor(0);
@@ -228,9 +269,10 @@ for(int Bent_or_Not=1; Bent_or_Not<2; Bent_or_Not++)
             leg->SetTextFont(22);
             //leg->AddEntry(Energy_Loss_E_Line,"Earth","lP");
             leg->AddEntry("","Criteria:","");
-            leg->AddEntry(Energy_Loss_S_Line,"Energy <10eV","lP");
-            leg->AddEntry(Energy_Loss_A_Line,"Energy Loss< 1%*Initial Energy","lP");
-
+            leg->AddEntry(Energy_Loss_A_Line,"Energy loss<10%","lP");
+            leg->AddEntry(Energy_Loss_B_Line,"Energy loss>10% and Energy loss<90%","lP");
+            leg->AddEntry(Energy_Loss_C_Line,"Energy loss>90%","lP");
+            leg->AddEntry(Energy_Loss_D_Line,"Total Percentage","lP");
 
             leg->Draw();
             c3->SetLogx();

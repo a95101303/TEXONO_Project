@@ -7,11 +7,13 @@
 
 void plot_DCS_LR()
 {
-
+    
   double massDM[26] =  {0.06, 0.07,  0.08, 0.09,  0.10, 0.12, 0.20,
 			0.25, 0.30,  0.40, 0.50,  0.60, 0.70, 0.80,
 			0.90, 1.00,  1.30, 1.50,  2.00, 2.50, 3.00,
 			3.50, 4.00,  5.00, 10.00, 20.00};
+     
+    //double massDM[2] =  {2,0.2};
 
   const int NumPt = 1000;
   
@@ -24,32 +26,75 @@ void plot_DCS_LR()
   double mx; //GeV
   double rate_factor;
   
-    mx = 2;//10: 0.5GeV
-    
- 
+    float SE_to_NT_P = 1.64458;//68%->90%
+    //mx = 2;//10: 0.5GeV
+  const double Lower_Bound = 49.432*SE_to_NT_P;
   printf("mx = %f\n",mx);
     
+    //cout << "DS_Try(4.89e-11,0.5): " << DS_Try(4.89e-11,0.5) << endl;
+    double Sigma_e_Dec[26];double Sigma_e_Jun[26];
     
-  for(int rr = 0; rr<NumPt;rr++)
+    for(int M_Idx=0; M_Idx<1; M_Idx++)
     {
-      
-      rate_factor = pow(1E-9,2)*1E-18*1E+3*86400*3E+10*(density*electron_number(AGe))/(mx);
-      
-      Energy[rr] = 95.0E-3 + 5.0*(double)rr/(double)NumPt;
-      JuneRate[rr] = rate_factor*LongRangeDcs_June(Energy[rr]*1E+3 , mx );
-      DecRate[rr]  = rate_factor*LongRangeDcs_Dec(Energy[rr]*1E+3  , mx );
-      
-      Ratio[rr]  = JuneRate[rr]-DecRate[rr];
+          double mx = massDM[M_Idx] ;
         cout << "mx: " << mx << endl;
-        cout << "Energy[rr]: " << Energy[rr] << endl;
-        cout << "rate_factor: " << rate_factor << endl;
-        cout << "rate_factor: " << rate_factor << endl;
-        cout << "LongRangeDcs_June(Energy[rr]*1E+3 , mx ): " << LongRangeDcs_June(Energy[rr]*1E+3 , mx ) << endl;
+        cout << "=================================================" << endl;
+        int DecRate_Check=0;int JuneRate_Check=0;
         
-        cout << "DecRate[rr]: " << DecRate[rr] << endl;
-        cout << "JuneRate[rr]: " << JuneRate[rr] << endl;
-      //printf("%f  %e \n", Energy[rr], JuneRate[rr]);
+            for(int Sig_Idx=1; Sig_Idx<2; Sig_Idx++)
+            {
+                  double d1 = 1E-9;
+                  for(int rr = 0; rr<NumPt;rr++)
+                    {
+                          rate_factor = pow(d1,2)*1E-18*1E+3*86400*3E+10*(density*electron_number(AGe))/(mx);
+                          
+                          Energy[rr] = 95.0E-3 + 5.0*(double)rr/(double)NumPt;
+                          JuneRate[rr] = rate_factor*LongRangeDcs_June(Energy[rr]*1E+3 , mx );
+                          DecRate[rr]  = rate_factor*LongRangeDcs_Dec(Energy[rr]*1E+3  , mx );
+
+                          Ratio[rr]  = JuneRate[rr]-DecRate[rr];
+                        if(Energy[rr]==0.20)
+                        {
+                            cout << "=================================================" << endl;
+                            cout << "DecRate_Final[rr]: " << DecRate[rr] << endl;
+                            cout << "=================================================" << endl;
+
+                            if(JuneRate_Check==0)
+                            {
+                                double scale_June = Lower_Bound/JuneRate[rr];
+                                double scale_June_d1 = sqrt(scale_June);
+                                cout << "mx: " << mx << endl;
+                                cout << "JuneRate_Final[rr]: " << JuneRate[rr]*scale_June << endl;
+                                cout << "June_Cross-section_sigma_e: " << DS_Try(d1*scale_June_d1,mx) << endl;
+                                Sigma_e_Jun[M_Idx] = DS_Try(d1*scale_June_d1,mx);
+                                JuneRate_Check = JuneRate_Check + 1;
+                            }
+                            if(DecRate_Check==0)
+                            {
+                                double scale_Dec = Lower_Bound/DecRate[rr];
+                                double scale_Dec_d1 = sqrt(scale_Dec);
+                                cout << "mx: " << mx << endl;
+                                cout << "DecRate_Final[rr]: " << DecRate[rr]*scale_Dec << endl;
+                                cout << "Dec_Cross-section_sigma_e: " << DS_Try(d1*scale_Dec_d1,mx) << endl;
+                                Sigma_e_Dec[M_Idx] = DS_Try(d1*scale_Dec_d1,mx);
+                                DecRate_Check = DecRate_Check + 1;
+                            }
+                        }
+                      //printf("%f  %e \n", Energy[rr], JuneRate[rr]);
+                    }
+            }
+        cout << "=================================================" << endl;
     }
+    
+    for(int M_Idx=0; M_Idx<26; M_Idx++)
+    {
+        cout << "mx: " << mx << endl;
+        cout << "Sigma_e_Jun[M_Idx]: " << Sigma_e_Jun[M_Idx] << endl;
+        cout << "Sigma_e_Dec[M_Idx]: " << Sigma_e_Dec[M_Idx] << endl;
+     }
+     
+    for(int M_Idx=0; M_Idx<26; M_Idx++){cout << massDM[M_Idx] << "," << Sigma_e_Jun[M_Idx] << "," << endl;}
+    for(int M_Idx=0; M_Idx<26; M_Idx++){cout << massDM[M_Idx] << "," << Sigma_e_Dec[M_Idx] << "," << endl;}
      
     
     TCanvas *plot = new TCanvas("plot");

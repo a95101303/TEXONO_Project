@@ -215,9 +215,9 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
             form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
             double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
             double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
-            double q  = Unit_Y * dq;// momentum transfer(GeV/c)
+            double q  = (Unit_Y+0.5) * dq;// momentum transfer(GeV/c)
             //cout << "q: " << q << endl;
-            Ee_List[Ei] = Ee*1e-9;//GeV
+            Ee_List[Ei] = (Ee+0.5)*1e-9;//GeV
             q_List[qi]  = q ;
             /*
             cout << "Ei*1e-1: " << Ei*1e-1 << endl;
@@ -236,9 +236,9 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     double Max_Energy_e          = 0.5*(reduce_mass_Si_N)*(v_beta)*(v_beta)*1e9;//eV
     double Max_Recoil_Energy     = 0.5*(mx)*1e9*(v_beta)*(v_beta);//GeV
     //cout << "q_max: " << q_max << endl;
-    double m_cell = 4*72./ 6.02e23;    //each unit cell has 4 Fe and 4 O
+    //double m_cell = 4*72./ 6.02e23;    //each unit cell has 4 Fe and 4 O
     //double n_cell = 2.7/m_cell;
-    double n_cell = 4.9e+22;
+    //double n_cell = 4.9e+22;
 
     double Max_beta = 784.*1e3/3e8;
     //========================Prefactor============================
@@ -254,6 +254,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     double dE_dX         = 0;
     
     //for(int i=Ethr/dE;i<Ei_Number;i++)
+    /*   // Energy as the integrator
     for(int kkk=0; kkk<Edm_Bin_Number; kkk++)//Energy of DM
     {
         //cout << "kkk: " << kkk << endl;
@@ -279,9 +280,55 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
             }
         }
     }
+     
+     
     cout << "dE_dX " << (dE_dX) << endl;
     cout << "1/dE_dX " << (1./dE_dX) << endl;
     cout << "(1/dE_dX)*dE_DM " << (1./dE_dX)*dE_DM*1e4 << endl;
+     */
+    
+    const int   dv_Bin_Number = 50;
+    double dv_DM         = 784.*(V_to_C)/dv_Bin_Number;
+    
+    const double N_Avo = 6.02e23;            //N_avo
+    double rho =2.7;        //g cm-3
+    double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
+    double n_cell = (rho/m_cell);
+     
+    //double n_cell = 6e21/2;
+    cout << "mx: " << mx << endl;
+    cout << "n_cell:" << n_cell << endl;
+    double sum_array[dv_Bin_Number];
+    
+    for(int lll=0; lll<dv_Bin_Number; lll++)
+    {
+        double sum           = 0;
+        double V_DM_now = dv_DM*(lll+0.5);
+        
+        for(int i=0;i<Ei_Number;i++)//Energy of electrons
+        {
+            for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+            {
+                if( V_DM_now > v_min_DM(Ee_List[i],q_List[qi],mx,0)*(V_to_C) and V_DM_now>sqrt(2*Ee_List[i]/mx) and V_DM_now>sqrt(2*(1.1*1e-9)/mx) and q_List[qi]<2*reduce_mass_Si_N*(V_DM_now) )
+                {
+                    double Prefactor = (n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel);
+                    double sum_L = ( (dE*Ee_List[i])* ( 0.02*dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                    if(sum_L!=0 and Prefactor!=0)
+                    {
+                        sum = sum + (Prefactor*sum_L);
+                    }
+                }
+            }
+        }
+        sum_array[lll] = sum;
+    }
+    for(int lll=0; lll<dv_Bin_Number; lll++)
+    {
+        double V_DM_now = dv_DM*(lll+0.5);
+        if(sum_array[lll]>0)dE_dX = dE_dX + mx*pow(V_DM_now,2)*dv_DM*1/sum_array[lll];
+    }
+    
+    cout << "sigma " << (dE_dX)/2e5 << endl;
 
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*1e5*1e6 << endl;//keV
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*2e5*1e6 << endl;//keV
@@ -301,6 +348,12 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     return 0;
 }
 
+/*
+double dE_dX_crystal_Alex()
+{
+    
+}
+ */
 /*
 double From_Factor_Si_e()
 {
