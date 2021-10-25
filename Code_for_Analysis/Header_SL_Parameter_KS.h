@@ -30,6 +30,7 @@ const int DataBin = 255;
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/Header_LR_DCS_Dec.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 const double GeV = 1.0;
 const double eV     = 1.0e-9 * GeV;
@@ -165,7 +166,7 @@ double F_DM(int Option, double q, double mMediator)//
         }
 }
 //=====================================================//
-double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV
+double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV (Not totally right)
 {
     double Delta_Ee = Ee;// eV (Free-electron Energy + Binding Energy)
     double v_min_beta = (Delta_Ee/(q)) + (q/(2*Mx));//All in GeV
@@ -177,6 +178,8 @@ double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV
     return Bool_for_truncate;
 }
 //=====================================================//
+
+
 double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity(km/s)
 {
     const int Ei_Number=500;const int qi_Number=900;
@@ -186,7 +189,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
     vector<double> Ee_List(500,0);vector<double> q_List(900,0);
     //Get the form factor
-    std::ifstream input("C_Si137.txt");//Input the auxiliary file
+    std::ifstream input("Test.txt");//Input the auxiliary file
     int Element_Number=-1;double data;
     while(Element_Number<Ei_Number*qi_Number)//
     {
@@ -348,6 +351,63 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     return 0;
 }
 
+double fdsigma_dT_ER(double mx, double v)//mx(GeV/c^2),v(c)
+{
+    string filename("1P333.txt");
+    
+       vector<char> Energy_Transfer;
+       vector<char> dsigma_dT;
+       string Power="E";
+       int counter_E;int counter_sigma;
+       string Energy_Transfer_String="";
+       string dsigma_dT_String="";
+    
+       vector<double> Energy_Transfer_array;
+       vector<double> dsigma_dT_array;
+    
+       char byte = 0;
+
+       ifstream input_file(filename);
+       if (!input_file.is_open()) {
+           cerr << "Could not open the file - '"
+                << filename << "'" << endl;
+           return EXIT_FAILURE;
+       }
+
+       while (input_file.get(byte))
+       {
+           bytes.push_back(byte);
+           //^<^Start for energy transfer^<^
+           if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
+           if(counter_E!=0){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
+           if(counter_E!=0 and byte=','){counter_E=0;counter_sigma=1;continue;}//End counting for energy transfer^_^
+           
+           //^<^Start for differential cross sections^<^
+           if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
+           else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
+           else if(counter_sigma!=0 and byte=='}'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
+
+           
+           
+       }
+       for (const auto &i : bytes) {
+           cout << i ;
+       }
+       cout << endl;
+       input_file.close();
+
+    /*
+      std::ifstream input("Test.txt");//Input the auxiliary file
+      double data;double data1;
+    for(int kkk=0; kkk<4; kkk++)
+    {
+        cin >> input
+        input << "{" << data ;
+      cout << "data: " << data << "data1: " << data1 << endl;
+    }
+      return 0;
+     */
+}
 /*
 double dE_dX_crystal_Alex()
 {

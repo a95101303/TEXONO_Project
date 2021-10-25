@@ -1,6 +1,5 @@
-const int DataBin = 255;
-#include "Header_SR_DCS_June.h"
-#include "Header_SR_DCS_Dec.h"
+#include "Header_SL_Parameter.h"
+
 void plot_DCS_SR()
 {
 
@@ -29,26 +28,77 @@ void plot_DCS_SR()
   
   double rate_factor;
  
-  double c1 = 1E-18;
-  double mx; //GeV
-
-  mx = massDM[10];
- 
-  printf("mx = %f\n",mx);
   
-  for(int rr = 0; rr<NumPt;rr++)
+    float SE_to_NT_P = 1.64458;//68%->90%
+    const double Lower_Bound = 49.432*SE_to_NT_P;
+
+    double Sigma_e_Dec[26];double Sigma_e_Jun[26];
+
+for(int M_Idx=10; M_Idx<11; M_Idx++)
+{
+      double mx = massDM[M_Idx] ;
+    cout << "mx: " << mx << endl;
+    cout << "=================================================" << endl;
+    int DecRate_Check=0;int JuneRate_Check=0;
+    
+        for(int Sig_Idx=1; Sig_Idx<2; Sig_Idx++)
+        {
+            double c1 = 9*1e-20;
+            cout << "c1: " << CS_Try(c1,mx) << endl;
+
+          for(int rr = 0; rr<NumPt;rr++)
+            {
+              rate_factor = pow(c1,2)*1E-18*1E+3*86400*3E+10*(density*electron_number)/(mx);
+              
+              Energy[rr] = 95.0E-3 + 5.0*(double)rr/(double)NumPt;
+              JuneRate[rr] = rate_factor*ShortRangeDcs_June(Energy[rr]*1E+3 , mx);
+              DecRate[rr]  = rate_factor*ShortRangeDcs_Dec(Energy[rr]*1E+3  , mx);
+              Ratio[rr]  = DecRate[rr]-JuneRate[rr];
+
+              if(Energy[rr]==0.20)
+              {
+                  cout << "=================================================" << endl;
+                  cout << "DecRate_Final[rr]: " << DecRate[rr] << endl;
+                  cout << "=================================================" << endl;
+
+                  if(JuneRate_Check==0)
+                  {
+                      double scale_June = Lower_Bound/JuneRate[rr];
+                      double scale_June_c1 = sqrt(scale_June);
+                      cout << "mx: " << mx << endl;
+                      cout << "JuneRate_Final[rr]: " << JuneRate[rr]*scale_June << endl;
+                      cout << "June_Cross-section_sigma_e: " << CS_Try(c1*scale_June_c1,mx) << endl;
+                      Sigma_e_Jun[M_Idx] = CS_Try(c1*scale_June_c1,mx);
+                      JuneRate_Check = JuneRate_Check + 1;
+                  }
+                  if(DecRate_Check==0)
+                  {
+                      double scale_Dec = Lower_Bound/DecRate[rr];
+                      double scale_Dec_c1 = sqrt(scale_Dec);
+                      cout << "mx: " << mx << endl;
+                      cout << "DecRate_Final[rr]: " << DecRate[rr]*scale_Dec << endl;
+                      cout << "Dec_Cross-section_sigma_e: " << CS_Try(c1*scale_Dec_c1,mx) << endl;
+                      Sigma_e_Dec[M_Idx] = CS_Try(c1*scale_Dec_c1,mx);
+                      DecRate_Check = DecRate_Check + 1;
+                  }
+              }
+
+              //printf("%f  %e \n", Energy[rr], JuneRate[rr]);
+            }
+        }
+    
+}
+    /*
+    for(int M_Idx=0; M_Idx<26; M_Idx++)
     {
-      rate_factor = pow(c1,2)*1E-18*1E+3*86400*3E+10*(density*electron_number)/(mx);
-      
-      Energy[rr] = 95.0E-3 + 5.0*(double)rr/(double)NumPt;
-      JuneRate[rr] = rate_factor*ShortRangeDcs_June(Energy[rr]*1E+3 , mx);
-      DecRate[rr]  = rate_factor*ShortRangeDcs_Dec(Energy[rr]*1E+3  , mx);
-      Ratio[rr]  = DecRate[rr]-JuneRate[rr];
-
-      
-      //printf("%f  %e \n", Energy[rr], JuneRate[rr]);
-    }
-
+        cout << "mx: " << massDM[M_Idx] << endl;
+        cout << "Sigma_e_Jun[M_Idx]: " << Sigma_e_Jun[M_Idx] << endl;
+        cout << "Sigma_e_Dec[M_Idx]: " << Sigma_e_Dec[M_Idx] << endl;
+     }
+     
+    for(int M_Idx=0; M_Idx<26; M_Idx++){cout << massDM[M_Idx] << "," << Sigma_e_Jun[M_Idx] << "," << endl;}
+    for(int M_Idx=0; M_Idx<26; M_Idx++){cout << massDM[M_Idx] << "," << Sigma_e_Dec[M_Idx] << "," << endl;}
+     */
 
   TCanvas *plot = new TCanvas("plot");
   gPad->SetLogy(1);
@@ -61,7 +111,7 @@ void plot_DCS_SR()
   grJ->SetLineColor(kRed);
   grJ->Draw("al");
 
-     
+    /*
   TGraph *grD = new TGraph(NumPt , Energy , DecRate );
   grD->SetLineWidth(3);
   grD->SetLineColor(kBlue);
@@ -77,7 +127,7 @@ void plot_DCS_SR()
   grF->SetLineWidth(3);
   grF->SetLineColor(2);
   grF->Draw("al");
-
+     */
 
      
 

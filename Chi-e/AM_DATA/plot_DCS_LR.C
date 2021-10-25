@@ -34,7 +34,7 @@ void plot_DCS_LR()
     //cout << "DS_Try(4.89e-11,0.5): " << DS_Try(4.89e-11,0.5) << endl;
     double Sigma_e_Dec[26];double Sigma_e_Jun[26];
     
-    for(int M_Idx=0; M_Idx<1; M_Idx++)
+    for(int M_Idx=25; M_Idx<26; M_Idx++)
     {
           double mx = massDM[M_Idx] ;
         cout << "mx: " << mx << endl;
