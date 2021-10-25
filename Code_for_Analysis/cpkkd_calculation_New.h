@@ -570,8 +570,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
-    /*
-    const double M_of_DM=1e6;
+    
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
         cout << "Electronic Recoil//(From other paper not Mukesh's)" << endl;
@@ -586,18 +585,15 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 float v_cm_day = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])*kms1_to_cmday1;
                 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
-                if((Max_Recoil_A_keV_ER_Free(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
+                if( Energy_DM(WIMP_mx,v*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
                     {
-//if(Conventional_or_not==0)recoilX[i] = recoilX[i] + 2*0.511*1e-3*dsigma_dT_GeV_ER_2(Sigma_SI, WIMP_mx, v)*N_atom_Ge_1kg*32*(rohx/WIMP_mx)*v_cm_day*(1)*(Flux->GetBinContent(j))/(Flux->GetEntries());
                 if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*(1/(sum))*velo_dist_Ave[j][3];
-          //  if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*(1/(sum))*velo_dist_Ave[j][3];
-          //  if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*N_atom_Ge_1kg*32*(rohx/WIMP_mx)*v_cm_day*(1/(sum))*velo_dist_Ave[j][3];
                     }
             }
             
         }
     }
-     */
+     
     //===============================================================
     double sig_E; double dEx;
     static double Factor1[dm_spec_resolution];

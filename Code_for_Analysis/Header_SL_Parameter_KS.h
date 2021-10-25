@@ -351,62 +351,107 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     return 0;
 }
 
-double fdsigma_dT_ER(double mx, double v)//mx(GeV/c^2),v(c)
+double fdsigma_dT_ER(string FileName, double mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
 {
-    string filename("1P333.txt");
+       static string Pre_File="";
+       static vector<double> Energy_Transfer_array;
+       static vector<double> dsigma_dT_array;
+       int Counter=0;
+       TGraph* gr = new TGraph();
     
-       vector<char> Energy_Transfer;
-       vector<char> dsigma_dT;
-       string Power="E";
-       int counter_E;int counter_sigma;
-       string Energy_Transfer_String="";
-       string dsigma_dT_String="";
-    
-       vector<double> Energy_Transfer_array;
-       vector<double> dsigma_dT_array;
-    
-       char byte = 0;
-
-       ifstream input_file(filename);
-       if (!input_file.is_open()) {
-           cerr << "Could not open the file - '"
-                << filename << "'" << endl;
-           return EXIT_FAILURE;
-       }
-
-       while (input_file.get(byte))
+       if(Pre_File!=FileName)
        {
-           bytes.push_back(byte);
-           //^<^Start for energy transfer^<^
-           if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
-           if(counter_E!=0){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
-           if(counter_E!=0 and byte=','){counter_E=0;counter_sigma=1;continue;}//End counting for energy transfer^_^
-           
-           //^<^Start for differential cross sections^<^
-           if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
-           else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
-           else if(counter_sigma!=0 and byte=='}'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
-
-           
-           
+               Pre_File = FileName;
+               string filename(FileName);
+               
+               vector<char> bytes;
+               vector<char> Energy_Transfer;
+               vector<char> dsigma_dT;
+               string Power="E";
+               int counter_E=0;int counter_sigma=0;
+               string Energy_Transfer_String="";
+               string dsigma_dT_String="";
+                        
+               char byte = 0;
+               ifstream input_file(filename);
+               if (!input_file.is_open())
+               {
+                   cerr << "Could not open the file - '"
+                        << filename << "'" << endl;
+                   return EXIT_FAILURE;
+               }
+               while (input_file.get(byte))
+               {
+                   bytes.push_back(byte);
+                   if(byte==' ')continue;
+                   //^<^Start for energy transfer^<^
+                   if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
+                   if(counter_E!=0 and byte!='{'){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
+                   if(counter_E!=0 and byte==','){//End counting for energy transfer^_^
+                       Counter = Counter + 1;
+                       Energy_Transfer_array.push_back(stod(Energy_Transfer_String));
+                       cout << "Energy_Transfer_array: " << Energy_Transfer_array[Counter-1] << endl;
+                       Energy_Transfer_String="",counter_E=0;counter_sigma=1;continue;
+                   }
+                   
+                   //^<^Start for differential cross sections^<^
+                   if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
+                   else if(counter_sigma!=0 and byte=='}'){//Replace E with D^0^
+                      // cout << "dsigma_dT_String: " << dsigma_dT_String << endl;
+                       dsigma_dT_array.push_back(stod(dsigma_dT_String));
+                      // cout << "dsigma_dT_array: " << dsigma_dT_array[Counter-1] << endl;
+                       dsigma_dT_String="";counter_sigma=0;
+                   }
+                   else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
+               }
+                for(int kkk=0; kkk<Counter; kkk++)
+                {
+                    cout.precision(10);
+                    cout << "Energy of DM: " << 0.5*0.5*1e6*(1.33)*(1.33) << endl;
+                    cout << "Energy_Transfer_array: " << Energy_Transfer_array[kkk] << endl;
+                    cout << "dsigma_dT_array: " << dsigma_dT_array[kkk] << endl;
+                    cout << "TMath::Log10(dsigma_dT_array): " << TMath::Log10(dsigma_dT_array[kkk]) << endl;
+                    gr->SetPoint(kkk,Energy_Transfer_array[kkk],TMath::Log10(dsigma_dT_array[kkk]));
+                }
+                   input_file.close();
        }
-       for (const auto &i : bytes) {
-           cout << i ;
-       }
-       cout << endl;
-       input_file.close();
+    
+    //gr->Draw("ALP");
+    //c3->Print("Check_ECS.pdf");
 
-    /*
-      std::ifstream input("Test.txt");//Input the auxiliary file
-      double data;double data1;
-    for(int kkk=0; kkk<4; kkk++)
-    {
-        cin >> input
-        input << "{" << data ;
-      cout << "data: " << data << "data1: " << data1 << endl;
-    }
-      return 0;
-     */
+        Float_t Lower_eV[Counter+1];
+        Lower_eV[0]=0;
+        for(int kkk=0; kkk<Counter; kkk++)
+        {
+            Lower_eV[kkk+1]=Energy_Transfer_array[kkk];
+            cout << Lower_eV[kkk+1] << endl;
+        }
+    
+        TH1F* hist_DFCS = new TH1F("hist","",Counter, Lower_eV);//Differential Cross-section
+        hist_DFCS->SetBinContent(1, dsigma_dT_array[0]);
+        for(int kkk=0; kkk<Counter; kkk++)
+        {
+            hist_DFCS->SetBinContent(kkk+1, dsigma_dT_array[kkk]);
+            cout << "dsigma_dT_array[kkk+1]: " << dsigma_dT_array[kkk] << endl;
+        }
+        for(int kkk=0; kkk<Counter; kkk++)
+        {
+            cout << "hist_DFCS->GetBinCenter(kkk+1): " << hist_DFCS->GetBinCenter(kkk+1) << endl;
+            cout << "hist_DFCS->GetBinContent(kkk+1): " << hist_DFCS->GetBinContent(kkk+1) << endl;
+        }
+        /*
+        TCanvas *c3 = new TCanvas("c3");
+        gStyle->SetOptFit(0);
+        gStyle->SetOptStat(0);
+    
+        c3->SetLogy();
+        hist_DFCS->GetXaxis()->SetRangeUser(0,435);
+        hist_DFCS->GetYaxis()->SetRangeUser(1e-8,1);
+         
+        hist_DFCS->Draw("HIST");
+         */
+        
+         return 0;
 }
 /*
 double dE_dX_crystal_Alex()
