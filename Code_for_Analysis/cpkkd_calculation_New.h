@@ -322,7 +322,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     if(Conventional_or_not==2){//Conventional Distribution
         WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Model_of_Interaction==4){//electron Recoil
-        WIMP_max_T = max_recoil_A_for_ER_keV(MaxV,WIMP_mx)+0.2;} //keV
+        WIMP_max_T = Energy_DM(WIMP_mx,544*kms1_to_c)+0.02;} //keV
 
     double WIMP_max_T_NU = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
@@ -570,13 +570,14 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
-    
+    string filename="0P5";
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
-        cout << "Electronic Recoil//(From other paper not Mukesh's)" << endl;
+        cout << "Electronic Recoil//(From Mukesh's Code)" << endl;
         for(int i=0;i<reso_T;i++)
         {
             T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+            //double dE = (WIMP_max_T)/(double)reso_T;
             recoilX[i] = 0.0;//No need to attenuate
             //cout << "T[i]: " << T[i] << endl;
             for(int j=0;j<2000;j++)
@@ -585,9 +586,9 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 float v_cm_day = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2])*kms1_to_cmday1;
                 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
-                if( Energy_DM(WIMP_mx,v*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
+                if( Energy_DM(WIMP_mx,544*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
                     {
-                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dsigma_dT_keV_ER(Sigma_SI, WIMP_mx, v, T[i], M_of_DM)*(1/(sum))*velo_dist_Ave[j][3];
+                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-3*1e-24*fdsigma_dT_ER(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3];
                     }
             }
             
@@ -663,6 +664,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }
+    
     cout << "WIMP_max_T: " << WIMP_max_T << endl;
     cout << "WIMP_mx_Check: " << WIMP_mx << endl;
     cout << "Velocity_Min_Check: " << Velocity_Min << endl;

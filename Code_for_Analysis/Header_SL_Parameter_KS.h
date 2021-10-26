@@ -351,30 +351,43 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     return 0;
 }
 
-double fdsigma_dT_ER(string mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
+double fdsigma_dT_ER(string mx, double v, double T)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
+    
        static string Pre_mx="";
        
-       int Counter=0;
        TGraph* gr = new TGraph();
+    
        const int DM_Beta_N=10;
        string DM_Beta[DM_Beta_N]={"1P000","1P167","1P333","1P500","1P667","1P833","2P000","2P167","2P333","2P500"};
+        //=================Check the cross sections used===========================
+       int Now_File=0;
+       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.000,1.167,1.333,1.500,1.667,1.833,2.000,2.167,2.333,2.500};
+       for(int N=0; N<DM_Beta_N; N++){if(v>DM_Beta_Exact_double[N] and v<DM_Beta_Exact_double[N+1]) Now_File=N;}
+       if(v>DM_Beta_Exact_double[9])Now_File=9;
+        //====================================================================
        static vector<vector<double>> Energy_Transfer_array(DM_Beta_N);
        static vector<vector<double>> dsigma_dT_array(DM_Beta_N);
-
+       static vector<TH1F*> Hist_DCS_array;
+    
+       int Number_Exe=10;
+    
        if(Pre_mx!=mx)
        {
            Pre_mx = mx;
-           for(int N=0; N<DM_Beta_N; N++){
-                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[0].c_str()));
+           Energy_Transfer_array.clear();//Make sure that there is no element in.
+           dsigma_dT_array.clear();//Make sure that there is no element in.
+           for(int N=0; N<Number_Exe; N++)
+           {
+                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
+                   cout << "filename: " << filename << endl;
                    vector<char> bytes;
                    vector<char> Energy_Transfer;
                    vector<char> dsigma_dT;
                    string Power="E";
-                   int counter_E=0;int counter_sigma=0;
+                   int counter_E=0;int counter_sigma=0;int Counter=0;
                    string Energy_Transfer_String="";
                    string dsigma_dT_String="";
-                            
                    char byte = 0;
                    ifstream input_file(filename);
                    if (!input_file.is_open())
@@ -388,62 +401,72 @@ double fdsigma_dT_ER(string mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
                        bytes.push_back(byte);
                        if(byte==' ')continue;
                        //^<^Start for energy transfer^<^
-                       if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
-                       if(counter_E!=0 and byte!='{'){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
+                       if(byte==(char)123){counter_E=1; continue;}//Start counting for energy transfer^<^, (char)123 = "{"
+                       if(counter_E!=0 and byte!=(char)123){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
                        if(counter_E!=0 and byte==','){//End counting for energy transfer^_^
                            Counter = Counter + 1;
                            Energy_Transfer_array[N].push_back(stod(Energy_Transfer_String));
-                           cout << "Energy_Transfer_array: " << Energy_Transfer_array[Counter-1] << endl;
                            Energy_Transfer_String="",counter_E=0;counter_sigma=1;continue;
                        }
                        
                        //^<^Start for differential cross sections^<^
                        if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
-                       else if(counter_sigma!=0 and byte=='}'){//Replace E with D^0^
-                          // cout << "dsigma_dT_String: " << dsigma_dT_String << endl;
+                       else if(counter_sigma!=0 and byte==(char)125){//Replace E with D^0^, (char)125 = "}"
                            dsigma_dT_array[N].push_back(stod(dsigma_dT_String));
-                          // cout << "dsigma_dT_array: " << dsigma_dT_array[Counter-1] << endl;
                            dsigma_dT_String="";counter_sigma=0;
                        }
                        else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
+                        
                    }
+               
+                    input_file.close();
+                    
+    
+                    cout << scientific;
+               
+                    Float_t Lower_eV[DM_Beta_N][Counter+1];
+                    Lower_eV[N][0]=0;
                     for(int kkk=0; kkk<Counter; kkk++)
                     {
-                        cout.precision(10);
-                        cout << "Energy of DM: " << 0.5*0.5*1e6*(1.33)*(1.33) << endl;
-                        cout << "Energy_Transfer_array: " << Energy_Transfer_array[kkk] << endl;
-                        cout << "dsigma_dT_array: " << dsigma_dT_array[kkk] << endl;
-                        cout << "TMath::Log10(dsigma_dT_array): " << TMath::Log10(dsigma_dT_array[kkk]) << endl;
-                        gr->SetPoint(kkk,Energy_Transfer_array[kkk],TMath::Log10(dsigma_dT_array[kkk]));
+                        Lower_eV[N][kkk+1]=Energy_Transfer_array[N][kkk];
+                        cout << "Energy_transfer: " << Lower_eV[N][kkk+1] << endl;
                     }
-                       input_file.close();
+               
+                    TH1F* hist_DFCS = new TH1F("hist","",Counter, Lower_eV[N]);//Differential Cross-section
+                    for(int kkk=0; kkk<Counter; kkk++)
+                    {
+                        hist_DFCS->SetBinContent(kkk+1, dsigma_dT_array[N][kkk]);
+                        cout << "dsigma_dT_array[kkk+1]: " << dsigma_dT_array[N][kkk] << endl;
+                    }
+                    Hist_DCS_array.push_back(hist_DFCS);
+                    for(int kkk=0; kkk<Counter; kkk++)
+                    {
+                        //cout << "hist_DFCS->GetBinCenter(kkk+1): " << hist_DFCS->GetBinCenter(kkk+1) << endl;
+                        cout << "hist_DFCS->GetBinContent(kkk+1): " << hist_DFCS->GetBinContent(kkk+1) << endl;
+                    }
+                   /*
+                   TCanvas *c3 = new TCanvas("c3");
+                   gStyle->SetOptFit(0);
+                   gStyle->SetOptStat(0);
+               
+                   c3->SetLogy();
+                   hist_DFCS->GetXaxis()->SetRangeUser(0,247);
+                   hist_DFCS->GetYaxis()->SetRangeUser(1e-8,1);
+                    
+                   hist_DFCS->Draw("HIST");
+                    */
            }
        }
-    
-    //gr->Draw("ALP");
-    //c3->Print("Check_ECS.pdf");
-
-        Float_t Lower_eV[Counter+1];
-        Lower_eV[0]=0;
-        for(int kkk=0; kkk<Counter; kkk++)
-        {
-            Lower_eV[kkk+1]=Energy_Transfer_array[kkk];
-            cout << Lower_eV[kkk+1] << endl;
-        }
-    
-        TH1F* hist_DFCS = new TH1F("hist","",Counter, Lower_eV);//Differential Cross-section
-        hist_DFCS->SetBinContent(1, dsigma_dT_array[0]);
-        for(int kkk=0; kkk<Counter; kkk++)
-        {
-            hist_DFCS->SetBinContent(kkk+1, dsigma_dT_array[kkk]);
-            cout << "dsigma_dT_array[kkk+1]: " << dsigma_dT_array[kkk] << endl;
-        }
-        for(int kkk=0; kkk<Counter; kkk++)
-        {
-            cout << "hist_DFCS->GetBinCenter(kkk+1): " << hist_DFCS->GetBinCenter(kkk+1) << endl;
-            cout << "hist_DFCS->GetBinContent(kkk+1): " << hist_DFCS->GetBinContent(kkk+1) << endl;
-        }
+        
+        Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);
+        //cout << "binx: " << binx << endl;
+        double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
+        //cout << "DCS: " << DCS << endl;
         /*
+         
+         //gr->Draw("ALP");
+         //c3->Print("Check_ECS.pdf");
+
         TCanvas *c3 = new TCanvas("c3");
         gStyle->SetOptFit(0);
         gStyle->SetOptStat(0);
@@ -454,8 +477,17 @@ double fdsigma_dT_ER(string mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
          
         hist_DFCS->Draw("HIST");
          */
-        
-         return 0;
+    
+        //Give out the root file to check the content of the DCS
+        /*
+        char fout_name[100];
+        sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/DCS.root",mx.c_str()));
+        TFile *fout=new TFile(fout_name,"recreate");
+        for(int N=0; N<DM_Beta_N; N++){Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
+        fout->Close();
+        */
+    
+         return DCS;
 }
 /*
 double dE_dX_crystal_Alex()
