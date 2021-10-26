@@ -351,69 +351,73 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     return 0;
 }
 
-double fdsigma_dT_ER(string FileName, double mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
-{
-       static string Pre_File="";
-       static vector<double> Energy_Transfer_array;
-       static vector<double> dsigma_dT_array;
+double fdsigma_dT_ER(string mx, double v)//mx(GeV/c^2),v(c), dsigma_dT
+{//Vecloty-dependent dsigma_dT
+       static string Pre_mx="";
+       
        int Counter=0;
        TGraph* gr = new TGraph();
-    
-       if(Pre_File!=FileName)
+       const int DM_Beta_N=10;
+       string DM_Beta[DM_Beta_N]={"1P000","1P167","1P333","1P500","1P667","1P833","2P000","2P167","2P333","2P500"};
+       static vector<vector<double>> Energy_Transfer_array(DM_Beta_N);
+       static vector<vector<double>> dsigma_dT_array(DM_Beta_N);
+
+       if(Pre_mx!=mx)
        {
-               Pre_File = FileName;
-               string filename(FileName);
-               
-               vector<char> bytes;
-               vector<char> Energy_Transfer;
-               vector<char> dsigma_dT;
-               string Power="E";
-               int counter_E=0;int counter_sigma=0;
-               string Energy_Transfer_String="";
-               string dsigma_dT_String="";
-                        
-               char byte = 0;
-               ifstream input_file(filename);
-               if (!input_file.is_open())
-               {
-                   cerr << "Could not open the file - '"
-                        << filename << "'" << endl;
-                   return EXIT_FAILURE;
-               }
-               while (input_file.get(byte))
-               {
-                   bytes.push_back(byte);
-                   if(byte==' ')continue;
-                   //^<^Start for energy transfer^<^
-                   if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
-                   if(counter_E!=0 and byte!='{'){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
-                   if(counter_E!=0 and byte==','){//End counting for energy transfer^_^
-                       Counter = Counter + 1;
-                       Energy_Transfer_array.push_back(stod(Energy_Transfer_String));
-                       cout << "Energy_Transfer_array: " << Energy_Transfer_array[Counter-1] << endl;
-                       Energy_Transfer_String="",counter_E=0;counter_sigma=1;continue;
+           Pre_mx = mx;
+           for(int N=0; N<DM_Beta_N; N++){
+                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[0].c_str()));
+                   vector<char> bytes;
+                   vector<char> Energy_Transfer;
+                   vector<char> dsigma_dT;
+                   string Power="E";
+                   int counter_E=0;int counter_sigma=0;
+                   string Energy_Transfer_String="";
+                   string dsigma_dT_String="";
+                            
+                   char byte = 0;
+                   ifstream input_file(filename);
+                   if (!input_file.is_open())
+                   {
+                       cerr << "Could not open the file - '"
+                            << filename << "'" << endl;
+                       return EXIT_FAILURE;
                    }
-                   
-                   //^<^Start for differential cross sections^<^
-                   if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
-                   else if(counter_sigma!=0 and byte=='}'){//Replace E with D^0^
-                      // cout << "dsigma_dT_String: " << dsigma_dT_String << endl;
-                       dsigma_dT_array.push_back(stod(dsigma_dT_String));
-                      // cout << "dsigma_dT_array: " << dsigma_dT_array[Counter-1] << endl;
-                       dsigma_dT_String="";counter_sigma=0;
+                   while (input_file.get(byte))
+                   {
+                       bytes.push_back(byte);
+                       if(byte==' ')continue;
+                       //^<^Start for energy transfer^<^
+                       if(byte=='{'){counter_E=1; continue;}//Start counting for energy transfer^<^
+                       if(counter_E!=0 and byte!='{'){Energy_Transfer_String = Energy_Transfer_String + byte;}//Counting for energy transfer^0^
+                       if(counter_E!=0 and byte==','){//End counting for energy transfer^_^
+                           Counter = Counter + 1;
+                           Energy_Transfer_array[N].push_back(stod(Energy_Transfer_String));
+                           cout << "Energy_Transfer_array: " << Energy_Transfer_array[Counter-1] << endl;
+                           Energy_Transfer_String="",counter_E=0;counter_sigma=1;continue;
+                       }
+                       
+                       //^<^Start for differential cross sections^<^
+                       if(counter_sigma!=0 and byte=='D'){dsigma_dT_String = dsigma_dT_String + Power;}//Replace E with D^0^
+                       else if(counter_sigma!=0 and byte=='}'){//Replace E with D^0^
+                          // cout << "dsigma_dT_String: " << dsigma_dT_String << endl;
+                           dsigma_dT_array[N].push_back(stod(dsigma_dT_String));
+                          // cout << "dsigma_dT_array: " << dsigma_dT_array[Counter-1] << endl;
+                           dsigma_dT_String="";counter_sigma=0;
+                       }
+                       else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
                    }
-                   else if(counter_sigma!=0){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for dsigma_dT
-               }
-                for(int kkk=0; kkk<Counter; kkk++)
-                {
-                    cout.precision(10);
-                    cout << "Energy of DM: " << 0.5*0.5*1e6*(1.33)*(1.33) << endl;
-                    cout << "Energy_Transfer_array: " << Energy_Transfer_array[kkk] << endl;
-                    cout << "dsigma_dT_array: " << dsigma_dT_array[kkk] << endl;
-                    cout << "TMath::Log10(dsigma_dT_array): " << TMath::Log10(dsigma_dT_array[kkk]) << endl;
-                    gr->SetPoint(kkk,Energy_Transfer_array[kkk],TMath::Log10(dsigma_dT_array[kkk]));
-                }
-                   input_file.close();
+                    for(int kkk=0; kkk<Counter; kkk++)
+                    {
+                        cout.precision(10);
+                        cout << "Energy of DM: " << 0.5*0.5*1e6*(1.33)*(1.33) << endl;
+                        cout << "Energy_Transfer_array: " << Energy_Transfer_array[kkk] << endl;
+                        cout << "dsigma_dT_array: " << dsigma_dT_array[kkk] << endl;
+                        cout << "TMath::Log10(dsigma_dT_array): " << TMath::Log10(dsigma_dT_array[kkk]) << endl;
+                        gr->SetPoint(kkk,Energy_Transfer_array[kkk],TMath::Log10(dsigma_dT_array[kkk]));
+                    }
+                       input_file.close();
+           }
        }
     
     //gr->Draw("ALP");
