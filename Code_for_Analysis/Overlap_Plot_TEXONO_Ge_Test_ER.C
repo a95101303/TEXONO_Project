@@ -191,7 +191,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
 
     ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e+2);
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-38,1e-23);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-36,1e-23);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);

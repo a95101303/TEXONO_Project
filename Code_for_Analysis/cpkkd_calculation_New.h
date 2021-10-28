@@ -577,9 +577,10 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         for(int i=0;i<reso_T;i++)
         {
             T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
-            //double dE = (WIMP_max_T)/(double)reso_T;
             recoilX[i] = 0.0;//No need to attenuate
             //cout << "T[i]: " << T[i] << endl;
+            cout << "T[i]: " << T[i] << endl;
+
             for(int j=0;j<2000;j++)
             {
                 float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);
@@ -588,9 +589,11 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
                 if( Energy_DM(WIMP_mx,544*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
                     {
-                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-3*1e-24*fdsigma_dT_ER(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3];
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
+                        //if(T[i]>2.477480e-01)cout << "fdsigma_dT_ER(filename,v*kms1_to_c,T[i]): " << fdsigma_dT_ER(filename,v*kms1_to_c,T[i]) << endl;
                     }
             }
+            cout << "recoilX[i]: " << recoilX[i]  << endl;
             
         }
     }
@@ -658,9 +661,9 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-            cout << "T[i]: " << T[i] << endl;
+            //cout << "T[i]: " << T[i] << endl;
            // cout << "T_QF[i]: " << T_QF[i] << endl;
-            cout << "RecoilX: " << recoilX[i] << endl;
+            //cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }
