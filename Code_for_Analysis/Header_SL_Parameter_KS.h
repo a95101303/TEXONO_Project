@@ -383,7 +383,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
        static vector<TH1F*>      Hist_DCS_array;
        static vector<TGraph*> TG_Hist_DCS_array;
 
-       int Number_Exe=1;
+       int Number_Exe=10;
     
        if(Pre_mx!=mx)
        {
@@ -439,8 +439,8 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
                    //^^TGraph Plot
                    Float_t TG_Lower_eV[DM_Beta_N][Counter];
                    Float_t TG_dsigma_dT[DM_Beta_N][Counter];
-                   Float_t TG_Slope[DM_Beta_N][Counter-1];
-                   Float_t TG_Constant[DM_Beta_N][Counter-1];
+                   Float_t TG_Slope[DM_Beta_N][Counter];
+                   Float_t TG_Constant[DM_Beta_N][Counter];
 
 
                    for(int kkk=0; kkk<Counter; kkk++)
@@ -449,15 +449,18 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
                        TG_dsigma_dT[N][kkk] = TMath::Log10(dsigma_dT_array[N][kkk]);//TGraaph
                    }//For extrapolating the cross sections between 0 to 80eV
                     
-                   for(int kkk=0; kkk<Counter-1; kkk++)//Slope
+                   for(int kkk=0; kkk<Counter-1; kkk++)//Add the slope from the second interval ( from 80eV ) into the bin from the second element
                    {
-                       TG_Slope[N][kkk]    = Slope_A(TG_Lower_eV[N][kkk],TG_dsigma_dT[N][kkk],TG_Lower_eV[N][kkk+1],TG_dsigma_dT[N][kkk+1]);
-                       TG_Constant[N][kkk] = Constant_B(TG_Slope[N][kkk],TG_Lower_eV[N][kkk],TG_dsigma_dT[N][kkk]);
-                       //cout << "Check: " << TG_Constant[N][kkk]+TG_Slope[N][kkk]*TG_Lower_eV[N][kkk+1] << "==?" << TG_dsigma_dT[N][kkk+1] << endl;
+                       TG_Slope[N][kkk+1]    = Slope_A(TG_Lower_eV[N][kkk],TG_dsigma_dT[N][kkk],TG_Lower_eV[N][kkk+1],TG_dsigma_dT[N][kkk+1]);
+                       TG_Constant[N][kkk+1] = Constant_B(TG_Slope[N][kkk+1],TG_Lower_eV[N][kkk],TG_dsigma_dT[N][kkk]);
+                       //cout << "Check: " << TG_Constant[N][kkk+1]+TG_Slope[N][kkk+1]*TG_Lower_eV[N][kkk+1] << "==?" << TG_dsigma_dT[N][kkk+1] << endl;
                        //cout << "hist_DFCS->GetBinContent(kkk+1): " << hist_DFCS->GetBinContent(kkk+1) << endl;
                    }
+                   //Aussume the first line between 0 to 80eV is the same as the second one
+                   TG_Slope[N][0]    = Slope_A(TG_Lower_eV[N][0],TG_dsigma_dT[N][0],TG_Lower_eV[N][1],TG_dsigma_dT[N][1]);
+                   TG_Constant[N][0] = Constant_B(TG_Slope[N][0],TG_Lower_eV[N][0],TG_dsigma_dT[N][0]);
                    //============================Find the extrapolated line============================
-                   Float_t TG_Lower_eV_F[DM_Beta_N][Counter+1];
+                   Float_t TG_Lower_eV_F[DM_Beta_N][Counter+1];//Add one point (0) to the array
                    Float_t TG_dsigma_dT_F[DM_Beta_N][Counter+1];
                    TG_Lower_eV_F[N][0]=0;TG_dsigma_dT_F[N][0]=TG_Constant[N][0];
                    for(int kkk=0; kkk<Counter; kkk++)
@@ -469,7 +472,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
                    TGraph* gr = new TGraph(Counter+1,TG_Lower_eV_F[N],TG_dsigma_dT_F[N]);
                    TG_Hist_DCS_array.push_back(gr);
                    //============================Final values==========================================
-                   for(int kkk=0; kkk<Counter+1; kkk++)
+                   for(int kkk=0; kkk<Counter+1; kkk++)//Put all of them into another array for histogram
                    {
                        Energy_Transfer_array_Hist[N].push_back(TG_Lower_eV_F[N][kkk]);
                        dsigma_dT_array_Hist[N].push_back(TG_dsigma_dT_F[N][kkk]);
@@ -485,39 +488,68 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
                    double checkkk;
                    for(int kkk=0; kkk <Counter; kkk++)
                    {
-                       cout << "Energy_Transfer_array_Hist[N][kkk]: " << Energy_Transfer_array_Hist[N][kkk] << endl;
-                       cout << "Energy_Transfer_array_Hist[N][kkk+1]: " << Energy_Transfer_array_Hist[N][kkk+1] << endl;
                        DIff_Lower_eV_Hist[N][kkk]=Energy_Transfer_array_Hist[N][kkk+1]-Energy_Transfer_array_Hist[N][kkk];//Hist
                        Diff_Total[N] = Diff_Total[N] + DIff_Lower_eV_Hist[N][kkk];
                    }
                    for(int kkk=0; kkk <Counter; kkk++)
                    {
-                       cout << "DIff_Lower_eV_Hist[N][kkk]: " << DIff_Lower_eV_Hist[N][kkk] << endl;
-                       cout << "DIff_Lower_eV_Hist[N][kkk]/Diff_Total: " << DIff_Lower_eV_Hist[N][kkk]/Diff_Total[N] << endl;
                        checkkk = checkkk + DIff_Lower_eV_Hist[N][kkk]/Diff_Total[N];
                        Bin_Number_interval[N][kkk]=Bin_Number*(DIff_Lower_eV_Hist[N][kkk]/Diff_Total[N]);
                        Width_Per_Bin[N][kkk]=(DIff_Lower_eV_Hist[N][kkk])/(Bin_Number_interval[N][kkk]);
-                       cout << "Bin_Number_interval[N][kkk]: " << Bin_Number_interval[N][kkk] << endl;
                        Bin_Number_total = Bin_Number_total + Bin_Number_interval[N][kkk];
-                       cout << "Bin_Number_total: " << Bin_Number_total << endl;
                    }
                    cout.precision(10);
                    for(int kkk=0; kkk <Counter; kkk++)
                    {
-                       cout << "Max: "      << Energy_Transfer_array_Hist[N][kkk]+(Bin_Number_interval[N][kkk])*Width_Per_Bin[N][kkk] << endl;
+                      // cout << "Max: "      << Energy_Transfer_array_Hist[N][kkk]+(Bin_Number_interval[N][kkk])*Width_Per_Bin[N][kkk] << endl;
 
                    }
-                   cout << "checkkk: " << checkkk << endl;
-                   cout << "Diff_Total: " << Diff_Total[N] << endl;
+                   //cout << "Diff_Total: " << Diff_Total[N] << endl;
+                   vector<vector<double>> Lower_eV_array_for_Hist(DM_Beta_N);
+                   vector<vector<double>> Lower_eV_center_array_for_Hist(DM_Beta_N);
+                   vector<vector<double>> dsigma_dT_for_Hist(DM_Beta_N);
+
+                   int test_bin_Number=0;
                   //==================================================================================
-                   Float_t    Lower_eV[DM_Beta_N][Bin_Number];
-                   Lower_eV[N][0]=0;
-               for(int LLL=0; LLL<)
-                   for(int kkk=0; kkk<Counter; kkk++)
+                   for(int kkk=0; kkk< Counter; kkk++)//Tell about the interval designated
                    {
-                       Lower_eV[N][kkk+1]=Energy_Transfer_array[N][kkk];//Hist
-                       //cout << "Energy_transfer: " << Lower_eV[N][kkk+1] << endl;
+                       /*
+                       cout << "=========================================================" << endl;
+                       cout << "Bin_Number_interval[N][kkk]: " << Bin_Number_interval[N][kkk] << endl;
+                       cout << "kkk: " << kkk << endl;
+                       cout << "Energy_Transfer_array_Hist[N][kkk]: " << Energy_Transfer_array_Hist[N][kkk] << endl;
+                        
+                       cout << "TG_Slope[N][kkk]: " << TG_Slope[N][kkk] << endl;cout << "TG_Constant[N][kkk]: " << TG_Constant[N][kkk] << endl;
+                        */
+                       //cout << "=========================================================" << endl;
+                            for(int jjj=0; jjj<Bin_Number_interval[N][kkk]; jjj++)
+                            {
+                                Lower_eV_array_for_Hist[N].push_back(Energy_Transfer_array_Hist[N][kkk]+(jjj)*Width_Per_Bin[N][kkk]);
+                                Lower_eV_center_array_for_Hist[N].push_back(Energy_Transfer_array_Hist[N][kkk]+(jjj+0.5)*Width_Per_Bin[N][kkk]);
+                                dsigma_dT_for_Hist[N].push_back(TG_Slope[N][kkk]*Lower_eV_center_array_for_Hist[N][test_bin_Number]+TG_Constant[N][kkk]);
+                                /*
+                                cout << "Lower_eV_center_array_for_Hist[N]: " << Lower_eV_center_array_for_Hist[N][test_bin_Number] << endl;
+                                cout << "dsigma_dT_for_Hist[N]: " << dsigma_dT_for_Hist[N][test_bin_Number] << endl;
+                                cout << "TMath::Power(10,dsigma_dT_for_Hist[N][test_bin_Number]): " << TMath::Power(10,dsigma_dT_for_Hist[N][test_bin_Number]) << endl;
+                                 */
+                                test_bin_Number = test_bin_Number + 1;
+                            }
+                       //cout << "=========================================================" << endl;
                    }
+               
+                    
+                   Float_t    Lower_eV_Hist_Final[DM_Beta_N][test_bin_Number];
+                   Float_t    dsigma_dT_Hist_Final[DM_Beta_N][test_bin_Number];
+
+               for(int kkk=0; kkk<test_bin_Number; kkk++)
+               //for(int kkk=0; kkk<3; kkk++)
+               {Lower_eV_Hist_Final[N][kkk]=Lower_eV_array_for_Hist[N][kkk];}//Hist
+                TH1F* hist_DFCS = new TH1F("hist","",test_bin_Number-1, Lower_eV_Hist_Final[N]);//Differential Cross-section
+               for(int kkk=0; kkk<test_bin_Number; kkk++)
+               //for(int kkk=0; kkk<3; kkk++)
+               {hist_DFCS->SetBinContent(kkk+1, TMath::Power(10,dsigma_dT_for_Hist[N][kkk]));}//Hist
+               
+                   Hist_DCS_array.push_back(hist_DFCS);
 
                    /*
                     //^^Produce the Hist
@@ -540,8 +572,10 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
            }
        }
         Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);
+        //cout << "binx: " << binx << endl;
         //if(T>0.3 and v_int>300)cout << "binx: " << binx << endl;
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
+        //cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
         /*
          
@@ -560,17 +594,17 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
          */
     
         //Give out the root file to check the content of the DCS
-    cout << "OPEN: " << endl;
+        /*
         char fout_name[100];
         sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/DCS.root",mx.c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
-        //for(int N=0; N<DM_Beta_N; N++){   Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
-        for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
+        for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
+        //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
 
         fout->Close();
-        
+        */
     
-         return 0;
+         return DCS;
 }
 /*
 double dE_dX_crystal_Alex()
