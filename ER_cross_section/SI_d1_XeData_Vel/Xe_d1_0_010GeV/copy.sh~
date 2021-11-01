@@ -1,0 +1,19 @@
+#!/bin/sh
+cp bash_txt_header.sh ../d1_0_09GeV/
+cp bash_txt_header.sh ../d1_0_12GeV/
+cp bash_txt_header.sh ../d1_0_15GeV/
+cp bash_txt_header.sh ../d1_0_2GeV/
+cp bash_txt_header.sh ../d1_0_3GeV/
+cp bash_txt_header.sh ../d1_0_4GeV/
+cp bash_txt_header.sh ../d1_0_5GeV/
+cp bash_txt_header.sh ../d1_0_6GeV/
+cp bash_txt_header.sh ../d1_0_7GeV/
+cp bash_txt_header.sh ../d1_0_8GeV/
+cp bash_txt_header.sh ../d1_0_9GeV/
+cp bash_txt_header.sh ../d1_1_0GeV/
+cp bash_txt_header.sh ../d1_1_3GeV/
+cp bash_txt_header.sh ../d1_1_5GeV/
+cp bash_txt_header.sh ../d1_2_0GeV/
+cp bash_txt_header.sh ../d1_3_5GeV/
+cp bash_txt_header.sh ../d1_2_5GeV/
+cp bash_txt_header.sh ../d1_3_0GeV/
