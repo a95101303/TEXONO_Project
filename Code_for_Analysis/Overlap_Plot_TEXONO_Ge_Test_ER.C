@@ -107,26 +107,32 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
          */
     double RecoilX_Event_Original_M1=0; double RecoilX_Event_Aft_EARTH_M1=0;
     double RecoilX_Event_Original_M3=0; double RecoilX_Event_Aft_EARTH_M3=0;
-    
+        int Number_of_Bin=0;
     for(int i=0;i<reso_T;i++)
     {
         //cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
         //cout << "Factor1_Original_Aft_Array[i]: " << Factor1_Original_Aft_Array[i] << endl;
-        if(T_QF_Original_Bef_Array[i]>0.16)
+        if(T_QF_Original_Bef_Array[i]>0.7 and T_QF_Original_Bef_Array[i]<0.75)
         {
+            Number_of_Bin = Number_of_Bin + 1;
             RecoilX_Event_Original_M1 = RecoilX_Event_Original_M1 + Factor1_Original_Bef_Array[i];
         }
         //cout << "===========================================================================";
-        if(T_QF_Original_Aft_Array[i]>0.16)
+        if(T_QF_Original_Aft_Array[i]>0.7 and T_QF_Original_Bef_Array[i]<0.75)
         {
             RecoilX_Event_Aft_EARTH_M1 = RecoilX_Event_Aft_EARTH_M1 + Factor1_Original_Aft_Array[i];
         }
-        if(T_QF_Original_Bef_Array[i]>0.16 and T_QF_Original_Bef_Array[i]<0.26) RecoilX_Event_Original_M3 = RecoilX_Event_Original_M3 + Factor1_Original_Bef_Array[i];
-        if(T_QF_Original_Aft_Array[i]>0.16 and T_QF_Original_Aft_Array[i]<0.26) RecoilX_Event_Aft_EARTH_M3 = RecoilX_Event_Aft_EARTH_M3 + Factor1_Original_Aft_Array[i];
+        if(T_QF_Original_Bef_Array[i]>0.7 and T_QF_Original_Bef_Array[i]<0.75) RecoilX_Event_Original_M3 = RecoilX_Event_Original_M3 + Factor1_Original_Bef_Array[i];
+        if(T_QF_Original_Aft_Array[i]>0.7 and T_QF_Original_Aft_Array[i]<0.75) RecoilX_Event_Aft_EARTH_M3 = RecoilX_Event_Aft_EARTH_M3 + Factor1_Original_Aft_Array[i];
     }
-        cout << "RecoilX_Event_Aft_EARTH_M1: " << RecoilX_Event_Aft_EARTH_M1 << endl;
         cout << "RecoilX_Event_Original_M1: " << RecoilX_Event_Original_M1 << endl;
-
+        cout << "Number_of_Bin: " << Number_of_Bin << endl;
+        cout << "RecoilX_Event_Original_M1/Number_of_Bin: " << RecoilX_Event_Original_M1/(double)Number_of_Bin << endl;
+        cout << "60/(RecoilX_Event_Original_M1/(double)Number_of_Bin): " << 0.5/(RecoilX_Event_Original_M1/(double)Number_of_Bin) << endl;
+        double Scaling = 0.5/(RecoilX_Event_Original_M1/(double)Number_of_Bin);
+        cout << "DS_Try(1e-9,0.5): " << DS_Try(1e-9,0.5) << endl;
+        cout << "Final: " << DS_Try(1e-9,0.5)* sqrt(Scaling) << endl;
+        
     double EARTH_Original=0;
     double EARTH_Bigger_Than_Threshold=0;
     double Earth_Bigger_Than_Threshold=0;

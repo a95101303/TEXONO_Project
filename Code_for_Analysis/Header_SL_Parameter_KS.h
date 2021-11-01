@@ -617,13 +617,15 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
     //if(T>0.3 and v_int>300)cout << "v_int: " << v_int << endl;
     //if(T>0.3 and v_int>300)cout << "v: " << v << endl;
     
-       const int DM_Beta_N=10;
-       string DM_Beta[DM_Beta_N]={"1P000","1P167","1P333","1P500","1P667","1P833","2P000","2P167","2P333","2P500"};
+       const int DM_Beta_N=12;
+       //string DM_Beta[DM_Beta_N]={"1P000","1P167","1P333","1P500","1P667","1P833","2P000","2P167","2P333","2P500"};
+        string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};
         //=================Check the cross sections used===========================
        int Now_File=0;
-       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.000,1.167,1.333,1.500,1.667,1.833,2.000,2.167,2.333,2.500};
+       //double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.000,1.167,1.333,1.500,1.667,1.833,2.000,2.167,2.333,2.500};
+       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670,2.3330,2.5000};
        for(int N=0; N<DM_Beta_N; N++){if(v>DM_Beta_Exact_double[N] and v<DM_Beta_Exact_double[N+1]) Now_File=N;}
-       if(v>DM_Beta_Exact_double[9])Now_File=9;
+       if(v>DM_Beta_Exact_double[DM_Beta_N-1])Now_File=DM_Beta_N-1;
         //====================================================================
        static vector<vector<double>> Energy_Transfer_array(DM_Beta_N);
        static vector<vector<double>> dsigma_dT_array(DM_Beta_N);
@@ -635,7 +637,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
        static vector<TH1F*>      Hist_DCS_array;
        static vector<TGraph*> TG_Hist_DCS_array;
 
-       int Number_Exe=1;
+       int Number_Exe=12;
     
        if(Pre_mx!=mx)
        {
@@ -648,7 +650,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
            {
                    
                    //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
-                   string filename("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_GeData_Vel/c1_0_5GeV/DM_0_5GeV_06667V.h");
+                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_GeData_Vel/d1_%sGeV/DM_%sGeV_%sV.h",mx.c_str(),mx.c_str(),DM_Beta[N].c_str()));
                    cout << "filename: " << filename << endl;
                    vector<char> bytes;
                    vector<char> Energy_Transfer;
@@ -682,9 +684,11 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
                        }
                        if(counter_sigma==1 and byte!=(char)125){dsigma_dT_String = dsigma_dT_String + byte;}//Counting for energy transfer^0^
                        if(counter_sigma==1 and byte==(char)125){//
+                           if(dsigma_dT_String=="0.000000e+00"){Counter = Counter - 1;break;}
                            dsigma_dT_array[N].push_back(stod(dsigma_dT_String));
                            dsigma_dT_String="";counter_sigma=0;
                        }
+                       
 
                    }
                
@@ -706,6 +710,8 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
                    {
                        TG_Lower_eV[N][kkk]  = Energy_Transfer_array[N][kkk];//TGraph
                        TG_dsigma_dT[N][kkk] = TMath::Log10(dsigma_dT_array[N][kkk]);//TGraaph
+                       cout << "TG_Lower_eV[N][kkk]: " << TG_Lower_eV[N][kkk] << endl;
+                       cout << "TG_dsigma_dT[N][kkk]: " << TG_dsigma_dT[N][kkk] << endl;
                    }//For extrapolating the cross sections between 0 to 80eV
                     
                    for(int kkk=0; kkk<Counter-1; kkk++)//Add the slope from the second interval ( from 80eV ) into the bin from the second element
@@ -855,7 +861,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
         //Give out the root file to check the content of the DCS
         /*
         char fout_name[100];
-        sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/DCS.root",mx.c_str()));
+        sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_GeData_Vel/d1_%sGeV/DCS.root",mx.c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
         for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}

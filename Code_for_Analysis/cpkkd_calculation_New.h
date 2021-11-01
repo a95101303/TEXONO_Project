@@ -570,7 +570,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }//close8
     }//Close9
 
-    string filename="0P5";
+    string filename="0_5";
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
         cout << "Electronic Recoil//(From Mukesh's Code)" << endl;
@@ -588,7 +588,11 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
                 if( Energy_DM(WIMP_mx,v*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
                     {
-                        if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
+                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*N_atom_Xe_1kg*(rohx/WIMP_mx)*fdsigma_dT_ER_New(filename,v,T[i])*v_cm_day*(1/(sum))*velo_dist_Ave[j][3]*0.395;
+
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
+
                         //if(T[i]>2.477480e-01)cout << "fdsigma_dT_ER(filename,v*kms1_to_c,T[i]): " << fdsigma_dT_ER(filename,v*kms1_to_c,T[i]) << endl;
                     }
             }
@@ -659,9 +663,9 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-            //cout << "T[i]: " << T[i] << endl;
+            cout << "T[i]: " << T[i] << endl;
            // cout << "T_QF[i]: " << T_QF[i] << endl;
-            //cout << "RecoilX: " << recoilX[i] << endl;
+            cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }
