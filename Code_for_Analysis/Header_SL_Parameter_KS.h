@@ -618,12 +618,15 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
     //if(T>0.3 and v_int>300)cout << "v: " << v << endl;
     
        const int DM_Beta_N=12;
-       //string DM_Beta[DM_Beta_N]={"1P000","1P167","1P333","1P500","1P667","1P833","2P000","2P167","2P333","2P500"};
-        string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};
+       // string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};//Ge 0.5GeV
+       string DM_Beta[DM_Beta_N]={"03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};//Xe 0.5GeV
+       //const int DM_Beta_N=7;
+       //string DM_Beta[DM_Beta_N]={"11670","13330","15000","16670","18330","20000","21670"};//Xe 0.2GeV
         //=================Check the cross sections used===========================
        int Now_File=0;
-       //double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.000,1.167,1.333,1.500,1.667,1.833,2.000,2.167,2.333,2.500};
-       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670,2.3330,2.5000};
+       //double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670,2.3330,2.5000};//Ge 0.5GeV
+       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};//Xe 0.5GeV
+      // double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};//Xe 0.2GeV
        for(int N=0; N<DM_Beta_N; N++){if(v>DM_Beta_Exact_double[N] and v<DM_Beta_Exact_double[N+1]) Now_File=N;}
        if(v>DM_Beta_Exact_double[DM_Beta_N-1])Now_File=DM_Beta_N-1;
         //====================================================================
@@ -650,7 +653,8 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
            {
                    
                    //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
-                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_GeData_Vel/d1_%sGeV/DM_%sGeV_%sV.h",mx.c_str(),mx.c_str(),DM_Beta[N].c_str()));
+                   //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/d1_%sGeV/DM_%sGeV_%sV.h",mx.c_str(),mx.c_str(),DM_Beta[N].c_str()));
+                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/Xe_d1_0_500GeV/DM_0_50GeV_%sV.h",DM_Beta[N].c_str()));
                    cout << "filename: " << filename << endl;
                    vector<char> bytes;
                    vector<char> Energy_Transfer;
@@ -861,7 +865,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
         //Give out the root file to check the content of the DCS
         /*
         char fout_name[100];
-        sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_GeData_Vel/d1_%sGeV/DCS.root",mx.c_str()));
+        sprintf(fout_name,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/Xe_d1_0_500GeV/DCS.root");
         TFile *fout=new TFile(fout_name,"recreate");
         for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}

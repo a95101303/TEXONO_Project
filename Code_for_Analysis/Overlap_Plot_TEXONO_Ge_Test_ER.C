@@ -112,7 +112,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     {
         //cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
         //cout << "Factor1_Original_Aft_Array[i]: " << Factor1_Original_Aft_Array[i] << endl;
-        if(T_QF_Original_Bef_Array[i]>0.7 and T_QF_Original_Bef_Array[i]<0.75)
+        if(T_QF_Original_Bef_Array[i]>0.7 and T_QF_Original_Bef_Array[i]<1.7)
         {
             Number_of_Bin = Number_of_Bin + 1;
             RecoilX_Event_Original_M1 = RecoilX_Event_Original_M1 + Factor1_Original_Bef_Array[i];

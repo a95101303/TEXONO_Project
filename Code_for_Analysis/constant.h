@@ -69,6 +69,7 @@ const double MNGe = atom_mass_Ge_MeV;
 // number of atom in 1kg of Ge
 const double N_atom_Ge_1kg = 1000.0/atom_mass_Ge_g;
 const double N_atom_Xe_1kg = 1000.0/atom_mass_Xe_g;
+
 // mass_density in g/cm^3
 const double mass_density_Ge = 5.323;
 const double mass_density_Xe = 5.761*1e-3;

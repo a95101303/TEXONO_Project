@@ -571,6 +571,12 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     }//Close9
 
     string filename="0_5";
+    double dm_mass= WIMP_mx;
+      const double percm_GeV = 1.97326971780039025e-14;
+  float  me = 0.510998928E-3;
+  float red_mass = ((me*dm_mass)/(me+dm_mass));
+  float alpha = (1E-37*TMath::Pi())/(pow(red_mass,2)*pow(percm_GeV,2));
+
     if(Model_of_Interaction==4)//Electronic-recoil Only
     {
         cout << "Electronic Recoil//(From Mukesh's Code)" << endl;
@@ -588,18 +594,21 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
                 if( Energy_DM(WIMP_mx,v*kms1_to_c)>T[i] and v>sqrt(T[i]/(WIMP_mx*1e6)) and v<544)
                     {
-                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*N_atom_Xe_1kg*(rohx/WIMP_mx)*fdsigma_dT_ER_New(filename,v,T[i])*v_cm_day*(1/(sum))*velo_dist_Ave[j][3]*0.395;
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e3*1e-1*1e-18*N_atom_Xe_1kg*(rohx/WIMP_mx)*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*v_cm_day*(1/(sum))*velo_dist_Ave[j][3]*0.395;
 
                         //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
                         //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
+                        
+                        if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 2e-2*1e-18*alpha*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*1e5*(0.395*1e5);
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-18*alpha*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*1e5*(0.395*1e5);
 
                         //if(T[i]>2.477480e-01)cout << "fdsigma_dT_ER(filename,v*kms1_to_c,T[i]): " << fdsigma_dT_ER(filename,v*kms1_to_c,T[i]) << endl;
                     }
             }
-            
+            cout << "recoilX[i]: " << recoilX[i] << endl;
         }
     }
-     
+
     //===============================================================
     double sig_E; double dEx;
     static double Factor1[dm_spec_resolution];
