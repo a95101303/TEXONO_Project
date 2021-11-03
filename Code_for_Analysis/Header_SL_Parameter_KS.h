@@ -625,7 +625,7 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
     {
         //Designate which files
         if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;continue;}
-        cout << "entry.path(): " << entry.path() << endl;//String
+        //cout << "entry.path(): " << entry.path() << endl;//String
         std::string Path_to_file = entry.path();//String
         std::string::iterator it;//Run the whole address
         string File_Name="";string DM_Mass="";
@@ -636,9 +636,10 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
             char byte = *it;
             if(Start_file!=1 and byte=='l'){Start_file=1;continue;}
             if(Start_file==1 and byte=='.'){Start_file=0;continue;}
-            if(Start_file==1 and byte!='/'){File_Name=File_Name+byte;}
+            if(Start_file==1 and byte!='/' and byte!='V'){File_Name=File_Name+byte;continue;}
             if(Start_file==1 and byte=='V'){
-                cout << "File_Name: " << File_Name << endl;
+                File_Name=File_Name+byte;
+                //cout << "File_Name: " << File_Name << endl;
                 FileName_Individual.push_back(File_Name);Start_file=0;
                 Add_or_Not=1;
             }
@@ -648,15 +649,16 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
             char byte = *it;
             if(Start_file==0 and byte=='_'){Start_file=1;continue;}
             if(Start_file==1 and byte=='.'){Start_file=0;continue;}
-            if(Start_file==1 and byte=='_'){DM_Mass=DM_Mass+".";}
-            if(Start_file==1 and byte!='_' and byte!='G'){DM_Mass=DM_Mass+byte;}
+            if(Start_file==1 and byte=='_'){DM_Mass=DM_Mass+".";continue;}
+            if(Start_file==1 and byte!='_' and byte!='G'){DM_Mass=DM_Mass+byte;continue;}
             if(Start_file==1 and byte=='G'){
                 string Mass = to_string(int(stod(DM_Mass)*1e3));
-                cout << "DM_Mass: " << to_string(int(stod(DM_Mass)*1e3)) << endl;Start_file=0;
+                //cout << "double: DM_Mass" << DM_Mass << endl;
+                //cout << "DM_Mass: " << to_string(int(stod(DM_Mass)*1e3)) << endl;Start_file=0;
                 S_DM_Mass.push_back(to_string(int(stod(DM_Mass)*1e3)));
             }
         }
-            if(Add_or_Not==1){FileName.push_back(entry.path());}//Make sure the number is right
+        if(Add_or_Not==1){FileName.push_back(entry.path());}//Make sure the number is right
 
         kkk = kkk + 1;
     }
@@ -671,26 +673,58 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         
        string mx = "0_5";
        Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
-       
+       //===============================================First, check the file and number==========================================//
        int Number=0;
        for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
             if(S_DM_Mass[kkk]==to_string(int(Mx*1e3)))Number=kkk;
-       }
-        cout << "S_DM_Mass[kkk]: " << S_DM_Mass[Number] << endl;
-        cout << "Mx: " << Mx << endl;
-    
-        for (const auto & entry : fs::directory_iterator(FileName[Number]))
+       }//Find the position of this mass in the array
+        
+        vector<string> File_velocity;//
+        vector<double> DM_Beta_Now;
+        static vector<string> File_velocity_Right;
+        static vector<double> DM_Beta_Right;
+
+        //cout << "FileName[Number]: " << FileName[Number] << endl;
+        for (const auto & entry : fs::directory_iterator(FileName[Number]))//Read all files
         {
-            cout << "entry.path(): " << entry.path() << endl;
+            std::string Path_to_file = entry.path();//String
+            std::string::iterator it;//Run the whole address
+            if(Path_to_file.find(".h")!= std::string::npos and Path_to_file.find("DM")!= std::string::npos)
+            {
+                //cout << "entry.path(): " << entry.path() << endl;
+                int Prestart=0;int Realstart=0;int Digital=0;
+                string String_velocity="";
+                string String_velocity_Real="";
+                for(it = Path_to_file.begin(); it != Path_to_file.end(); it++){
+                    char byte = *it;
+                    if(byte=='V'){Prestart=1;continue;}
+                    if(Prestart==1 and byte!='_'){Prestart=0;Realstart=0;continue;}
+                    if(Prestart==1 and byte=='_'){Prestart=0;Realstart=1;continue;}
+                    if(Realstart==1 and byte!='V'){String_velocity = String_velocity + byte;continue;}
+                    if(Realstart==1 and byte=='V'){Prestart==0;Realstart=0;continue;}
+                }
+                cout << "Path_to_file: " << Path_to_file << endl;
+                File_velocity.push_back(Path_to_file);
+                //cout << "String_velocity_F: " << String_velocity << endl;
+                
+                int check=0;
+                for(it = String_velocity.begin(); it != String_velocity.end(); it++){
+                    char byte = *it;
+                    if(check==1)String_velocity_Real = String_velocity_Real + ".";
+                    String_velocity_Real = String_velocity_Real + byte;
+                    check = check + 1;
+                }
+                cout << "String_velocity_Real: " << String_velocity_Real << endl;
+                DM_Beta_Now.push_back(stod(String_velocity_Real));
+            }
+            //File_velocity.push_back(String_velocity);
         }
-        /*
-        std::string path = File_for_ER[Material_and_DCS];
-        for (const auto & entry : fs::directory_iterator(path))
-        {
-            //Designate which files
-            if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;}
-        }
-         */
+        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;}
+        cout << "==============================================================================" << endl;
+        sort(DM_Beta_Now.begin(),DM_Beta_Now.end());
+        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_Right.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Right[ppp]: " << DM_Beta_Right[ppp] << endl;}
+        
+       //===============================================Find out the DCS==========================================//
        static string Pre_mx="";
        double v = v_int*(1e3/3e8)*1e3;
     
