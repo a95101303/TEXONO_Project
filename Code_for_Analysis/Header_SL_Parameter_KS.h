@@ -680,7 +680,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
        }//Find the position of this mass in the array
         
         vector<string> File_velocity;//
-        vector<double> DM_Beta_Now;
+        vector<double> DM_Beta_Now;vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
         static vector<string> File_velocity_Right;
         static vector<double> DM_Beta_Right;
 
@@ -719,11 +719,18 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
             }
             //File_velocity.push_back(String_velocity);
         }
-        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;}
+        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_for_list.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;}
         cout << "==============================================================================" << endl;
-        sort(DM_Beta_Now.begin(),DM_Beta_Now.end());
+        sort(DM_Beta_Now.begin(),DM_Beta_Now.end());//Sort the array
         for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_Right.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Right[ppp]: " << DM_Beta_Right[ppp] << endl;}
-        
+        //Rearrrangement
+        for(int LLL=0; LLL<DM_Beta_for_list.size(); LLL++)
+        {
+                for(int ppp=0; ppp<DM_Beta_Now.size();ppp++)
+                {
+                    if(DM_Beta_Now[ppp])
+                }
+        }
        //===============================================Find out the DCS==========================================//
        static string Pre_mx="";
        double v = v_int*(1e3/3e8)*1e3;
