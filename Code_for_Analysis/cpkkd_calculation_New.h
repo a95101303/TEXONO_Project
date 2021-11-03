@@ -599,7 +599,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                         //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
                         //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*kms1_to_c*(0.395*kms1_to_c);
                         
-                        if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 2e-2*1e-18*alpha*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*1e5*(0.395*1e5);
+                        //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-18*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*1e5*(0.395*1e5);
                         //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-18*alpha*1e-15*fdsigma_dT_ER_New(filename,v,T[i])*(1/(sum))*velo_dist_Ave[j][3]*v*1e5*(0.395*1e5);
 
                         //if(T[i]>2.477480e-01)cout << "fdsigma_dT_ER(filename,v*kms1_to_c,T[i]): " << fdsigma_dT_ER(filename,v*kms1_to_c,T[i]) << endl;

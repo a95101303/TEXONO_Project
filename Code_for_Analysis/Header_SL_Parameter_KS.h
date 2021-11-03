@@ -32,6 +32,10 @@ const int DataBin = 255;
 #include <fstream>
 #include <cstdlib>
 
+#include <string>
+#include <filesystem>
+namespace fs = std::filesystem;
+
 const double GeV = 1.0;
 const double eV     = 1.0e-9 * GeV;
 
@@ -607,16 +611,38 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
          return DCS;
 }
 
+static vector<string> FileName;//
+static vector<int> Mass_Int;//Real Mass*100 for storage and comparison
+
+int Find_File()
+{
+    int kkk=0;
+    std::string path = "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_XeData_Vel";
+    for (const auto & entry : fs::directory_iterator(path))
+    {
+        if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;}
+        else{FileName.push_back(entry.path());}
+        
+        int Start_file=0;
+        char byte = 0;
+        ifstream input_file(entry.path());
+        while(input_file.get(byte))
+            {
+                if(byte='l')Start_file=1;
+                
+        }
+        kkk = kkk + 1;
+    }
+    for(int kkk=0; kkk< FileName.size(); kkk++){cout << "FileName: " << FileName[kkk] << endl;}
+    return 0;
+}
+
 double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
     
        static string Pre_mx="";
-    double v = v_int*(1e3/3e8)*1e3;
-
-    //if(T>0.3 and v_int>300)cout << "T: " << T << endl;
-    //if(T>0.3 and v_int>300)cout << "v_int: " << v_int << endl;
-    //if(T>0.3 and v_int>300)cout << "v: " << v << endl;
-    
+       double v = v_int*(1e3/3e8)*1e3;
+       Find_File();
        const int DM_Beta_N=12;
        // string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};//Ge 0.5GeV
        string DM_Beta[DM_Beta_N]={"03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};//Xe 0.5GeV
@@ -655,7 +681,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
                    //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
                    //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/d1_%sGeV/DM_%sGeV_%sV.h",mx.c_str(),mx.c_str(),DM_Beta[N].c_str()));
                    string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/Xe_d1_0_500GeV/DM_0_50GeV_%sV.h",DM_Beta[N].c_str()));
-                   cout << "filename: " << filename << endl;
+                  //cout << "filename: " << filename << endl;
                    vector<char> bytes;
                    vector<char> Energy_Transfer;
                    vector<char> dsigma_dT;
@@ -698,8 +724,8 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
                
                    for(int kkk=0; kkk<Counter; kkk++)
                    {
-                       cout << "Energy_Transfer_array[N][kkk]: " << Energy_Transfer_array[N][kkk] << endl;
-                       cout << "dsigma_dT_array[N][kkk]: " << dsigma_dT_array[N][kkk] << endl;
+                       //cout << "Energy_Transfer_array[N][kkk]: " << Energy_Transfer_array[N][kkk] << endl;
+                       //cout << "dsigma_dT_array[N][kkk]: " << dsigma_dT_array[N][kkk] << endl;
                    }
                     input_file.close();
                     
@@ -714,8 +740,8 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
                    {
                        TG_Lower_eV[N][kkk]  = Energy_Transfer_array[N][kkk];//TGraph
                        TG_dsigma_dT[N][kkk] = TMath::Log10(dsigma_dT_array[N][kkk]);//TGraaph
-                       cout << "TG_Lower_eV[N][kkk]: " << TG_Lower_eV[N][kkk] << endl;
-                       cout << "TG_dsigma_dT[N][kkk]: " << TG_dsigma_dT[N][kkk] << endl;
+                       //cout << "TG_Lower_eV[N][kkk]: " << TG_Lower_eV[N][kkk] << endl;
+                       //cout << "TG_dsigma_dT[N][kkk]: " << TG_dsigma_dT[N][kkk] << endl;
                    }//For extrapolating the cross sections between 0 to 80eV
                     
                    for(int kkk=0; kkk<Counter-1; kkk++)//Add the slope from the second interval ( from 80eV ) into the bin from the second element
@@ -846,6 +872,7 @@ double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), d
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         //cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
+    
         /*
          
          //gr->Draw("ALP");
