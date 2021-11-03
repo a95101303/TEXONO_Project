@@ -1,1 +1,5 @@
-string File_Name[]={"20_0","10_0","5_0","4_0","3_5","3_0"};
+const vector<string> File_for_ER={
+    "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_XeData_Vel",
+    "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel",
+    "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_GeData_Vel",
+    "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_GeData_Vel"};

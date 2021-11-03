@@ -1,5 +1,6 @@
 const int DataBin = 255;
 
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Code_for_Analysis/file_name_ER.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/DataJune_ShortRange/DataJune_0_06GeV_c1_dcs.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/DataJune_ShortRange/DataJune_0_07GeV_c1_dcs.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/AM_DATA/DataJune_ShortRange/DataJune_0_08GeV_c1_dcs.h"
@@ -612,37 +613,87 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
 }
 
 static vector<string> FileName;//
-static vector<int> Mass_Int;//Real Mass*100 for storage and comparison
+static vector<string> FileName_Individual;//
+static vector<string> S_DM_Mass;//
+static int RUN_AGAIN=0;//
 
-int Find_File()
+int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
 {
     int kkk=0;
-    std::string path = "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_XeData_Vel";
+    std::string path = File_for_ER[Material_and_DCS];
     for (const auto & entry : fs::directory_iterator(path))
     {
-        if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;}
-        else{FileName.push_back(entry.path());}
-        
+        //Designate which files
+        if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;continue;}
+        cout << "entry.path(): " << entry.path() << endl;//String
+        std::string Path_to_file = entry.path();//String
+        std::string::iterator it;//Run the whole address
+        string File_Name="";string DM_Mass="";
         int Start_file=0;
         char byte = 0;
-        ifstream input_file(entry.path());
-        while(input_file.get(byte))
-            {
-                if(byte='l')Start_file=1;
-                
+        int Add_or_Not=0;
+        for(it = Path_to_file.begin(); it != Path_to_file.end(); it++){
+            char byte = *it;
+            if(Start_file!=1 and byte=='l'){Start_file=1;continue;}
+            if(Start_file==1 and byte=='.'){Start_file=0;continue;}
+            if(Start_file==1 and byte!='/'){File_Name=File_Name+byte;}
+            if(Start_file==1 and byte=='V'){
+                cout << "File_Name: " << File_Name << endl;
+                FileName_Individual.push_back(File_Name);Start_file=0;
+                Add_or_Not=1;
+            }
         }
+        Start_file=0;
+        for(it = File_Name.begin(); it != File_Name.end(); it++){
+            char byte = *it;
+            if(Start_file==0 and byte=='_'){Start_file=1;continue;}
+            if(Start_file==1 and byte=='.'){Start_file=0;continue;}
+            if(Start_file==1 and byte=='_'){DM_Mass=DM_Mass+".";}
+            if(Start_file==1 and byte!='_' and byte!='G'){DM_Mass=DM_Mass+byte;}
+            if(Start_file==1 and byte=='G'){
+                string Mass = to_string(int(stod(DM_Mass)*1e3));
+                cout << "DM_Mass: " << to_string(int(stod(DM_Mass)*1e3)) << endl;Start_file=0;
+                S_DM_Mass.push_back(to_string(int(stod(DM_Mass)*1e3)));
+            }
+        }
+            if(Add_or_Not==1){FileName.push_back(entry.path());}//Make sure the number is right
+
         kkk = kkk + 1;
     }
-    for(int kkk=0; kkk< FileName.size(); kkk++){cout << "FileName: " << FileName[kkk] << endl;}
+    
+
+    //for(int kkk=0; kkk< FileName_Individual.size(); kkk++){cout << "FileName_Individual: " << FileName_Individual[kkk] << endl;}
     return 0;
 }
 
-double fdsigma_dT_ER_New(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
+double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
+        
+       string mx = "0_5";
+       Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+       
+       int Number=0;
+       for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
+            if(S_DM_Mass[kkk]==to_string(int(Mx*1e3)))Number=kkk;
+       }
+        cout << "S_DM_Mass[kkk]: " << S_DM_Mass[Number] << endl;
+        cout << "Mx: " << Mx << endl;
     
+        for (const auto & entry : fs::directory_iterator(FileName[Number]))
+        {
+            cout << "entry.path(): " << entry.path() << endl;
+        }
+        /*
+        std::string path = File_for_ER[Material_and_DCS];
+        for (const auto & entry : fs::directory_iterator(path))
+        {
+            //Designate which files
+            if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;}
+        }
+         */
        static string Pre_mx="";
        double v = v_int*(1e3/3e8)*1e3;
-       Find_File();
+    
        const int DM_Beta_N=12;
        // string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};//Ge 0.5GeV
        string DM_Beta[DM_Beta_N]={"03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};//Xe 0.5GeV

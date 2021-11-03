@@ -2,6 +2,23 @@
 
 void A_Test_Test_Compile()
 {
+    int myarray[6]{10, 4, 14, 84, 1, 3};
+
+    std::cout << std::find(std::begin(myarray), std::end(myarray), 1) << endl;
+    std::cout << std::find(std::begin(myarray), std::end(myarray), 3) << endl;
+    std::cout << std::end(myarray) << endl;
+    std::cout << std::find(std::begin(myarray), std::end(myarray), 5) << endl;
+    std::cout << std::find(std::begin(myarray), std::end(myarray), 7) << endl;
+
+    if (std::find(std::begin(myarray), std::end(myarray), 5) == std::end(myarray))
+    {
+        std::cout << std::find(std::begin(myarray), std::end(myarray), 5) << endl;
+        std::cout << "It doesn't exists5";
+    }
+    if (std::find(std::begin(myarray), std::end(myarray), 7) != std::end(myarray))
+        std::cout << "It exists7";
+
+    
     double Position1[2]={1,2};
     vector<double> Position2={10,5,8};
     cout << "Test3: " << Test3(1) << endl;
