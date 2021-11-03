@@ -183,7 +183,7 @@ double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Re
     {
         //dE_dX_Crystal(0,1e-1,784);
         //cout << "1: " << endl;
-        double C = fdsigma_dT_ER_New(300,1,0.3);
+        double C = fdsigma_dT_ER_New(300,1,0.08);
         double A = Slope_A(1,3,2,4);
         cout << "A: " << A << endl;
         double B = Constant_B(A,2,4);//==Constant_B(A,1,3);

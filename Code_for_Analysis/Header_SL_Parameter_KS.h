@@ -719,17 +719,32 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
             }
             //File_velocity.push_back(String_velocity);
         }
-        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_for_list.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;}
+        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_for_list.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;cout << "Filename: " << File_velocity[ppp] << endl;}
         cout << "==============================================================================" << endl;
         sort(DM_Beta_Now.begin(),DM_Beta_Now.end());//Sort the array
         for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_Right.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Right[ppp]: " << DM_Beta_Right[ppp] << endl;}
         //Rearrrangement
-        for(int LLL=0; LLL<DM_Beta_for_list.size(); LLL++)
+        for(int ppp=0; ppp<DM_Beta_Now.size(); ppp++)
         {
-                for(int ppp=0; ppp<DM_Beta_Now.size();ppp++)
+                for(int LLL=0; LLL<DM_Beta_for_list.size();LLL++)
                 {
-                    if(DM_Beta_Now[ppp])
+                    //cout << "DM_Beta_for_list[LLL]: " << DM_Beta_for_list[LLL] << endl;
+                    //cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;
+                    if(DM_Beta_Now[ppp] == DM_Beta_for_list[LLL])
+                    {
+                        
+                        cout << "DM_Beta_for_list[LLL] : " << DM_Beta_for_list[LLL]  << endl;
+                          cout << "LLL: " << LLL << endl;
+                          cout << "ppp: " << ppp << endl;
+                        Check_the_arrangement.push_back(LLL);
+                    }
                 }
+        }
+        for(int JJJ=0; JJJ<File_velocity.size(); JJJ++)
+        {
+            File_velocity_Right.push_back(File_velocity[Check_the_arrangement[JJJ]]);
+            cout << "DM_Beta_Right[ppp]: " << DM_Beta_Right[JJJ] << endl;
+            cout << "Filename: " << File_velocity[Check_the_arrangement[JJJ]] << endl;
         }
        //===============================================Find out the DCS==========================================//
        static string Pre_mx="";
