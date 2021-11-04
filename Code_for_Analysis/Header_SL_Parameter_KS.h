@@ -612,6 +612,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
          return DCS;
 }
 
+static vector<string> FileName_Full;//
 static vector<string> FileName;//
 static vector<string> FileName_Individual;//
 static vector<string> S_DM_Mass;//
@@ -624,14 +625,22 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
     for (const auto & entry : fs::directory_iterator(path))
     {
         //Designate which files
-        if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;continue;}
+        //if ( std::find(std::begin(FileName), std::end(FileName), entry.path()) != std::end(FileName) ){cout << "OK" ;continue;}
         //cout << "entry.path(): " << entry.path() << endl;//String
         std::string Path_to_file = entry.path();//String
         std::string::iterator it;//Run the whole address
-        string File_Name="";string DM_Mass="";
-        int Start_file=0;
-        char byte = 0;
-        int Add_or_Not=0;
+        
+        int End_Point=0;string File_Name_Full="";//File name for putting DCS in
+        for(it = Path_to_file.begin(); it != Path_to_file.end(); it++){
+            char byte = *it;
+            //cout << "byte: " << byte << endl;
+            File_Name_Full = File_Name_Full + byte;
+            //cout << "File_Name_Full:  " << File_Name_Full << endl;
+            if(byte=='/'){End_Point = End_Point + 1;}
+            if(End_Point==7 and byte=='V'){FileName_Full.push_back(File_Name_Full);break;}
+        }
+        
+        int Start_file=0;char byte = 0;int Add_or_Not=0;string File_Name="";
         for(it = Path_to_file.begin(); it != Path_to_file.end(); it++){
             char byte = *it;
             if(Start_file!=1 and byte=='l'){Start_file=1;continue;}
@@ -639,12 +648,13 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
             if(Start_file==1 and byte!='/' and byte!='V'){File_Name=File_Name+byte;continue;}
             if(Start_file==1 and byte=='V'){
                 File_Name=File_Name+byte;
-                //cout << "File_Name: " << File_Name << endl;
+                //cout << "File_Name: " << File_Name << endl;//File_individual
                 FileName_Individual.push_back(File_Name);Start_file=0;
                 Add_or_Not=1;
             }
         }
-        Start_file=0;
+        
+        Start_file=0;string DM_Mass="";
         for(it = File_Name.begin(); it != File_Name.end(); it++){
             char byte = *it;
             if(Start_file==0 and byte=='_'){Start_file=1;continue;}
@@ -653,7 +663,7 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
             if(Start_file==1 and byte!='_' and byte!='G'){DM_Mass=DM_Mass+byte;continue;}
             if(Start_file==1 and byte=='G'){
                 string Mass = to_string(int(stod(DM_Mass)*1e3));
-                //cout << "double: DM_Mass" << DM_Mass << endl;
+                //cout << "double: DM_Mass" << DM_Mass << endl;//DM_Mass
                 //cout << "DM_Mass: " << to_string(int(stod(DM_Mass)*1e3)) << endl;Start_file=0;
                 S_DM_Mass.push_back(to_string(int(stod(DM_Mass)*1e3)));
             }
@@ -663,6 +673,7 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
         kkk = kkk + 1;
     }
     
+    //for(int Try=0; Try<FileName_Full.size(); Try++){cout << "FileName_Full: " << FileName_Full[Try] << endl;}
 
     //for(int kkk=0; kkk< FileName_Individual.size(); kkk++){cout << "FileName_Individual: " << FileName_Individual[kkk] << endl;}
     return 0;
@@ -671,18 +682,33 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
 double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
         
-       string mx = "0_5";
-       Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
-       //===============================================First, check the file and number==========================================//
-       int Number=0;
-       for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
-            if(S_DM_Mass[kkk]==to_string(int(Mx*1e3)))Number=kkk;
-       }//Find the position of this mass in the array
+        double v = v_int*(1e3/3e8)*1e3;
+
+        static int Pre_mx= 0;
+
         
         vector<string> File_velocity;//
+        vector<string> DM_Beta_Now_String;
         vector<double> DM_Beta_Now;vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
-        static vector<string> File_velocity_Right;
-        static vector<double> DM_Beta_Right;
+        static vector<string> File_velocity_Right;//From small to big
+        static vector<double> DM_Beta_Right;//From small to big
+        static vector<string> DM_Beta_Right_String;
+        static vector<double> DM_Beta_Used;
+
+    //cout << "File_velocity.size(): " << File_velocity.size() << endl;
+    //cout << "File_velocity_Right: " << File_velocity_Right.size() << endl;
+    //cout << "DM_Beta_Right_String: " << DM_Beta_Right_String.size() << endl;
+
+
+    if(Pre_mx!=int(Mx*1e3))//IF1
+    {
+        Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+        //===============================================First, check the file and number==========================================//
+        int Number=0;
+        for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
+             if(S_DM_Mass[kkk]==to_string(int(Mx*1e3)))Number=kkk;
+        }//Find the position of this mass in the array
+
 
         //cout << "FileName[Number]: " << FileName[Number] << endl;
         for (const auto & entry : fs::directory_iterator(FileName[Number]))//Read all files
@@ -701,11 +727,12 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                     if(Prestart==1 and byte!='_'){Prestart=0;Realstart=0;continue;}
                     if(Prestart==1 and byte=='_'){Prestart=0;Realstart=1;continue;}
                     if(Realstart==1 and byte!='V'){String_velocity = String_velocity + byte;continue;}
-                    if(Realstart==1 and byte=='V'){Prestart==0;Realstart=0;continue;}
+                    if(Realstart==1 and byte=='V'){Prestart=0;Realstart=0;continue;}
                 }
-                cout << "Path_to_file: " << Path_to_file << endl;
+                //cout << "Path_to_file: " << Path_to_file << endl;
                 File_velocity.push_back(Path_to_file);
                 //cout << "String_velocity_F: " << String_velocity << endl;
+                DM_Beta_Now_String.push_back(String_velocity);
                 
                 int check=0;
                 for(it = String_velocity.begin(); it != String_velocity.end(); it++){
@@ -714,11 +741,13 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                     String_velocity_Real = String_velocity_Real + byte;
                     check = check + 1;
                 }
-                cout << "String_velocity_Real: " << String_velocity_Real << endl;
+                //cout << "String_velocity_Real: " << String_velocity_Real << endl;
                 DM_Beta_Now.push_back(stod(String_velocity_Real));
             }
             //File_velocity.push_back(String_velocity);
         }
+
+
         for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_for_list.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;cout << "Filename: " << File_velocity[ppp] << endl;}
         cout << "==============================================================================" << endl;
         sort(DM_Beta_Now.begin(),DM_Beta_Now.end());//Sort the array
@@ -733,51 +762,46 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                     if(DM_Beta_Now[ppp] == DM_Beta_for_list[LLL])
                     {
                         
-                        cout << "DM_Beta_for_list[LLL] : " << DM_Beta_for_list[LLL]  << endl;
-                          cout << "LLL: " << LLL << endl;
-                          cout << "ppp: " << ppp << endl;
+                        //cout << "DM_Beta_for_list[LLL] : " << DM_Beta_for_list[LLL]  << endl;
+                        //cout << "LLL: " << LLL << endl;
+                        //cout << "ppp: " << ppp << endl;
                         Check_the_arrangement.push_back(LLL);
                     }
                 }
         }
         for(int JJJ=0; JJJ<File_velocity.size(); JJJ++)
         {
+            cout << "JJJ " << JJJ << endl;
             File_velocity_Right.push_back(File_velocity[Check_the_arrangement[JJJ]]);
-            cout << "DM_Beta_Right[ppp]: " << DM_Beta_Right[JJJ] << endl;
-            cout << "Filename: " << File_velocity[Check_the_arrangement[JJJ]] << endl;
+            DM_Beta_Right_String.push_back(DM_Beta_Now_String[Check_the_arrangement[JJJ]]);
+            cout << "DM_Beta_Right: " << DM_Beta_Right[JJJ] << endl;
+            //cout << "File_velocity_Right: " << File_velocity_Right[JJJ] << endl;
+            //cout << "DM_Beta_Right_String: " << DM_Beta_Right_String[JJJ] << endl;
         }
-       //===============================================Find out the DCS==========================================//
-       static string Pre_mx="";
-       double v = v_int*(1e3/3e8)*1e3;
+        
     
-       const int DM_Beta_N=12;
-       // string DM_Beta[DM_Beta_N]={"06667","08333","10000","11670","13330","15000","16670","18330","20000","21670","23330","25000"};//Ge 0.5GeV
-       string DM_Beta[DM_Beta_N]={"03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};//Xe 0.5GeV
-       //const int DM_Beta_N=7;
-       //string DM_Beta[DM_Beta_N]={"11670","13330","15000","16670","18330","20000","21670"};//Xe 0.2GeV
-        //=================Check the cross sections used===========================
-       int Now_File=0;
-       //double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670,2.3330,2.5000};//Ge 0.5GeV
-       double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};//Xe 0.5GeV
-      // double DM_Beta_Exact_double[DM_Beta_N+1]={0.000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};//Xe 0.2GeV
-       for(int N=0; N<DM_Beta_N; N++){if(v>DM_Beta_Exact_double[N] and v<DM_Beta_Exact_double[N+1]) Now_File=N;}
-       if(v>DM_Beta_Exact_double[DM_Beta_N-1])Now_File=DM_Beta_N-1;
+       //===============================================Find out the DCS==========================================//
+       DM_Beta_Used.push_back(0);
+       for(int N=0; N<DM_Beta_Right.size(); N++){cout << "DM_Beta_Right[N]: " << DM_Beta_Right[N] << endl;DM_Beta_Used.push_back(DM_Beta_Right[N]);}
+       for(int LLL=0; LLL<DM_Beta_Used.size();LLL++)cout << "DM_Beta_Used[LLL]: " << DM_Beta_Used[LLL] << endl;
+    }//IF1:End
+        
         //====================================================================
-       static vector<vector<double>> Energy_Transfer_array(DM_Beta_N);
-       static vector<vector<double>> dsigma_dT_array(DM_Beta_N);
+       static vector<vector<double>> Energy_Transfer_array(DM_Beta_Right.size());
+       static vector<vector<double>> dsigma_dT_array(DM_Beta_Right.size());
 
-       static vector<vector<double>> Energy_Transfer_array_Hist(DM_Beta_N);
-       static vector<vector<double>> dsigma_dT_array_Hist(DM_Beta_N);
+       static vector<vector<double>> Energy_Transfer_array_Hist(DM_Beta_Right.size());
+       static vector<vector<double>> dsigma_dT_array_Hist(DM_Beta_Right.size());
 
-       static vector<vector<double>> Slope(DM_Beta_N);static vector<vector<double>> Constant(DM_Beta_N);
+       static vector<vector<double>> Slope(DM_Beta_Right.size());static vector<vector<double>> Constant(DM_Beta_Right.size());
        static vector<TH1F*>      Hist_DCS_array;
        static vector<TGraph*> TG_Hist_DCS_array;
 
-       int Number_Exe=12;
+       int Number_Exe=DM_Beta_Right.size();
     
-       if(Pre_mx!=mx)
+       if(Pre_mx!=int(Mx*1e3))
        {
-           Pre_mx = mx;
+           Pre_mx = int(Mx*1e3);
            //fill(Energy_Transfer_array.begin(), Energy_Transfer_array.end(), 0);
            //fill(dsigma_dT_array.begin(), dsigma_dT_array.end(), 0);
            //Make sure that there is no element in.
@@ -785,10 +809,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
            for(int N=0; N<Number_Exe; N++)
            {
                    
-                   //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
-                   //string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/d1_%sGeV/DM_%sGeV_%sV.h",mx.c_str(),mx.c_str(),DM_Beta[N].c_str()));
-                   string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/Xe_d1_0_500GeV/DM_0_50GeV_%sV.h",DM_Beta[N].c_str()));
-                  //cout << "filename: " << filename << endl;
+                   string filename=File_velocity_Right[N];
                    vector<char> bytes;
                    vector<char> Energy_Transfer;
                    vector<char> dsigma_dT;
@@ -835,12 +856,13 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                        //cout << "dsigma_dT_array[N][kkk]: " << dsigma_dT_array[N][kkk] << endl;
                    }
                     input_file.close();
-                    
+               cout << "1" << endl;
                    //^^TGraph Plot
-                   Float_t TG_Lower_eV[DM_Beta_N][Counter];
-                   Float_t TG_dsigma_dT[DM_Beta_N][Counter];
-                   Float_t TG_Slope[DM_Beta_N][Counter];
-                   Float_t TG_Constant[DM_Beta_N][Counter];
+                   Float_t TG_Lower_eV[DM_Beta_Right.size()][Counter];
+                   Float_t TG_dsigma_dT[DM_Beta_Right.size()][Counter];
+                   Float_t TG_Slope[DM_Beta_Right.size()][Counter];
+                   Float_t TG_Constant[DM_Beta_Right.size()][Counter];
+               cout << "2" << endl;
 
 
                    for(int kkk=0; kkk<Counter; kkk++)
@@ -850,7 +872,8 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                        //cout << "TG_Lower_eV[N][kkk]: " << TG_Lower_eV[N][kkk] << endl;
                        //cout << "TG_dsigma_dT[N][kkk]: " << TG_dsigma_dT[N][kkk] << endl;
                    }//For extrapolating the cross sections between 0 to 80eV
-                    
+                    cout << "3" << endl;
+
                    for(int kkk=0; kkk<Counter-1; kkk++)//Add the slope from the second interval ( from 80eV ) into the bin from the second element
                    {
                        TG_Slope[N][kkk+1]    = Slope_A(TG_Lower_eV[N][kkk],TG_dsigma_dT[N][kkk],TG_Lower_eV[N][kkk+1],TG_dsigma_dT[N][kkk+1]);
@@ -862,8 +885,8 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                    TG_Slope[N][0]    = Slope_A(TG_Lower_eV[N][0],TG_dsigma_dT[N][0],TG_Lower_eV[N][1],TG_dsigma_dT[N][1]);
                    TG_Constant[N][0] = Constant_B(TG_Slope[N][0],TG_Lower_eV[N][0],TG_dsigma_dT[N][0]);
                    //============================Find the extrapolated line============================
-                   Float_t TG_Lower_eV_F[DM_Beta_N][Counter+1];//Add one point (0) to the array
-                   Float_t TG_dsigma_dT_F[DM_Beta_N][Counter+1];
+                   Float_t TG_Lower_eV_F[DM_Beta_Right.size()][Counter+1];//Add one point (0) to the array
+                   Float_t TG_dsigma_dT_F[DM_Beta_Right.size()][Counter+1];
                    TG_Lower_eV_F[N][0]=0;TG_dsigma_dT_F[N][0]=TG_Constant[N][0];
                    for(int kkk=0; kkk<Counter; kkk++)
                    {
@@ -879,12 +902,14 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                        Energy_Transfer_array_Hist[N].push_back(TG_Lower_eV_F[N][kkk]);
                        dsigma_dT_array_Hist[N].push_back(TG_dsigma_dT_F[N][kkk]);
                    }
+               cout << "4" << endl;
+
                    //==================================================================================
-                   Float_t DIff_Lower_eV_Hist[DM_Beta_N][Counter];
-                   Double_t Diff_Total[DM_Beta_N];
+                   Float_t DIff_Lower_eV_Hist[DM_Beta_Right.size()][Counter];
+                   Double_t Diff_Total[DM_Beta_Right.size()];
                    const double Bin_Number=1e+4;
-                   Double_t Bin_Number_interval[DM_Beta_N][Counter];
-                   Double_t Width_Per_Bin[DM_Beta_N][Counter];
+                   Double_t Bin_Number_interval[DM_Beta_Right.size()][Counter];
+                   Double_t Width_Per_Bin[DM_Beta_Right.size()][Counter];
 
                    double Bin_Number_total;
                    double checkkk;
@@ -906,10 +931,12 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                       // cout << "Max: "      << Energy_Transfer_array_Hist[N][kkk]+(Bin_Number_interval[N][kkk])*Width_Per_Bin[N][kkk] << endl;
 
                    }
+               cout << "5" << endl;
+
                    //cout << "Diff_Total: " << Diff_Total[N] << endl;
-                   vector<vector<double>> Lower_eV_array_for_Hist(DM_Beta_N);
-                   vector<vector<double>> Lower_eV_center_array_for_Hist(DM_Beta_N);
-                   vector<vector<double>> dsigma_dT_for_Hist(DM_Beta_N);
+                   vector<vector<double>> Lower_eV_array_for_Hist(DM_Beta_Right.size());
+                   vector<vector<double>> Lower_eV_center_array_for_Hist(DM_Beta_Right.size());
+                   vector<vector<double>> dsigma_dT_for_Hist(DM_Beta_Right.size());
 
                    int test_bin_Number=0;
                   //==================================================================================
@@ -939,9 +966,10 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                        //cout << "=========================================================" << endl;
                    }
                
-                    
-                   Float_t    Lower_eV_Hist_Final[DM_Beta_N][test_bin_Number];
-                   Float_t    dsigma_dT_Hist_Final[DM_Beta_N][test_bin_Number];
+                    cout << "6" << endl;
+
+                   Float_t    Lower_eV_Hist_Final[DM_Beta_Right.size()][test_bin_Number];
+                   Float_t    dsigma_dT_Hist_Final[DM_Beta_Right.size()][test_bin_Number];
 
                for(int kkk=0; kkk<test_bin_Number; kkk++)
                //for(int kkk=0; kkk<3; kkk++)
@@ -952,6 +980,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                {hist_DFCS->SetBinContent(kkk+1, TMath::Power(10,dsigma_dT_for_Hist[N][kkk]));}//Hist
                
                    Hist_DCS_array.push_back(hist_DFCS);
+               cout << "7" << endl;
 
                    /*
                     //^^Produce the Hist
@@ -973,13 +1002,21 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
 
            }
        }
+    
+        //cout << "Now_File: " << Now_File << "v: " << v  <<endl;
+        //cout << "Hist_DCS_array: " << Hist_DCS_array.size() << endl;
+        
+        int Now_File=0;
+        for(int N=0; N<DM_Beta_Used.size(); N++){if(v>DM_Beta_Used[N] and v<DM_Beta_Used[N+1]) Now_File=N;}
+        if(v>DM_Beta_Used[DM_Beta_Used.size()-1])Now_File=DM_Beta_Used.size()-1;
+
         Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);
         //cout << "binx: " << binx << endl;
         //if(T>0.3 and v_int>300)cout << "binx: " << binx << endl;
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         //cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
-    
+
         /*
          
          //gr->Draw("ALP");
@@ -992,16 +1029,17 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         c3->SetLogy();
         hist_DFCS->GetXaxis()->SetRangeUser(0,435);
         hist_DFCS->GetYaxis()->SetRangeUser(1e-8,1);
-         
+    .q
         hist_DFCS->Draw("HIST");
          */
     
         //Give out the root file to check the content of the DCS
         /*
         char fout_name[100];
-        sprintf(fout_name,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_d1_XeData_Vel/Xe_d1_0_500GeV/DCS.root");
+        sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
-        for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
+        cout << "fout: " << fout_name << endl;
+        for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta_Right_String[N].c_str());}
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
 
         fout->Close();

@@ -27,7 +27,7 @@ void Overlap_Plot_TEXONO_Ge_Test_ER()
     double Sigma_SI_With_Threshold_M3_Error[Number];double Error_X[Number];
 
     double CPKKD_EXCLUSION[Number];
-    double Mass=0.5;//2.34
+    double Mass=0.2;//2.34
     int Take_Plot=0;
     string Type_of_Model="ER"; int Type_of_Model_INT=4;
     cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
