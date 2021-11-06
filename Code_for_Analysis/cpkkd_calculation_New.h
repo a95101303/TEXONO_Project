@@ -154,12 +154,12 @@ double Possibility()//v(km/s)
     if(check==0)
     {
         double Vecolity[2000];double Possiblity[2000];
-        double sum; for(int j=0;j<2000;j++){sum = sum + velo_dist_Ave[j][3];}
+        double sum; for(int j=0;j<2000;j++){sum = sum + velo_dist_Ave[j][3]*1e3*0.395;}
         for(int j=0;j<2000;j++)
         {
             float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);
             Vecolity[j] = v;
-            Possiblity[j] = velo_dist_Ave[j][3]/sum;
+            Possiblity[j] = velo_dist_Ave[j][3]*1e3*0.395/sum;
             //cout << "Possiblity[j]: " << Possiblity[j] << endl;
         }
         TH1F   *Flux_HIST = new TH1F("Flux_HIST","Flux_HIST",2000,0,791);
@@ -176,7 +176,7 @@ double Possibility()//v(km/s)
                 //cout << "Flux_HIST->GetBinContent(kkk): " << Flux_HIST->GetBinContent(kkk) << endl;
                 Pob_temp = Pob_temp + Flux_HIST->GetBinContent(binx_end);
             }
-            cout << "sum: " << sum << endl;
+            cout << "1/sum: " << 1/sum << endl;
             cout << "vel_dist_ER_kms[j]: " << vel_dist_ER_kms[j] << endl;
             cout << "vel_dist_ER_kms[j+1]: " << vel_dist_ER_kms[j+1] << endl;
             cout << "Pob_temp: " << Pob_temp << endl;
@@ -677,13 +677,13 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
                    // if( Energy_DM(WIMP_mx,v_kms_now*kms1_to_c)>T[i] and (v_kms_now*kms1_to_c)>(sqrt(T[i]/(WIMP_mx*1e6))) and v_kms_now<776)
                     //    {
-                cout << "===================================" << endl;
-                cout << "T[i]: " << T[i] << endl;
-                cout << "v_kms_now: " << v_kms_now << endl;
+                //cout << "===================================" << endl;
+                //cout << "T[i]: " << T[i] << endl;
+                //cout << "v_kms_now: " << v_kms_now << endl;
                             double dv=(v_cms_next)-(v_cms_now);
                             if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*Possibilities_array[j]*v_cms_next*(dv);
-                cout << "fdsigma_dT_ER_New(v_kms_now,T[i]*1e-3,WIMP_mx): " << fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx) << endl;
-                cout << "===================================" << endl;
+                //cout << "fdsigma_dT_ER_New(v_kms_now,T[i]*1e-3,WIMP_mx): " << fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx) << endl;
+                //cout << "===================================" << endl;
 
                       //  }
             }

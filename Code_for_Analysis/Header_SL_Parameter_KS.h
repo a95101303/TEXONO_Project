@@ -1028,14 +1028,15 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         double Bin_Content_Max = Hist_DCS_array[Now_File]->GetBinCenter(X_max_Bin);
         double Bin_Width       = Hist_DCS_array[Now_File]->GetBinWidth(X_max_Bin);
         double Right_Edge      = Bin_Content_Max+Bin_Width*2;
+        /*
         cout << "T[keV]: " << T << endl;
         cout << "v_c: " << v_c << endl;
         cout << "Now_File: " << Now_File << endl;
         cout << "Right_Edge: " << Right_Edge << endl;
-    
+         */
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         if(T*1e3>Right_Edge)DCS=0;
-        cout << "DCS: " << DCS << endl;
+        //cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
 
         /*
