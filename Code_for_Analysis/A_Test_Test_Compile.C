@@ -1,7 +1,30 @@
 #include "A_Test_Test_Test.h"
+#include "TH1.h"
+#include "velocity_distribution_2000_Ave.h"
 
 void A_Test_Test_Compile()
 {
+    double Vecolity[2000];double Possiblity[2000];
+    double sum; for(int j=0;j<2000;j++){sum = sum + velo_dist_Ave[j][3];}
+    for(int j=0;j<2000;j++)
+    {
+        float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);
+        Vecolity[j] = v;
+        Possiblity[j] = velo_dist_Ave[j][3]/sum;
+        //cout << "Possiblity[j]: " << Possiblity[j] << endl;
+    }
+    TH1F   *Flux_HIST = new TH1F("Flux_HIST","Flux_HIST",2000,0,791);
+    for(int kkk=0;kkk<2000;kkk++){Flux_HIST->SetBinContent(kkk+1,Possiblity[kkk]);}
+
+    cout << "Flux_HIST->Max: " << Flux_HIST->FindlastBinAbove() << endl;
+    cout << "GetBinContent(): " << Flux_HIST->GetBinCenter(Flux_HIST->GetMaximumBin()) << endl;
+    Int_t binx        = Flux_HIST->GetXaxis()->FindBin(800);
+    Int_t binx_Number = Flux_HIST->GetNbinsX();
+    double Bin_content = Flux_HIST->GetBinContent(binx);
+    
+    cout << "binx: " << binx << endl;
+    cout << "Bin_content: " << Bin_content  << endl;
+    cout << "binx_Number: " << binx_Number << endl;
     int myarray[6]{10, 4, 14, 84, 1, 3};
 
     std::cout << std::find(std::begin(myarray), std::end(myarray), 1) << endl;

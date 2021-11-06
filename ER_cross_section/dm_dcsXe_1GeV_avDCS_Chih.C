@@ -1,16 +1,16 @@
 const int data_bin = 156;
-#include "c1_1_0GeV/DM_1_0GeV_03333V.h"
-#include "c1_1_0GeV/DM_1_0GeV_05000V.h"
-#include "c1_1_0GeV/DM_1_0GeV_06667V.h"
-#include "c1_1_0GeV/DM_1_0GeV_08333V.h"
-#include "c1_1_0GeV/DM_1_0GeV_10000V.h"
-#include "c1_1_0GeV/DM_1_0GeV_11670V.h"
-#include "c1_1_0GeV/DM_1_0GeV_13330V.h"
-#include "c1_1_0GeV/DM_1_0GeV_15000V.h"
-#include "c1_1_0GeV/DM_1_0GeV_16670V.h"
-#include "c1_1_0GeV/DM_1_0GeV_18330V.h"
-#include "c1_1_0GeV/DM_1_0GeV_20000V.h"
-#include "c1_1_0GeV/DM_1_0GeV_21670V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_03333V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_05000V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_06667V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_08333V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_10000V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_11670V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_13330V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_15000V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_16670V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_18330V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_20000V.h"
+#include "SI_c1_XeData_Vel/c1_1_0GeV/DM_1_0GeV_21670V.h"
 //#include "c1_1_0GeV/DM_1_0GeV_25460V.h"
 
 
@@ -21,6 +21,15 @@ double sub_MB_dist(double dm_vel)
   double V0    = 220E+5; //cm sec^{-1}
   double Ve    = 232E+5; //cm sec^{-1} 
   return MB_factor = dm_vel*exp(-pow((dm_vel-Ve)/V0,2));
+
+ }
+
+double sub_MB_dist_Test(double dm_vel, double dm_vel_0)
+{
+  double MB_factor;
+  double V0    = 220E+5; //cm sec^{-1}
+  double Ve    = 232E+5; //cm sec^{-1}
+  return MB_factor = dm_vel*exp(-pow((dm_vel-Ve)/V0,2))*(dm_vel-dm_vel_0);
 
  }
 
@@ -105,25 +114,28 @@ void dm_dcsXe_1GeV_avDCS_Chih()
       energy[rr] = DM_1_0GeV_10000V[rr][0]*1E-3;
 
       rate[rr] =  (rate_factor*norm_factor*                  
-		   ( vel_dist[1]*  DM_1_0GeV_03333V[rr][1]*sub_MB_dist(vel_dist[1])*(vel_dist[1]-vel_dist[0])   +
-		     vel_dist[2]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[2])*(vel_dist[2]-vel_dist[1])   +
-		     vel_dist[3]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[3])*(vel_dist[3]-vel_dist[2])   +
-		     vel_dist[4]*  DM_1_0GeV_08333V[rr][1]*sub_MB_dist(vel_dist[4])*(vel_dist[4]-vel_dist[3])   +
-		     vel_dist[5]*  DM_1_0GeV_10000V[rr][1]*sub_MB_dist(vel_dist[5])*(vel_dist[5]-vel_dist[4])   +	  
-		     vel_dist[6]*  DM_1_0GeV_11670V[rr][1]*sub_MB_dist(vel_dist[6])*(vel_dist[6]-vel_dist[5])   +	  
-		     vel_dist[7]*  DM_1_0GeV_13330V[rr][1]*sub_MB_dist(vel_dist[7])*(vel_dist[7]-vel_dist[6])   +	  
-		     vel_dist[8]*  DM_1_0GeV_15000V[rr][1]*sub_MB_dist(vel_dist[8])*(vel_dist[8]-vel_dist[7])   +	  
-		     vel_dist[9]*  DM_1_0GeV_16670V[rr][1]*sub_MB_dist(vel_dist[9])*(vel_dist[9]-vel_dist[8])   +
-		     vel_dist[10]* DM_1_0GeV_18330V[rr][1]*sub_MB_dist(vel_dist[10])*(vel_dist[10]-vel_dist[9]) +
-		     vel_dist[11]* DM_1_0GeV_20000V[rr][1]*sub_MB_dist(vel_dist[11])*(vel_dist[11]-vel_dist[10]) +
-		     vel_dist[12]* DM_1_0GeV_21670V[rr][1]*sub_MB_dist(vel_dist[12])*(vel_dist[12]-vel_dist[11]) 
+		   ( vel_dist[1]*  DM_1_0GeV_03333V[rr][1]*sub_MB_dist(vel_dist[1])*(vel_dist[1]-vel_dist[0])*(vel_dist[1]-vel_dist[0])   +
+		     vel_dist[2]*  DM_1_0GeV_05000V[rr][1]*sub_MB_dist(vel_dist[2])*(vel_dist[2]-vel_dist[1])*(vel_dist[2]-vel_dist[1])   +
+		     vel_dist[3]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[3])*(vel_dist[3]-vel_dist[2])*(vel_dist[3]-vel_dist[2])   +
+		     vel_dist[4]*  DM_1_0GeV_08333V[rr][1]*sub_MB_dist(vel_dist[4])*(vel_dist[4]-vel_dist[3])*(vel_dist[4]-vel_dist[3])   +
+		     vel_dist[5]*  DM_1_0GeV_10000V[rr][1]*sub_MB_dist(vel_dist[5])*(vel_dist[5]-vel_dist[4])*(vel_dist[5]-vel_dist[4])   +
+		     vel_dist[6]*  DM_1_0GeV_11670V[rr][1]*sub_MB_dist(vel_dist[6])*(vel_dist[6]-vel_dist[5])*(vel_dist[6]-vel_dist[5])   +
+		     vel_dist[7]*  DM_1_0GeV_13330V[rr][1]*sub_MB_dist(vel_dist[7])*(vel_dist[7]-vel_dist[6])*(vel_dist[7]-vel_dist[6])   +
+		     vel_dist[8]*  DM_1_0GeV_15000V[rr][1]*sub_MB_dist(vel_dist[8])*(vel_dist[8]-vel_dist[7])*(vel_dist[8]-vel_dist[7])   +
+		     vel_dist[9]*  DM_1_0GeV_16670V[rr][1]*sub_MB_dist(vel_dist[9])*(vel_dist[9]-vel_dist[8])*(vel_dist[9]-vel_dist[8])   +
+		     vel_dist[10]* DM_1_0GeV_18330V[rr][1]*sub_MB_dist(vel_dist[10])*(vel_dist[10]-vel_dist[9])*(vel_dist[10]-vel_dist[9]) +
+		     vel_dist[11]* DM_1_0GeV_20000V[rr][1]*sub_MB_dist(vel_dist[11])*(vel_dist[11]-vel_dist[10])*(vel_dist[11]-vel_dist[10]) +
+		     vel_dist[12]* DM_1_0GeV_21670V[rr][1]*sub_MB_dist(vel_dist[12])*(vel_dist[12]-vel_dist[11])*(vel_dist[12]-vel_dist[11])
 		     //vel_dist[13]* DM_1_0GeV_25460V[rr][1]*sub_MB_dist(vel_dist[13])*(vel_dist[13]-vel_dist[12]) 
 		     ));
-      
 
     }
+    cout << "norm_factor: " << norm_factor << endl;
 
-
+    for(int kkk=0; kkk<12; kkk++)
+    {
+        cout << "sub_MB_dist_Test(vel_dist[x]): "  << sub_MB_dist_Test(vel_dist[kkk+1],vel_dist[kkk])*norm_factor << endl;
+    }
 
   
   TCanvas *plot = new TCanvas("plot","",800,600);
@@ -153,7 +165,7 @@ void dm_dcsXe_1GeV_avDCS_Chih()
 
  
   
-  TH2F *frame = new TH2F("frame","",10,1E-2,1.8,10,1E-30,1E-21);
+    TH2F *frame = new TH2F("frame","",10,1E-2,10,10,1E-30,1E-21);
   frame->GetYaxis()->SetTitle("#frac{d<#sigma v>}{dT} cm^{3} keV^{-1} Day^{-1}");
   frame->GetXaxis()->SetTitle(" T (keV)");
   frame->GetXaxis()->CenterTitle();
@@ -165,7 +177,8 @@ void dm_dcsXe_1GeV_avDCS_Chih()
   TGraph *gr = new TGraph(data_bin-1,energy, rate);
   gr->SetLineColor(1);
   gr->SetLineWidth(10);
-  gr->Draw("al");
+  gr->GetXaxis()->SetRangeUser(1e-2,2.8);
+  gr->Draw("Al");
   
 }
 

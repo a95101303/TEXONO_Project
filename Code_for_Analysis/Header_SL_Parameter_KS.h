@@ -364,7 +364,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
 {//Vecloty-dependent dsigma_dT
     
        static string Pre_mx="";
-    double v = v_int*(1e3/3e8)*1e3;
+    double v = v_int*(1e3/3e8)*1e3;//c*1e3
 
     //if(T>0.3 and v_int>300)cout << "T: " << T << endl;
     //if(T>0.3 and v_int>300)cout << "v_int: " << v_int << endl;
@@ -608,7 +608,8 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
 
         fout->Close();
         */
-    
+        cout << "v: " << v << endl;
+        cout << "DCS: " << DCS << endl;
          return DCS;
 }
 
@@ -683,10 +684,11 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
 {//Vecloty-dependent dsigma_dT
         
         double v = v_int*(1e3/3e8)*1e3;
-
+        double v_c = v_int*(1e3/3e8)*1e3;
+    
         static int Pre_mx= 0;
 
-        
+        //cout << "Mx: " << Mx << endl;
         vector<string> File_velocity;//
         vector<string> DM_Beta_Now_String;
         vector<double> DM_Beta_Now;vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
@@ -699,14 +701,18 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     //cout << "File_velocity_Right: " << File_velocity_Right.size() << endl;
     //cout << "DM_Beta_Right_String: " << DM_Beta_Right_String.size() << endl;
 
+    static int Number=0;
+
 
     if(Pre_mx!=int(Mx*1e3))//IF1
     {
-        Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+        Find_File(0);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
         //===============================================First, check the file and number==========================================//
-        int Number=0;
+
         for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
-             if(S_DM_Mass[kkk]==to_string(int(Mx*1e3)))Number=kkk;
+            //cout << "to_string(int(Mx*1e3)): " << to_string(int(Mx*1e3)) << endl;
+            //cout << "S_DM_Mass[kkk]: " << S_DM_Mass[kkk] << endl;
+             if(S_DM_Mass[kkk]==to_string(int(Mx*1e3))){Number=kkk;}
         }//Find the position of this mass in the array
 
 
@@ -741,7 +747,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                     String_velocity_Real = String_velocity_Real + byte;
                     check = check + 1;
                 }
-                //cout << "String_velocity_Real: " << String_velocity_Real << endl;
+                cout << "String_velocity_Real: " << String_velocity_Real << endl;
                 DM_Beta_Now.push_back(stod(String_velocity_Real));
             }
             //File_velocity.push_back(String_velocity);
@@ -806,6 +812,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
            //fill(dsigma_dT_array.begin(), dsigma_dT_array.end(), 0);
            //Make sure that there is no element in.
            //Make sure that there is no element in.
+           //for(int N=0; N<Number_Exe; N++)
            for(int N=0; N<Number_Exe; N++)
            {
                    
@@ -957,6 +964,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                                 Lower_eV_center_array_for_Hist[N].push_back(Energy_Transfer_array_Hist[N][kkk]+(jjj+0.5)*Width_Per_Bin[N][kkk]);
                                 dsigma_dT_for_Hist[N].push_back(TG_Slope[N][kkk]*Lower_eV_center_array_for_Hist[N][test_bin_Number]+TG_Constant[N][kkk]);
                                 /*
+                                cout << "DM_Beta_Right: " << DM_Beta_Right[N] << endl;
                                 cout << "Lower_eV_center_array_for_Hist[N]: " << Lower_eV_center_array_for_Hist[N][test_bin_Number] << endl;
                                 cout << "dsigma_dT_for_Hist[N]: " << dsigma_dT_for_Hist[N][test_bin_Number] << endl;
                                 cout << "TMath::Power(10,dsigma_dT_for_Hist[N][test_bin_Number]): " << TMath::Power(10,dsigma_dT_for_Hist[N][test_bin_Number]) << endl;
@@ -1005,16 +1013,29 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     
         //cout << "Now_File: " << Now_File << "v: " << v  <<endl;
         //cout << "Hist_DCS_array: " << Hist_DCS_array.size() << endl;
-        
-        int Now_File=0;
-        for(int N=0; N<DM_Beta_Used.size(); N++){if(v>DM_Beta_Used[N] and v<DM_Beta_Used[N+1]) Now_File=N;}
-        if(v>DM_Beta_Used[DM_Beta_Used.size()-1])Now_File=DM_Beta_Used.size()-1;
+    //cout << "v: " << v << endl;
+    
+    int Now_File=0;
+    /*//For normal
+    if(v>DM_Beta_Used[DM_Beta_Used.size()-1]){Now_File=DM_Beta_Used.size()-2;}
+    else{for(int N=0; N<DM_Beta_Used.size(); N++){if(v>DM_Beta_Used[N] and v<DM_Beta_Used[N+1]) Now_File=N;}}
+    */
+    for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)==int(DM_Beta_Used[N]*1e4))Now_File=N-1;}
 
-        Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);
-        //cout << "binx: " << binx << endl;
-        //if(T>0.3 and v_int>300)cout << "binx: " << binx << endl;
+    
+        Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);//eV
+        Int_t X_max_Bin = Hist_DCS_array[Now_File]->GetNbinsX();
+        double Bin_Content_Max = Hist_DCS_array[Now_File]->GetBinCenter(X_max_Bin);
+        double Bin_Width       = Hist_DCS_array[Now_File]->GetBinWidth(X_max_Bin);
+        double Right_Edge      = Bin_Content_Max+Bin_Width*2;
+        cout << "T[keV]: " << T << endl;
+        cout << "v_c: " << v_c << endl;
+        cout << "Now_File: " << Now_File << endl;
+        cout << "Right_Edge: " << Right_Edge << endl;
+    
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
-        //cout << "DCS: " << DCS << endl;
+        if(T*1e3>Right_Edge)DCS=0;
+        cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
 
         /*
@@ -1041,10 +1062,10 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         cout << "fout: " << fout_name << endl;
         for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta_Right_String[N].c_str());}
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
-
+         
         fout->Close();
         */
-    
+    //cout << "DCS: " << DCS << endl;
          return DCS;
 }
 
