@@ -132,9 +132,9 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         cout << "RecoilX_Event_Original_M1/Number_of_Bin: " << RecoilX_Event_Original_M1/(double)Number_of_Bin << endl;
         cout << "60/(RecoilX_Event_Original_M1/(double)Number_of_Bin): " << 0.5/(RecoilX_Event_Original_M1/(double)Number_of_Bin) << endl;
         double Scaling = 0.5/(RecoilX_Event_Original_M1/(double)Number_of_Bin);
-        cout << "DS_Try(1e-9,0.5): " << DS_Try(1e-9,0.5) << endl;
-        cout << "Final: " << DS_Try(1e-9,0.5)* sqrt(Scaling) << endl;
-        
+        cout << "DS_Try(1e-9,0.5): " << CS_Try(1,0.5) << endl;
+        cout << "Final: " << CS_Try(1*sqrt(Scaling),0.5) << endl;
+        cout << "CS_Try: " << CS_Try(5.28*1e-4,0.5) << endl;
     double EARTH_Original=0;
     double EARTH_Bigger_Than_Threshold=0;
     double Earth_Bigger_Than_Threshold=0;
@@ -191,15 +191,19 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     SetOutLine->GetXaxis()->SetRangeUser(0,3);
     SetOutLine->GetYaxis()->SetRangeUser(0,1e+15);
 
+    const int data_Bin_ER = reso_T;
+        //const int data_Bin_ER = data_bin;
+
     //Energy recoil Spectrum
-    TGraph *ER_Spectrum_Bef = new TGraph(data_bin,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
+    TGraph *ER_Spectrum_Bef = new TGraph(data_Bin_ER,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
+    //TGraph *ER_Spectrum_Bef = new TGraph(data_bin,T_QF_Original_Bef_Array,Factor1_Original_Bef_Array);
     ER_Spectrum_Bef->GetXaxis()->SetTitle("Energy[keV]");
     //ER_Spectrum_Bef->GetYaxis()->SetTitle("Count");
     ER_Spectrum_Bef->GetYaxis()->SetTitle("d<#sigma>/dT");
 
     ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,3e+0);
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-23,1e-18);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-21,1e-13);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);
@@ -211,7 +215,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
     ER_Spectrum_Aft->GetXaxis()->SetTitle("Energy[keV]");
     ER_Spectrum_Aft->GetYaxis()->SetTitle("Count");
     ER_Spectrum_Aft->GetXaxis()->SetLimits(1e-2,1e+2);
-    ER_Spectrum_Aft->GetYaxis()->SetRangeUser(1e-35,1e-17);
+    ER_Spectrum_Aft->GetYaxis()->SetRangeUser(1e-18,1e-13);
     ER_Spectrum_Aft->SetLineColor(3);
 
 

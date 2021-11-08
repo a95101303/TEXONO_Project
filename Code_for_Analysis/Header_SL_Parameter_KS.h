@@ -49,8 +49,6 @@ const double hbarC_divide_GeV_cm = 1e2*hbarC_divide_GeV_m;//(cm)
 const double hbarC_divide_GeV_cm_Square = pow(hbarC_divide_GeV_cm,2);//(cm^2)
 
 //Other parameters that should be used
-const double avogadro_number = 6.02214129e+23;
-const double density = 0.3; //GeV cm^{-3} for (DM)
 const double Averaged_Velocity=232.;//(km/s)
 const double Electron_Mass_MeV=0.511;//MeV
 const double Me_times_alpha=3.7;//keV/c^2
@@ -683,6 +681,7 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
 double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
         
+    
         double v = v_int*(1e3/3e8)*1e3;
         double v_c = v_int*(1e3/3e8)*1e3;
     
@@ -1016,26 +1015,34 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     //cout << "v: " << v << endl;
     
     int Now_File=0;
-    /*//For normal
-    if(v>DM_Beta_Used[DM_Beta_Used.size()-1]){Now_File=DM_Beta_Used.size()-2;}
-    else{for(int N=0; N<DM_Beta_Used.size(); N++){if(v>DM_Beta_Used[N] and v<DM_Beta_Used[N+1]) Now_File=N;}}
-    */
-    for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)==int(DM_Beta_Used[N]*1e4))Now_File=N-1;}
-
+    //For normal
     
+    
+    if(v>DM_Beta_Used[DM_Beta_Used.size()-1]){Now_File=DM_Beta_Used.size()-2;}
+    else{for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)>int(1e4*DM_Beta_Used[N]) and int(v*1e4)<=int(1e4*DM_Beta_Used[N+1])) Now_File=N;}}
+    //cout << "Now_File: " << Now_File << endl;
+    //cout << "File_velocity_Right: " << File_velocity_Right[0] << endl;
+    //for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)==int(DM_Beta_Used[N]*1e4)){Now_File=N-1;}}
+    
+
+    if(int(v*1e4)<int(DM_Beta_Used[1]*1e4))Now_File=0;
+    /*
+    cout << "T[keV]: " << T << endl;
+    cout << "v_c: " << v_c << endl;
+    cout << "Now_File: " << Now_File << endl;
+     */
         Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);//eV
         Int_t X_max_Bin = Hist_DCS_array[Now_File]->GetNbinsX();
         double Bin_Content_Max = Hist_DCS_array[Now_File]->GetBinCenter(X_max_Bin);
         double Bin_Width       = Hist_DCS_array[Now_File]->GetBinWidth(X_max_Bin);
         double Right_Edge      = Bin_Content_Max+Bin_Width*2;
-        /*
-        cout << "T[keV]: " << T << endl;
-        cout << "v_c: " << v_c << endl;
-        cout << "Now_File: " << Now_File << endl;
-        cout << "Right_Edge: " << Right_Edge << endl;
-         */
+                 
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         if(T*1e3>Right_Edge)DCS=0;
+        //if(T*1e3>Right_Edge)DCS=0;
+        //cout << "v: " << v << endl;
+        //cout << "binx: " << binx << endl;
+        //cout << "T*1e3: " << T*1e3 << endl;
         //cout << "DCS: " << DCS << endl;
         //if(T>0.3 and v_int>300)cout << "DCS: " << DCS << endl;
 

@@ -186,6 +186,13 @@ double Possibility()//v(km/s)
         
             check=1;
     }
+    /*
+    for(int kkk=0; kkk<Possibilities_array.size(); kkk++)
+    {
+        cout << "Possibilities_array_2: " << Possibilities_array[kkk] << endl;
+        cout << "kkk: " << kkk << endl;
+    }
+     */
     return 0;
 }
 
@@ -365,7 +372,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     if(Conventional_or_not==2){//Conventional Distribution
         WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Model_of_Interaction==4){//electron Recoil
-        WIMP_max_T = Energy_DM(WIMP_mx,650*kms1_to_c)+0.02;} //keV
+        WIMP_max_T = Energy_DM(WIMP_mx,799*kms1_to_c)+0.02;} //keV
 
     double WIMP_max_T_NU = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
@@ -658,36 +665,89 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     }
      */
     Possibility();
+    //const int data_Bin_ER = data_bin;
+    const int data_Bin_ER = reso_T;
     if(Model_of_Interaction==4)//Electronic-recoil Only for Lahkwinder
     {
         cout << "Electronic Recoil//(From Lahkwinder's Code)" << endl;
-        for(int i=1;i<data_bin;i++)
-        //for(int i=0;i<1;i++)
+        
+        for(int kkk=0; kkk<Possibilities_array.size(); kkk++)
         {
-            //T[i] = ((double)i+0.5)*((1.832)/(double)reso_T); // keV
-            T[i] = reference[i][0]*1e-3; // keV
+            cout << "Possibilities_array_2: " << Possibilities_array[kkk] << endl;
+            cout << "kkk: " << kkk << endl;
+        }
+
+        for(int i=1;i<data_Bin_ER;i++)
+        //for(int i=0;i<data_bin;i++)
+        //for(int i=1000;i<1001;i++)
+        {
+            T[i] = ((double)i+0.5)*((2.0)/(double)reso_T); // keV
+            //T[i] = reference[i][0]*1e-3; // keV ==>Used to do the check with Lakh's codes
             recoilX[i] = 0.0;//No need to attenuate
 
-            for(int j=0;j<bin_for_ER-1;j++)
+            double A_Check=0;double B_Check=0;
+            //for(int j=0;j<bin_for_ER-1;j++)
+            //for(int j=0;j<1;j++)
+            for(int j=0;j<1999;j++)
             {
+                //Definetly true==>Used to do the check with Lakh's codes
+                /*
                 double v_cms_now = vel_dist_ER_cms[j];//cm/s
                 double v_cms_next = vel_dist_ER_cms[j+1];//cm/s
                 double v_kms_now = vel_dist_ER_cms[j]/(1e5);// km/s
+                double dv=(v_cms_next)-(v_cms_now);
+                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 86400*1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*Possibilities_array[j]*v_cms_next*(dv);
+                cout << "v_kms_now: " << v_kms_now << endl;
+                cout << "fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx): " << fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx) << endl;
+                 */
                 
-                //if((max_recoil_A_for_ER_keV(v,WIMP_mx))>T[i] and v<544 and v>sqrt(T[i]/(WIMP_mx*1e6)))
-                   // if( Energy_DM(WIMP_mx,v_kms_now*kms1_to_c)>T[i] and (v_kms_now*kms1_to_c)>(sqrt(T[i]/(WIMP_mx*1e6))) and v_kms_now<776)
-                    //    {
-                //cout << "===================================" << endl;
-                //cout << "T[i]: " << T[i] << endl;
-                //cout << "v_kms_now: " << v_kms_now << endl;
-                            double dv=(v_cms_next)-(v_cms_now);
-                            if(Conventional_or_not==1)recoilX[i] = recoilX[i] + 1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*Possibilities_array[j]*v_cms_next*(dv);
-                //cout << "fdsigma_dT_ER_New(v_kms_now,T[i]*1e-3,WIMP_mx): " << fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx) << endl;
-                //cout << "===================================" << endl;
+                
+                double v_cms_now  = (velo_dist_Ave[j][1])*1e5;//cm/s
+                double v_cms_next = (velo_dist_Ave[j][2])*1e5;//cm/s
+                double v_kms_now  = (velo_dist_Ave[j][1]);// km/s
+                double dv=(v_cms_next)-(v_cms_now);
+                //double dR_Factor  = N_atom_1kg_Ge_Electron*DM_density_ER*WIMP_mx;
+                double dR_Factor  = 1;
+                
+                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*(1/sum)*velo_dist_Ave[j][3]*v_cms_next*(dv);
+                if(v_kms_now>vel_dist_ER_kms[0] and v_kms_now<vel_dist_ER_kms[1]) A_Check = A_Check + fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*(1/sum)*velo_dist_Ave[j][3];
+                
+                /*
+                cout << "=======================================================" << endl;
+                cout << "T[i]: " << T[i] << endl;
+                cout << "fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx): " << fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx) << endl;
+                cout << "(1/sum)*velo_dist_Ave[j][3]:  " << (1/sum)*velo_dist_Ave[j][3] << endl;
+                 */
+                
+                double Vel_Temp=0;int Vel_block=0;
+                for(int LMN=0;LMN<bin_for_ER-1;LMN++)
+                {
+                    if(v_kms_now>vel_dist_ER_kms[LMN] and v_kms_now<vel_dist_ER_kms[LMN+1])
+                    {
+                        Vel_Temp=vel_dist_ER_kms[LMN+1];
+                        Vel_block=LMN;
+                    }
+                }
+                if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block]*v_cms_next*(dv);
+                 if(v_kms_now>vel_dist_ER_kms[0] and v_kms_now<vel_dist_ER_kms[1]) B_Check = B_Check + fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block];
+                /*
+                 if(v_kms_now>vel_dist_ER_kms[0] and v_kms_now<vel_dist_ER_kms[1]) B_Check = B_Check + fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block];
+                
+                cout << "=====================Method=======================" << endl;
+                cout << "T[i]: " << T[i] << endl;
+                cout << "Vel_Temp: " << Vel_Temp << endl;
+                cout << "fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx): " << fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx) << endl;
+                cout << "Possibilities_array[Vel_block]: " << Possibilities_array[Vel_block] << endl;
+                cout << "=======================================================" << endl;
+                 */
+                 //  cm3/(keV*day)
 
-                      //  }
             }
-            //cout << "recoilX[i]: " << recoilX[i] << endl;
+            cout << "T[i]: " << T[i] << endl;
+            cout << "recoilX[i]: " << recoilX[i] << endl;
+            cout << "check_A: " << A_Check << endl;
+            cout << "check_B: " << B_Check << endl;
+
         }
     }
      
@@ -766,9 +826,9 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-           // cout << "T[i]: " << T[i] << endl;
+            //cout << "T[i]: " << T[i] << endl;
            // cout << "T_QF[i]: " << T_QF[i] << endl;
-           // cout << "RecoilX: " << recoilX[i] << endl;
+            //cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }

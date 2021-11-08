@@ -68,7 +68,7 @@ void dm_dcsXe_1GeV_avDCS_Chih()
   double c1 = 1e-18;
   
   
-  const double rate_factor = pow(c1,2)*1E-18*1E+3;
+  const double rate_factor = pow(c1,2)*1E-18*1E+3*86400;
   const int bin = 13; 
   double vel_dist[bin] = {
     1.667e-04,

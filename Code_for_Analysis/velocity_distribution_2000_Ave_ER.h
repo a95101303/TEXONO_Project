@@ -3,8 +3,9 @@
 const double c_to_cms=(3e10);
 const double c_to_kms=(3e10)/(1e5);
 
-const int bin_for_ER = 12;
+const int bin_for_ER = 13;
 double vel_dist_ER_c[bin_for_ER] = {//*(3e10/1e5)=?km/s
+1.667e-04,
 3.333e-04,
 5.000e-04,
 6.667e-04,
@@ -31,6 +32,7 @@ vel_dist_ER_c[8]*c_to_kms,
 vel_dist_ER_c[9]*c_to_kms,
 vel_dist_ER_c[10]*c_to_kms,
 vel_dist_ER_c[11]*c_to_kms,
+vel_dist_ER_c[12]*c_to_kms,
 };
 double vel_dist_ER_cms[bin_for_ER] = {//*(3e10/1e5)=?km/s
 vel_dist_ER_c[0]*c_to_cms,
@@ -45,6 +47,7 @@ vel_dist_ER_c[8]*c_to_cms,
 vel_dist_ER_c[9]*c_to_cms,
 vel_dist_ER_c[10]*c_to_cms,
 vel_dist_ER_c[11]*c_to_cms,
+vel_dist_ER_c[12]*c_to_cms,
 };
 const int data_bin=156;
 double reference[data_bin][2] = {
