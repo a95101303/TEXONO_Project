@@ -693,7 +693,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     
         static int Pre_mx= 0;
 
-        //cout << "Mx: " << Mx << endl;
+        cout << "Mx: " << Mx << endl;
         vector<string> File_velocity;//
         vector<string> DM_Beta_Now_String;
         vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
@@ -711,8 +711,8 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         //===============================================First, check the file and number==========================================//
 
         for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
-            //cout << "to_string(int(Mx*1e3)): " << to_string(int(Mx*1e3)) << endl;
-            //cout << "S_DM_Mass[kkk]: " << S_DM_Mass[kkk] << endl;
+            cout << "to_string(int(Mx*1e3)): " << to_string(int(Mx*1e3)) << endl;
+            cout << "S_DM_Mass[kkk]: " << S_DM_Mass[kkk] << endl;
              if(S_DM_Mass[kkk]==to_string(int(Mx*1e3))){Number=kkk;}
         }//Find the position of this mass in the array
 
@@ -899,7 +899,10 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                    for(int kkk=0; kkk<Counter; kkk++)
                    {
                        TG_Lower_eV_F[N][kkk+1]  = Energy_Transfer_array[N][kkk];//TGraph
+                       cout << "TG_Lower_eV_F[N][kkk+1]: " << TG_Lower_eV_F[N][kkk+1] << endl;
                        TG_dsigma_dT_F[N][kkk+1] = TMath::Log10(dsigma_dT_array[N][kkk]);//TGraaph
+                       cout << "TG_dsigma_dT_F[N][kkk+1]: " << TG_dsigma_dT_F[N][kkk+1] << endl;
+
                    }//For extrapolating the cross sections between 0 to 80eV
 
                    TGraph* gr = new TGraph(Counter+1,TG_Lower_eV_F[N],TG_dsigma_dT_F[N]);
@@ -1025,6 +1028,8 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     
 
     if(int(v*1e4)<int(DM_Beta_Used[1]*1e4))Now_File=0;
+    
+
     /*
     cout << "T[keV]: " << T << endl;
     cout << "v_c: " << v_c << endl;
@@ -1038,6 +1043,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
                  
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         if(T*1e3>Right_Edge)DCS=0;
+        if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4))DCS=0;
         //if(T*1e3>Right_Edge)DCS=0;
         //cout << "v: " << v << endl;
         //cout << "binx: " << binx << endl;
@@ -1057,12 +1063,12 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         c3->SetLogy();
         hist_DFCS->GetXaxis()->SetRangeUser(0,435);
         hist_DFCS->GetYaxis()->SetRangeUser(1e-8,1);
-    .q
+    
         hist_DFCS->Draw("HIST");
          */
     
         //Give out the root file to check the content of the DCS
-        /*
+        
         char fout_name[100];
         sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
@@ -1071,7 +1077,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
          
         fout->Close();
-        */
+        
     //cout << "DCS: " << DCS << endl;
          return DCS;
 }

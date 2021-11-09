@@ -703,7 +703,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         //for(int i=0;i<data_bin;i++)
         //for(int i=1000;i<1001;i++)
         {
-            T[i] = ((double)i+0.5)*((2.0)/(double)reso_T); // keV
+            T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
             //T[i] = reference[i][0]*1e-3; // keV ==>Used to do the check with Lakh's codes
             recoilX[i] = 0.0;//No need to attenuate
 
@@ -849,9 +849,9 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-            //cout << "T[i]: " << T[i] << endl;
+            cout << "T[i]: " << T[i] << endl;
            // cout << "T_QF[i]: " << T_QF[i] << endl;
-            //cout << "RecoilX: " << recoilX[i] << endl;
+            cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }
