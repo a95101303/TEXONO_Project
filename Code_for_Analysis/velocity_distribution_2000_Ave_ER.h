@@ -2,7 +2,51 @@
 //Dark matter velocity V1-V2(Interval) [ Gaussian X,Y ] , V( km/s )
 const double c_to_cms=(3e10);
 const double c_to_kms=(3e10)/(1e5);
+const int bin_for_ER = 12;
+double vel_dist_ER_c[bin_for_ER] = {//*(3e10/1e5)=?km/s
+3.333e-04,
+5.000e-04,
+6.667e-04,
+8.333e-04,
+1.000e-03,
+1.167e-03,
+1.333e-03,
+1.500e-03,
+1.667e-03,
+1.833e-03,
+2.000e-03,
+2.167e-03,
+};
+double vel_dist_ER_kms[bin_for_ER] = {//*(3e10/1e5)=?km/s
+vel_dist_ER_c[0]*c_to_kms,
+vel_dist_ER_c[1]*c_to_kms,
+vel_dist_ER_c[2]*c_to_kms,
+vel_dist_ER_c[3]*c_to_kms,
+vel_dist_ER_c[4]*c_to_kms,
+vel_dist_ER_c[5]*c_to_kms,
+vel_dist_ER_c[6]*c_to_kms,
+vel_dist_ER_c[7]*c_to_kms,
+vel_dist_ER_c[8]*c_to_kms,
+vel_dist_ER_c[9]*c_to_kms,
+vel_dist_ER_c[10]*c_to_kms,
+vel_dist_ER_c[11]*c_to_kms,
+};
+double vel_dist_ER_cms[bin_for_ER] = {//*(3e10/1e5)=?km/s
+vel_dist_ER_c[0]*c_to_cms,
+vel_dist_ER_c[1]*c_to_cms,
+vel_dist_ER_c[2]*c_to_cms,
+vel_dist_ER_c[3]*c_to_cms,
+vel_dist_ER_c[4]*c_to_cms,
+vel_dist_ER_c[5]*c_to_cms,
+vel_dist_ER_c[6]*c_to_cms,
+vel_dist_ER_c[7]*c_to_cms,
+vel_dist_ER_c[8]*c_to_cms,
+vel_dist_ER_c[9]*c_to_cms,
+vel_dist_ER_c[10]*c_to_cms,
+vel_dist_ER_c[11]*c_to_cms,
+};
 
+/*
 const int bin_for_ER = 13;
 double vel_dist_ER_c[bin_for_ER] = {//*(3e10/1e5)=?km/s
 1.667e-04,
@@ -49,6 +93,7 @@ vel_dist_ER_c[10]*c_to_cms,
 vel_dist_ER_c[11]*c_to_cms,
 vel_dist_ER_c[12]*c_to_cms,
 };
+ */
 const int data_bin=156;
 double reference[data_bin][2] = {
   {      12.5000002 ,  0.0},

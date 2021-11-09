@@ -678,6 +678,12 @@ int Find_File(int Material_and_DCS)//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
     return 0;
 }
 
+static vector<double> DM_Beta_Now;
+static vector<string> File_velocity_Right;//From small to big
+static vector<double> DM_Beta_Right;//From small to big
+static vector<string> DM_Beta_Right_String;
+static vector<double> DM_Beta_Used;
+
 double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
 {//Vecloty-dependent dsigma_dT
         
@@ -690,11 +696,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         //cout << "Mx: " << Mx << endl;
         vector<string> File_velocity;//
         vector<string> DM_Beta_Now_String;
-        vector<double> DM_Beta_Now;vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
-        static vector<string> File_velocity_Right;//From small to big
-        static vector<double> DM_Beta_Right;//From small to big
-        static vector<string> DM_Beta_Right_String;
-        static vector<double> DM_Beta_Used;
+        vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
 
     //cout << "File_velocity.size(): " << File_velocity.size() << endl;
     //cout << "File_velocity_Right: " << File_velocity_Right.size() << endl;
@@ -1020,9 +1022,6 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     
     if(v>DM_Beta_Used[DM_Beta_Used.size()-1]){Now_File=DM_Beta_Used.size()-2;}
     else{for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)>int(1e4*DM_Beta_Used[N]) and int(v*1e4)<=int(1e4*DM_Beta_Used[N+1])) Now_File=N;}}
-    //cout << "Now_File: " << Now_File << endl;
-    //cout << "File_velocity_Right: " << File_velocity_Right[0] << endl;
-    //for(int N=0; N<DM_Beta_Used.size(); N++){if(int(v*1e4)==int(DM_Beta_Used[N]*1e4)){Now_File=N-1;}}
     
 
     if(int(v*1e4)<int(DM_Beta_Used[1]*1e4))Now_File=0;
