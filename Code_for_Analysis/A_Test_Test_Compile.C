@@ -4,6 +4,11 @@
 
 void A_Test_Test_Compile()
 {
+    TH1F   *Test_Integral = new TH1F("Test_Integral","Test_Integral",40,0,10);
+    Test_Integral->Fill(5);Test_Integral->Fill(9.1);
+    Test_Integral->Fill(9.5);Test_Integral->Fill(7.8);
+    cout << "Integral(): " << Test_Integral->Integral(1,40) << endl;
+    
     double Vecolity[2000];double Possiblity[2000];
     double sum; for(int j=0;j<2000;j++){sum = sum + velo_dist_Ave[j][3];}
     for(int j=0;j<2000;j++)
@@ -16,7 +21,6 @@ void A_Test_Test_Compile()
     TH1F   *Flux_HIST = new TH1F("Flux_HIST","Flux_HIST",2000,0,791);
     for(int kkk=0;kkk<2000;kkk++){Flux_HIST->SetBinContent(kkk+1,Possiblity[kkk]);}
 
-    cout << "Flux_HIST->Max: " << Flux_HIST->FindlastBinAbove() << endl;
     cout << "GetBinContent(): " << Flux_HIST->GetBinCenter(Flux_HIST->GetMaximumBin()) << endl;
     Int_t binx        = Flux_HIST->GetXaxis()->FindBin(800);
     Int_t binx_Number = Flux_HIST->GetNbinsX();

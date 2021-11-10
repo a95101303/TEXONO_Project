@@ -10,37 +10,48 @@
 #include "velocity_distribution_2000_Ave_ER.h"
 
 #include "cpkkd_calculation_New.h"
-void Overlap_Plot_TEXONO_Ge_Test_ER()
+void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
 {
-
-    const int Number=29;
-    double Sigma_SI_Array[Number];
-    //Method1 Threshold: 200eV
-    double Sigma_SI_With_Threshold_M1[Number];double Sigma_SI_With_Threshold_earth_M1[Number];
-    double Ratio_for_Average_M1[Number];double Ratio_for_PREM_M1[Number];
-
-    //Method2 Threshold: 200km/s
-    double Sigma_SI_With_Threshold_M2[Number];double Sigma_SI_With_Threshold_earth_M2[Number];
-    double Ratio_for_Average_M2[Number];double Ratio_for_PREM_M2[Number];
-
-    //Method1 Threshold: 200eV-300eV
-    double Sigma_SI_With_Threshold_M3[Number];double Sigma_SI_With_Threshold_earth_M3[Number];
-    double Ratio_for_Average_M3[Number];double Ratio_for_PREM_M3[Number];
-    double Sigma_SI_With_Threshold_M3_Error[Number];double Error_X[Number];
-
-    double CPKKD_EXCLUSION[Number];
-    double Mass=1;//2.34
-    int Take_Plot=0;
-    string Type_of_Model="ER"; int Type_of_Model_INT=4;
-    cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
+    const int    velocity_N=13;
+    const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
+    string velocity_s[velocity_N]={"01667","03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};
+    double velocity_d[velocity_N]={0.1667,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};
+    double velocitykm[velocity_N];//Filled in the next line
+    for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
     
-    /*
-    Sigma_SI_Array[0]=1*(3e-30);
-    Sigma_SI_With_Threshold_M1[0]=1e-42;
-    Sigma_SI_With_Threshold_M3[0]=1e-42;
-     */
     
-    int Point_Number=0;
+    //Read the file of DCS for different masses
+    TFile *fin = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_XeData_Vel/c1_1_0GeV/DCS.root");
+    vector<TH1F*> velocity_TH1F;//Mass-based
+    vector<double>   velocity_Used;//km/s
+    velocity_Used.push_back(0);
+    for(int kkk=0; kkk<velocity_N; kkk++)
+    {
+        TH1F *Velocity_TH1F_temp=(TH1F*)fin->Get(velocity_s[kkk].c_str());
+        if(Velocity_TH1F_temp!=NULL)
+        {
+            cout << "File: " << velocity_s[kkk].c_str() << endl;
+            cout << "velocitykm: " << velocitykm[kkk] << endl;
+            velocity_TH1F.push_back(Velocity_TH1F_temp);
+            velocity_Used.push_back(velocitykm[kkk]);
+        }
+    }
+    
+    int    Applied_Hist=0;
+    double Velocity_DM_Now;//km/s
+    if(Velocity_DM_Now>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
+    if(Applied_Hist==0)
+    {
+        for(int kkk=0; kkk<velocity_Used.size(); kkk++)
+        {
+            if(Velocity_DM_Now>velocity_Used[kkk] and Velocity_DM_Now<velocity_Used[kkk+1]){Applied_Hist=kkk;}
+        }
+    }
+    double v_c = Velocity_DM_Now*1e3/3e8;//c
+    double Max_Recoil = 0.5*WIMP_mx*1e6*TMath::Power(v_c,2);//Max_Recoil(keV)
+    Int_t Maximum_Bin = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Max_Recoil);//Max_Recoil_Bin
+    
+    
      
 for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
 {
