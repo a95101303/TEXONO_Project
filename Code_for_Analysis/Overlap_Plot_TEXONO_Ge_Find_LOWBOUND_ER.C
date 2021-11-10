@@ -81,44 +81,53 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
     cout << "Count: " << N << endl;
     //=======================================Start interacting=======================================//
     
-    double Velocity_DM_Temp = Velocity_DM_Now;//Initial Energy and iteration =>km/s
-    double Energy_DM_Temp   = DM_E(WIMP_mx,Velocity_DM_Now);//Initial Energy and iteration =>keV
-    int collision_Time=0;
-    //for(int kkk=0; kkk<1; kkk++)
-    while(Energy_DM_Temp>0.16)
+    int Event_Number=0;
+    double collision_Time_Total=0;
+    while(Event_Number<100)
     {
-        //Confirm the TH1F
-        gRandom = new TRandom3(0);
-        gRandom->SetSeed(0);
-        
-        cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
-        cout << "Energy_DM_Temp: " << Energy_DM_Temp << endl;
-        //Find the file
-        if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
-        if(Applied_Hist==0)
+        cout << "Event_Number: " << Event_Number << endl;
+        double Velocity_DM_Temp = 779;//Initial Energy and iteration =>km/s
+        double Energy_DM_Temp   = DM_E(WIMP_mx,779);//Initial Energy and iteration =>keV
+        int collision_Time=0;
+        //for(int kkk=0; kkk<1; kkk++)
+        while(Energy_DM_Temp>0.16)
         {
-            for(int kkk=0; kkk<velocity_Used.size(); kkk++)
+            //Confirm the TH1F
+            gRandom = new TRandom3(0);
+            gRandom->SetSeed(0);
+            
+            //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
+            //cout << "Energy_DM_Temp: " << Energy_DM_Temp << endl;
+            //Find the file
+            if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
+            if(Applied_Hist==0)
             {
-                if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1]){Applied_Hist=kkk;}
+                for(int kkk=0; kkk<velocity_Used.size(); kkk++)
+                {
+                    if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1]){Applied_Hist=kkk;}
+                }
             }
+            //Set the range
+            int Maximum_Bin_Loss = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_DM_Temp*1e3);//Max_Recoil_Bin
+            int LastBin_Loss = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_from_Hist
+            if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
+            double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
+            velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(0,Max_X);
+            double Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();//Energy_Loss(eV)
+            double Energy_Loss_keV = Energy_Loss_eV*1e-3;//Energy_Loss(keV)
+            //cout << "Energy_Loss_(keV): " << Energy_Loss_keV << endl;
+            Energy_DM_Temp   = Energy_DM_Temp - Energy_Loss_keV;
+            //cout << "Energy_DM_Temp(keV): " << Energy_DM_Temp << endl;
+            Velocity_DM_Temp = sqrt(2*Energy_DM_Temp/(WIMP_mx*1e6))*(3e8/1e3);//km/s
+            //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;//km/s
+            collision_Time = collision_Time + 1;
         }
-        //Set the range
-        int Maximum_Bin_Loss = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_DM_Temp*1e3);//Max_Recoil_Bin
-        int LastBin_Loss = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_from_Hist
-        if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
-        double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
-        velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(0,Max_X);
-        double Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();//Energy_Loss(eV)
-        double Energy_Loss_keV = Energy_Loss_eV*1e-3;//Energy_Loss(keV)
-        cout << "Energy_Loss_(keV): " << Energy_Loss_keV << endl;
-        Energy_DM_Temp   = Energy_DM_Temp - Energy_Loss_keV;
-        cout << "Energy_DM_Temp(keV): " << Energy_DM_Temp << endl;
-        Velocity_DM_Temp = sqrt(2*Energy_DM_Temp/(WIMP_mx*1e6))*(3e8/1e3);//km/s
-        cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;//km/s
-        collision_Time = collision_Time + 1;
+        collision_Time_Total = collision_Time_Total + collision_Time;
+        Event_Number = Event_Number + 1;
     }
-        cout << "collision_Time: " << collision_Time << endl;
-    
+    collision_Time_Total = collision_Time_Total / Event_Number;
+    cout << "collision_Time_Ave: " << collision_Time_Total << endl;
+
 }//End_Main
     
      
