@@ -693,7 +693,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     
         static int Pre_mx= 0;
 
-        cout << "Mx: " << Mx << endl;
+        //cout << "Mx: " << Mx << endl;
         vector<string> File_velocity;//
         vector<string> DM_Beta_Now_String;
         vector<double> DM_Beta_for_list;vector<int> Check_the_arrangement;
@@ -707,7 +707,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
 
     if(Pre_mx!=int(Mx*1e3))//IF1
     {
-        Find_File(0);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+        Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
         //===============================================First, check the file and number==========================================//
 
         for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
@@ -1068,7 +1068,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
          */
     
         //Give out the root file to check the content of the DCS
-        
+        /*
         char fout_name[100];
         sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
@@ -1077,7 +1077,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
          
         fout->Close();
-        
+        */
     //cout << "DCS: " << DCS << endl;
          return DCS;
 }

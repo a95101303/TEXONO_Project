@@ -17,29 +17,54 @@ double DM_E(double Mx, double v)//Mx(GeV/c^2),v(km/s)
 }
 void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
 {
-    const double WIMP_mx=0.07;//GeV
     const int    velocity_N=13;
     const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
     string velocity_s[velocity_N]={"01667","03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};
     double velocity_d[velocity_N]={0.1667,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};
     double velocitykm[velocity_N];//Filled in the next line
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
+    
+    const int Index=1;
+    const double Density = 1.8;//g/cm^3
+    const double Length  = 1e5;//cm
+
+    vector<string> File;
+    vector<double> WIMP_mx_Array;
+    vector<double> Scaling={1e-18,1e-9};
     //=========Define the file==========//
-    vector<string> File=
-        {"c1_2_0GeV","c1_1_0GeV",
-        "c1_0_900GeV","c1_0_800GeV",
-        "c1_0_700GeV","c1_0_600GeV",
-        "c1_0_500GeV","c1_0_400GeV",
-        "c1_0_300GeV","c1_0_200GeV",
-        "c1_0_120GeV","c1_0_090GeV",
-        "c1_0_070GeV","c1_0_050GeV"};
-    double WIMP_mx_Array[14]={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    //Xe_d1
+    if(Index==1)
+    {
+         File=
+            {"d1_2_0GeV","d1_1_0GeV",
+            "d1_0_900GeV","d1_0_800GeV",
+            "d1_0_700GeV","d1_0_600GeV",
+            "d1_0_500GeV","d1_0_400GeV",
+            "d1_0_300GeV","d1_0_200GeV",
+            "d1_0_120GeV","d1_0_090GeV",
+            "d1_0_070GeV","d1_0_050GeV"};
+        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    }
+    //Xe_c1
+    if(Index==0)
+    {
+    File=
+            {"c1_2_0GeV","c1_1_0GeV",
+            "c1_0_900GeV","c1_0_800GeV",
+            "c1_0_700GeV","c1_0_600GeV",
+            "c1_0_500GeV","c1_0_400GeV",
+            "c1_0_300GeV","c1_0_200GeV",
+            "c1_0_120GeV","c1_0_090GeV",
+            "c1_0_070GeV","c1_0_050GeV"};
+        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    }
     //Read the file of DCS for different masses
     vector<double> Cross_Section_Set;
+    string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
     //==================================//
     for(int kkk=0; kkk<File.size(); kkk++)
     {
-        TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/SI_c1_XeData_Vel/%s/DCS.root",File[kkk].c_str()));
+        TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[kkk].c_str()));
         vector<TH1F*> velocity_TH1F;//Mass-based
         vector<double>   velocity_Used;//km/s
         velocity_Used.push_back(0);
@@ -98,7 +123,7 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
         int Event_Number=0;
         double collision_Time_Total=0;
         double Energy_Loss_eV_collision=0;
-        while(Event_Number<5000)
+        while(Event_Number<50)
         {
             //cout << "Event_Number: " << Event_Number << endl;
             double Velocity_DM_Temp = 779;//Initial Energy and iteration =>km/s
@@ -106,7 +131,7 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
             int collision_Time=0;
             double Energy_Loss_Inidivual=0;
             //for(int kkk=0; kkk<1; kkk++)
-            while(Energy_DM_Temp>0.16)
+            while(Energy_DM_Temp>0.01)
             {
                 //Confirm the TH1F
                 gRandom = new TRandom3(0);
@@ -152,14 +177,12 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
         cout << "Energy_Loss_eV_collision: " << Energy_Loss_eV_collision << endl;
         //==================================================//
         
-        const double Density = 1.8;//g/cm^3
-        const double Length  = 1e5;//cm
         double Target_Total_Cross_Section = collision_Time_Ave*(unified_atomic_mass_g*(28))/(Density*Length);
         
         double Total_Cross_Section;
         for(int kkk=0; kkk<Maximum_Bin; kkk++)
         {
-            double dsigma_dT  = velocity_TH1F[Applied_Hist]->GetBinContent(kkk)*1e-15;
+            double dsigma_dT  = velocity_TH1F[Applied_Hist]->GetBinContent(kkk)*1e-15*TMath::Power(Scaling[Index],2);
             double dT         = velocity_TH1F[Applied_Hist]->GetBinWidth(kkk)*1e-3;
             //cout << "dsigma_dT: " << dsigma_dT << endl;
             //cout << "dT: " << dT << endl;
@@ -168,18 +191,20 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
         }
         //cout << "Total_Cross_Section: " << Total_Cross_Section << endl;
         
-        double c1_eV2  = sqrt((Target_Total_Cross_Section)/(Total_Cross_Section));
-        double c1_GeV2 = c1_eV2*1e18;
-            
-        Cross_Section_Set.push_back( CS_Try(c1_GeV2,WIMP_mx_Array[kkk]) );
-        cout << "WIMP_mx_Array[kkk]: " << WIMP_mx_Array[kkk] << endl;
-        cout << "CS_Try: " << CS_Try(c1_GeV2,WIMP_mx_Array[kkk]);
+        double Scaling = (Target_Total_Cross_Section)/(Total_Cross_Section);
+        double c1_GeV2 = sqrt(Scaling);
+        double d1      = sqrt(1e-9*Scaling);
+        if(Index==0)Cross_Section_Set.push_back( CS_Try(c1_GeV2,WIMP_mx_Array[kkk]) );
+        if(Index==1)Cross_Section_Set.push_back( DS_Try(d1,WIMP_mx_Array[kkk]) );
+
+        //cout << "WIMP_mx_Array[kkk]: " << WIMP_mx_Array[kkk] << endl;
     }
     cout << "========================================================" << endl;
     for(int kkk=0; kkk< Cross_Section_Set.size(); kkk++)
     {
         cout << WIMP_mx_Array[kkk] << "," << Cross_Section_Set[kkk] << "," << endl;
     }
+    cout << "DS_Try(d1,WIMP_mx_Array[kkk]): " << DS_Try(4.89e-11,0.5) << endl;
     //==================================================//
 
 }//End_Main
