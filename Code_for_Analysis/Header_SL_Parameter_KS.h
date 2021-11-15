@@ -684,7 +684,7 @@ static vector<double> DM_Beta_Right;//From small to big
 static vector<string> DM_Beta_Right_String;
 static vector<double> DM_Beta_Used;
 
-double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV)
+double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)//mx(GeV/c^2),v(c), dsigma_dT, T(KeV), Find_File(x);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
 {//Vecloty-dependent dsigma_dT
         
     
@@ -707,7 +707,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
 
     if(Pre_mx!=int(Mx*1e3))//IF1
     {
-        Find_File(1);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+        Find_File(Find_File_index);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
         //===============================================First, check the file and number==========================================//
 
         for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
@@ -805,7 +805,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
        static vector<TGraph*> TG_Hist_DCS_array;
 
        int Number_Exe=DM_Beta_Right.size();
-    
+       // int Number_Exe=1;
        if(Pre_mx!=int(Mx*1e3))
        {
            Pre_mx = int(Mx*1e3);
@@ -1035,6 +1035,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
     cout << "v_c: " << v_c << endl;
     cout << "Now_File: " << Now_File << endl;
      */
+        /*
         Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);//eV
         Int_t X_max_Bin = Hist_DCS_array[Now_File]->GetNbinsX();
         double Bin_Content_Max = Hist_DCS_array[Now_File]->GetBinCenter(X_max_Bin);
@@ -1044,6 +1045,8 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         if(T*1e3>Right_Edge)DCS=0;
         if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4))DCS=0;
+         */
+    
         //if(T*1e3>Right_Edge)DCS=0;
         //cout << "v: " << v << endl;
         //cout << "binx: " << binx << endl;
@@ -1068,7 +1071,7 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
          */
     
         //Give out the root file to check the content of the DCS
-        /*
+        
         char fout_name[100];
         sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
@@ -1077,9 +1080,11 @@ double fdsigma_dT_ER_New(double v_int, double T, double Mx)//mx(GeV/c^2),v(c), d
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
          
         fout->Close();
-        */
+        
     //cout << "DCS: " << DCS << endl;
-         return DCS;
+        // return DCS;
+        return 0;
+
 }
 
 /*

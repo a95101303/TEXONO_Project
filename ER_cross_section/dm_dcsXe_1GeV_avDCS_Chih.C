@@ -114,18 +114,18 @@ void dm_dcsXe_1GeV_avDCS_Chih()
       energy[rr] = DM_1_0GeV_10000V[rr][0]*1E-3;
 
       rate[rr] =  (rate_factor*norm_factor*                  
-		   ( vel_dist[1]*  DM_1_0GeV_03333V[rr][1]*sub_MB_dist(vel_dist[1])*(vel_dist[1]-vel_dist[0])*(vel_dist[1]-vel_dist[0])   +
-		     vel_dist[2]*  DM_1_0GeV_05000V[rr][1]*sub_MB_dist(vel_dist[2])*(vel_dist[2]-vel_dist[1])*(vel_dist[2]-vel_dist[1])   +
-		     vel_dist[3]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[3])*(vel_dist[3]-vel_dist[2])*(vel_dist[3]-vel_dist[2])   +
-		     vel_dist[4]*  DM_1_0GeV_08333V[rr][1]*sub_MB_dist(vel_dist[4])*(vel_dist[4]-vel_dist[3])*(vel_dist[4]-vel_dist[3])   +
-		     vel_dist[5]*  DM_1_0GeV_10000V[rr][1]*sub_MB_dist(vel_dist[5])*(vel_dist[5]-vel_dist[4])*(vel_dist[5]-vel_dist[4])   +
-		     vel_dist[6]*  DM_1_0GeV_11670V[rr][1]*sub_MB_dist(vel_dist[6])*(vel_dist[6]-vel_dist[5])*(vel_dist[6]-vel_dist[5])   +
-		     vel_dist[7]*  DM_1_0GeV_13330V[rr][1]*sub_MB_dist(vel_dist[7])*(vel_dist[7]-vel_dist[6])*(vel_dist[7]-vel_dist[6])   +
-		     vel_dist[8]*  DM_1_0GeV_15000V[rr][1]*sub_MB_dist(vel_dist[8])*(vel_dist[8]-vel_dist[7])*(vel_dist[8]-vel_dist[7])   +
-		     vel_dist[9]*  DM_1_0GeV_16670V[rr][1]*sub_MB_dist(vel_dist[9])*(vel_dist[9]-vel_dist[8])*(vel_dist[9]-vel_dist[8])   +
-		     vel_dist[10]* DM_1_0GeV_18330V[rr][1]*sub_MB_dist(vel_dist[10])*(vel_dist[10]-vel_dist[9])*(vel_dist[10]-vel_dist[9]) +
-		     vel_dist[11]* DM_1_0GeV_20000V[rr][1]*sub_MB_dist(vel_dist[11])*(vel_dist[11]-vel_dist[10])*(vel_dist[11]-vel_dist[10]) +
-		     vel_dist[12]* DM_1_0GeV_21670V[rr][1]*sub_MB_dist(vel_dist[12])*(vel_dist[12]-vel_dist[11])*(vel_dist[12]-vel_dist[11])
+		   ( vel_dist[1]*  DM_1_0GeV_03333V[rr][1]*sub_MB_dist(vel_dist[1])*(vel_dist[1]-vel_dist[0])   +
+		     vel_dist[2]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[2])*(vel_dist[2]-vel_dist[1])   +
+		     vel_dist[3]*  DM_1_0GeV_06667V[rr][1]*sub_MB_dist(vel_dist[3])*(vel_dist[3]-vel_dist[2])   +
+		     vel_dist[4]*  DM_1_0GeV_08333V[rr][1]*sub_MB_dist(vel_dist[4])*(vel_dist[4]-vel_dist[3])   +
+		     vel_dist[5]*  DM_1_0GeV_10000V[rr][1]*sub_MB_dist(vel_dist[5])*(vel_dist[5]-vel_dist[4])   +
+		     vel_dist[6]*  DM_1_0GeV_11670V[rr][1]*sub_MB_dist(vel_dist[6])*(vel_dist[6]-vel_dist[5])   +
+		     vel_dist[7]*  DM_1_0GeV_13330V[rr][1]*sub_MB_dist(vel_dist[7])*(vel_dist[7]-vel_dist[6])   +
+		     vel_dist[8]*  DM_1_0GeV_15000V[rr][1]*sub_MB_dist(vel_dist[8])*(vel_dist[8]-vel_dist[7])   +
+		     vel_dist[9]*  DM_1_0GeV_16670V[rr][1]*sub_MB_dist(vel_dist[9])*(vel_dist[9]-vel_dist[8])   +
+		     vel_dist[10]* DM_1_0GeV_18330V[rr][1]*sub_MB_dist(vel_dist[10])*(vel_dist[10]-vel_dist[9]) +
+		     vel_dist[11]* DM_1_0GeV_20000V[rr][1]*sub_MB_dist(vel_dist[11])*(vel_dist[11]-vel_dist[10]) +
+		     vel_dist[12]* DM_1_0GeV_21670V[rr][1]*sub_MB_dist(vel_dist[12])*(vel_dist[12]-vel_dist[11])
 		     //vel_dist[13]* DM_1_0GeV_25460V[rr][1]*sub_MB_dist(vel_dist[13])*(vel_dist[13]-vel_dist[12]) 
 		     ));
 

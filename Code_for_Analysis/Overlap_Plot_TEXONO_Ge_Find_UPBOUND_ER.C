@@ -15,7 +15,7 @@ double DM_E(double Mx, double v)//Mx(GeV/c^2),v(km/s)
 {
     return 0.5*(Mx*1e6)*(v*1e3/3e8)*(v*1e3/3e8);
 }
-void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
+void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
 {
     const int    velocity_N=13;
     const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
@@ -32,19 +32,6 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
     vector<double> WIMP_mx_Array;
     vector<double> Scaling={1e-18,1e-9};
     //=========Define the file==========//
-    //Xe_d1
-    if(Index==1)
-    {
-         File=
-            {"d1_2_0GeV","d1_1_0GeV",
-            "d1_0_900GeV","d1_0_800GeV",
-            "d1_0_700GeV","d1_0_600GeV",
-            "d1_0_500GeV","d1_0_400GeV",
-            "d1_0_300GeV","d1_0_200GeV",
-            "d1_0_120GeV","d1_0_090GeV",
-            "d1_0_070GeV","d1_0_050GeV"};
-        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
-    }
     //Xe_c1
     if(Index==0)
     {
@@ -58,11 +45,25 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
             "c1_0_070GeV","c1_0_050GeV"};
         WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
     }
+    //Xe_d1
+    if(Index==1)
+    {
+         File=
+            {"d1_2_0GeV","d1_1_0GeV",
+            "d1_0_900GeV","d1_0_800GeV",
+            "d1_0_700GeV","d1_0_600GeV",
+            "d1_0_500GeV","d1_0_400GeV",
+            "d1_0_300GeV","d1_0_200GeV",
+            "d1_0_120GeV","d1_0_090GeV",
+            "d1_0_070GeV","d1_0_050GeV"};
+        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    }
     //Read the file of DCS for different masses
     vector<double> Cross_Section_Set;
     string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
     //==================================//
     for(int kkk=0; kkk<File.size(); kkk++)
+    //for(int kkk=2; kkk<3; kkk++)
     {
         TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[kkk].c_str()));
         vector<TH1F*> velocity_TH1F;//Mass-based
@@ -73,8 +74,8 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
             TH1F *Velocity_TH1F_temp=(TH1F*)fin->Get(velocity_s[kkk].c_str());
             if(Velocity_TH1F_temp!=NULL)
             {
-                cout << "File: " << velocity_s[kkk].c_str() << endl;
-                cout << "velocitykm: " << velocitykm[kkk] << endl;
+                //cout << "File: " << velocity_s[kkk].c_str() << endl;
+                //cout << "velocitykm: " << velocitykm[kkk] << endl;
                 velocity_TH1F.push_back(Velocity_TH1F_temp);
                 velocity_Used.push_back(velocitykm[kkk]);
             }
@@ -94,9 +95,9 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
         double v_c = Velocity_DM_Now*1e3/3e8;//c
         double Max_Recoil = DM_E(WIMP_mx_Array[kkk],Velocity_DM_Now);//Max_Recoil(keV) given by mass
         Int_t Maximum_Bin = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Max_Recoil*1e3);//Max_Recoil_Bin
-        //cout << "Maximum_Bin: " << Maximum_Bin << endl;
+        cout << "Maximum_Bin: " << Maximum_Bin << endl;
         int LastBin = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
-        //cout << "LastBin: " << LastBin << endl;
+        cout << "LastBin: " << LastBin << endl;
 
         /*
         double Total_Cross_Section=0;
@@ -125,7 +126,7 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
         double Energy_Loss_eV_collision=0;
         while(Event_Number<50)
         {
-            //cout << "Event_Number: " << Event_Number << endl;
+            cout << "=====Event_Number: " << Event_Number << endl;
             double Velocity_DM_Temp = 779;//Initial Energy and iteration =>km/s
             double Energy_DM_Temp   = DM_E(WIMP_mx_Array[kkk],779);//Initial Energy and iteration =>keV
             int collision_Time=0;
@@ -140,16 +141,31 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
                 //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
                 //cout << "Energy_DM_Temp: " << Energy_DM_Temp << endl;
                 //Find the file
-                if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
+                if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])
+                {
+                  //  cout << "vel>650: " << endl;
+                  //  cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
+                  //  cout << "velocity_Used[velocity_Used.size()-1]: " << velocity_Used[velocity_Used.size()-1] << endl;
+                    Applied_Hist=(velocity_TH1F.size())-1;
+                  //  cout << "Applied_Hist: " << Applied_Hist << endl;
+                }
                 if(Applied_Hist==0)
                 {
                     for(int kkk=0; kkk<velocity_Used.size(); kkk++)
                     {
-                        if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1]){Applied_Hist=kkk;}
+                        if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1])
+                        {
+                            //cout << "velocity_Used[kkk]: " << velocity_Used[kkk] << endl;
+                            //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
+                            //cout << "velocity_Used[kkk+1]: " << velocity_Used[kkk+1] << endl;
+                            Applied_Hist=kkk;
+                            //cout << "Applied_Hist: " << Applied_Hist << endl;
+                        }
                     }
                 }
                 //Set the range
                 int Maximum_Bin_Loss = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_DM_Temp*1e3);//Max_Recoil_Bin
+                //cout << "Applied_Hist: " << Applied_Hist << endl;
                 int LastBin_Loss = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_from_Hist
                 if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
                 double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
@@ -163,6 +179,7 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
                 //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;//km/s
                 Energy_Loss_Inidivual = Energy_Loss_Inidivual + Energy_Loss_keV;
                 collision_Time = collision_Time + 1;
+                Applied_Hist =0;
             }
             //if(collision_Time>0)cout << "Energy_Loss_Inidivual/collision_Time: " << Energy_Loss_Inidivual/collision_Time << endl;
             Energy_Loss_eV_collision = Energy_Loss_eV_collision + Energy_Loss_Inidivual/collision_Time;
@@ -170,32 +187,39 @@ void Overlap_Plot_TEXONO_Ge_Find_LOWBOUND_ER()
             Event_Number = Event_Number + 1;
         }
         double collision_Time_Ave = collision_Time_Total / Event_Number;
-        cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
+        //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
         Energy_Loss_eV_collision = Energy_Loss_eV_collision / Event_Number;
-        cout << "Threshold: " << sqrt(2*0.16/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);
-        cout << "DM_E(WIMP_mx_Array[kkk],779) : " << DM_E(WIMP_mx_Array[kkk],779) << endl;;
-        cout << "Energy_Loss_eV_collision: " << Energy_Loss_eV_collision << endl;
+        //cout << "Threshold: " << sqrt(2*0.16/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);
+        //cout << "DM_E(WIMP_mx_Array[kkk],779) : " << DM_E(WIMP_mx_Array[kkk],779) << endl;;
+        //cout << "Energy_Loss_eV_collision: " << Energy_Loss_eV_collision << endl;
         //==================================================//
         
-        double Target_Total_Cross_Section = collision_Time_Ave*(unified_atomic_mass_g*(28))/(Density*Length);
+        //double Target_Total_Cross_Section = collision_Time_Ave*(unified_atomic_mass_g*(ASi))/(Density*Length);
         
-        double Total_Cross_Section;
-        for(int kkk=0; kkk<Maximum_Bin; kkk++)
+        double Total_Count;
+        
+        for(int kkk=1; kkk<Maximum_Bin-1; kkk++)
         {
+            //cout << "kkk:: " << kkk << endl;
             double dsigma_dT  = velocity_TH1F[Applied_Hist]->GetBinContent(kkk)*1e-15*TMath::Power(Scaling[Index],2);
             double dT         = velocity_TH1F[Applied_Hist]->GetBinWidth(kkk)*1e-3;
+            cout << "velocity_TH1F[Applied_Hist]->GetBinContent(kkk): " << velocity_TH1F[Applied_Hist]->GetBinContent(kkk) << endl;
+            //cout << "1e-15*TMath::Power(Scaling[Index],2): " << 1e-15*TMath::Power(Scaling[Index],2) << endl;
             //cout << "dsigma_dT: " << dsigma_dT << endl;
             //cout << "dT: " << dT << endl;
-            Total_Cross_Section = Total_Cross_Section + (dsigma_dT)*(dT);//(cm^2/keV)*(keV)=cm^2
-            //cout << "Total_Cross_Section: " << Total_Cross_Section << endl;
+            Total_Count = Total_Count + Length*(Density/((unified_atomic_mass_g*(ASi))))*(dsigma_dT)*(dT);//(cm^2/keV)*(keV)=cm^2
+            //cout << "Total_Count: " << Total_Count << endl;
         }
-        //cout << "Total_Cross_Section: " << Total_Cross_Section << endl;
+        //cout << "velocity_TH1F[Applied_Hist]->GetMean(): " << velocity_TH1F[Applied_Hist]->GetMean() << endl;
+        //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
+        //cout << "Total_Count: " << Total_Count << endl;
         
-        double Scaling = (Target_Total_Cross_Section)/(Total_Cross_Section);
+        double Scaling = (collision_Time_Ave)/(Total_Count);
+        //cout << "Scaling: " << Scaling << endl;
         double c1_GeV2 = sqrt(Scaling);
-        double d1      = sqrt(1e-9*Scaling);
-        if(Index==0)Cross_Section_Set.push_back( CS_Try(c1_GeV2,WIMP_mx_Array[kkk]) );
-        if(Index==1)Cross_Section_Set.push_back( DS_Try(d1,WIMP_mx_Array[kkk]) );
+        double d1      = sqrt(Scaling);
+        if(Index==0)Cross_Section_Set.push_back( CS_Try(1*c1_GeV2,WIMP_mx_Array[kkk]) );
+        if(Index==1)Cross_Section_Set.push_back( DS_Try(1e-9*d1,WIMP_mx_Array[kkk]) );
 
         //cout << "WIMP_mx_Array[kkk]: " << WIMP_mx_Array[kkk] << endl;
     }

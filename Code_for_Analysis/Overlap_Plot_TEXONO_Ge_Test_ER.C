@@ -109,24 +109,25 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         
     CPKKD_EXCLUSION[Point_Number]=Sigma_SI_Array[Point_Number]*FACTOR;
      */
+    static int File_index=0;
     double T_QF_Original_Bef_Array[reso_T]; double T_QF_Original_Aft_Array[reso_T];
     double Factor1_Original_Bef_Array[reso_T]; double Factor1_Original_Aft_Array[reso_T];
 
-    double *T_QF_Original_Bef=RecoilX_Event(0,Flux_HIST_Random,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1);
+    double *T_QF_Original_Bef=RecoilX_Event(0,Flux_HIST_Random,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1,File_index);
     for(int i=0;i<reso_T;i++){
         T_QF_Original_Bef_Array[i]=T_QF_Original_Bef[i];}
         cout << "======================================" << endl;
-    double *T_QF_Original_Aft=RecoilX_Event(0,Flux_HIST_Aft_Collision_EARTH,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1);
+    double *T_QF_Original_Aft=RecoilX_Event(0,Flux_HIST_Aft_Collision_EARTH,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1,File_index);
     for(int i=0;i<reso_T;i++){
         T_QF_Original_Aft_Array[i]=T_QF_Original_Aft[i];}
         cout << "======================================" << endl;
 
-    double *Factor1_Original_Bef=RecoilX_Event(1,Flux_HIST_Random,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1);
+    double *Factor1_Original_Bef=RecoilX_Event(1,Flux_HIST_Random,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1,File_index);
     for(int i=0;i<reso_T;i++){
         Factor1_Original_Bef_Array[i]=(Factor1_Original_Bef[i]);}
         cout << "======================================" << endl;
 
-    double *Factor1_Original_Aft=RecoilX_Event(1,Flux_HIST_Aft_Collision_EARTH,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1);
+    double *Factor1_Original_Aft=RecoilX_Event(1,Flux_HIST_Aft_Collision_EARTH,Mass,Sigma_SI_Array[Point_Number],Type_of_Model_INT,1,File_index);
     for(int i=0;i<reso_T;i++){
         Factor1_Original_Aft_Array[i]=(Factor1_Original_Aft[i]);}
         cout << "Sigma_SI_Array[Point_Number]: " << Sigma_SI_Array[Point_Number] << endl;
@@ -235,7 +236,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
 
     ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,2e0);
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(1e-2,1e1);
-    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(6e-28,1e-10);
+    ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-26,1e-19);
     //ER_Spectrum_Bef->GetYaxis()->SetRangeUser(1e-7,1e+7);
      
     //ER_Spectrum_Bef->GetXaxis()->SetLimits(0,1);
