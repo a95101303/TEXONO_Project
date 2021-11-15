@@ -31,10 +31,10 @@ void Overlap_Line_for_dsigmadT_ER()
         gStyle->SetOptStat(0);
         cout << "YES4" << endl;
         
-        double Mx          = 1;//GeV/c^2
-        double Atomic_Mass = AXe;//
+        double Mx            = 1;//GeV/c^2
+        double Atomic_Mass   = AXe;//
         double velocity_c    = 100.*1e3/3e8;//Velocity(c)
-        double Cro_Sec     = DS_Try(1e-9,Mx);//(Sigma_e)
+        double Cro_Sec       = DS_Try(1e-9,Mx);//(Sigma_e)
         cout << "Cro_Sec: " << Cro_Sec << endl;
         TF1 *fdsigma_dT_keV_FUNC = new TF1 ("fdsigma_dT_keV_FUNC", "fdsigma_dT_keV([0],[1],[2],[3],x)", 0., max_recoil_A_keV(Mx,velocity_c,Atomic_Mass));
         fdsigma_dT_keV_FUNC->SetParameter( 0, Mx);
@@ -42,7 +42,7 @@ void Overlap_Line_for_dsigmadT_ER()
         fdsigma_dT_keV_FUNC->SetParameter( 2, velocity_c);
         fdsigma_dT_keV_FUNC->SetParameter( 3, Atomic_Mass);
         fdsigma_dT_keV_FUNC->SetLineColor(4);
-    cout << "total_Sigma(1,velocity,Cro_Sec,Mx,AXe): " << 1e5*(1.8/((unified_atomic_mass_g*(ASi))))*total_Sigma(1,100,Cro_Sec,Mx,AXe) << endl;
+        cout << "N_Nucleus: " << 1e5*(1.8/((unified_atomic_mass_g*(ASi))))*total_Sigma(1,100,Cro_Sec,Mx,AXe) << endl;
     //cout << "fdsigma_dT_keV_FUNC->GetMean(): " << fdsigma_dT_keV_FUNC->GetMean() << endl;
     
         cout << "fdsigma_dT_keV_FUNC->Eval(): " << fdsigma_dT_keV_FUNC->Eval(0.12) << endl;
