@@ -1035,7 +1035,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
     cout << "v_c: " << v_c << endl;
     cout << "Now_File: " << Now_File << endl;
      */
-        /*
+        
         Int_t binx = Hist_DCS_array[Now_File]->GetXaxis()->FindBin(T*1e3);//eV
         Int_t X_max_Bin = Hist_DCS_array[Now_File]->GetNbinsX();
         double Bin_Content_Max = Hist_DCS_array[Now_File]->GetBinCenter(X_max_Bin);
@@ -1045,7 +1045,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
         if(T*1e3>Right_Edge)DCS=0;
         if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4))DCS=0;
-         */
+         
     
         //if(T*1e3>Right_Edge)DCS=0;
         //cout << "v: " << v << endl;
@@ -1071,7 +1071,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
          */
     
         //Give out the root file to check the content of the DCS
-        
+        /*
         char fout_name[100];
         sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
@@ -1080,10 +1080,10 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
          
         fout->Close();
-        
+        */
     //cout << "DCS: " << DCS << endl;
-        // return DCS;
-        return 0;
+         return DCS;
+        //return 0;
 
 }
 
