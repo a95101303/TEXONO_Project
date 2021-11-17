@@ -147,21 +147,36 @@ double Total_Flux(double WIMP_mx)
     return Total_Flux;
 }
 static vector<double> Possibilities_array;
-static int check;//For running for once
+static int check=0;//For running for once
 
 double Possibility()//v(km/s)
 {
     if(check==0)
     {
-        double Vecolity[2000];double Possiblity[2000];
-        double sum; for(int j=0;j<2000;j++){sum = sum + velo_dist_Ave[j][3]*1e5*0.395;}
+        double Vecolity[2000];double Pre_Possiblity[2000];
+        double Pre_Sum=0;
+        for(int JJJ=0; JJJ<2000; JJJ++){Pre_Sum = Pre_Sum + velo_dist_Ave[JJJ][3];}
+        cout << "Pre_Sum: " << Pre_Sum  << endl;
+        for(int JJJ=0; JJJ<2000; JJJ++){Pre_Possiblity[JJJ] = velo_dist_Ave[JJJ][3]/Pre_Sum;}
+
+        double sum_for_Possibility=0;
+        double Possiblity[2000];
+        //cout << "sum_for_Possibility: " << sum_for_Possibility << endl;
         for(int j=0;j<2000;j++)
         {
-            float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);
+            float v = 0.5*(velo_dist_Ave[j][1]+velo_dist_Ave[j][2]);//(km/s)
             Vecolity[j] = v;
-            Possiblity[j] = velo_dist_Ave[j][3]*1e5/sum;
+            sum_for_Possibility = sum_for_Possibility + Pre_Possiblity[j]*0.395*1e5;
+        }
+        for(int j=0;j<2000;j++)
+        {
+            Possiblity[j] = Pre_Possiblity[j]/sum_for_Possibility;
+
             //cout << "Possiblity[j]: " << Possiblity[j] << endl;
         }
+        //cout << "sum_for_Possibility: " << sum_for_Possibility << endl;
+        //cout << "1/sum_for_Possibility: " << 1/sum_for_Possibility << endl;
+
         TH1F   *Flux_HIST = new TH1F("Flux_HIST","Flux_HIST",2000,0,791);
         for(int kkk=0;kkk<2000;kkk++){Flux_HIST->SetBinContent(kkk+1,Possiblity[kkk]);}
 
@@ -169,19 +184,20 @@ double Possibility()//v(km/s)
         for(int j=0; j<DM_Beta_Right.size()-1; j++)
         {
             double Pob_temp= 0;
+            double LLL=0;
+
             int binx_start    = Flux_HIST->GetXaxis()->FindBin(DM_Beta_Right[j]*(3e8/1e3)*(1e-3));
             int binx_end      = Flux_HIST->GetXaxis()->FindBin(DM_Beta_Right[j+1]*(3e8/1e3)*(1e-3));
+            //cout << "binx_start: " << binx_start << endl;
+            //cout << "binx_end: "   << binx_end << endl;
+
             for(int kkk=binx_start; kkk<binx_end+1; kkk++)
             {
-                //cout << "Flux_HIST->GetBinContent(kkk): " << Flux_HIST->GetBinContent(kkk) << endl;
                 Pob_temp = Pob_temp + Flux_HIST->GetBinContent(binx_end);
+                LLL = LLL + 1;
             }
-            cout << "1/sum: " << 1/sum << endl;
-            cout << "vel_dist_ER_kms[j]: " << DM_Beta_Right[j]*(3e8/1e3)*(1e-3) << endl;
-            cout << "vel_dist_ER_kms[j+1]: " << DM_Beta_Right[j+1]*(3e8/1e3)*(1e-3) << endl;
-            cout << "Pob_temp: " << Pob_temp << endl;
             Total_Prob_Temp = Total_Prob_Temp + Pob_temp;
-            Possibilities_array.push_back(Pob_temp);
+            Possibilities_array.push_back(Pob_temp/(double)LLL);
         }
 
         /*
@@ -392,8 +408,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     if(Conventional_or_not==2){//Conventional Distribution
         WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A)+0.2;} //keV
     if(Model_of_Interaction==4){//electron Recoil
-        WIMP_max_T = Energy_DM(WIMP_mx,799*kms1_to_c)+0.02;} //keV
-
+        WIMP_max_T = Energy_DM(WIMP_mx,779*kms1_to_c)+0.02;} //keV
     double WIMP_max_T_NU = 1000.0*max_recoil_A(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
     double WIMP_max_T_EM = max_recoil_A_EM_keV(WIMP_mx, MaxV*1000.0/2.99792458e8, A);
 
@@ -684,7 +699,6 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }
     }
      */
-    double Ratio_Factor_ER = (N_atom_1kg_Ge_Electron*Electron_number_ER)/(WIMP_mx);
 
     //const int data_Bin_ER = data_bin;
     const int data_Bin_ER = reso_T;
@@ -693,6 +707,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         cout << "Electronic Recoil//(From Lahkwinder's Code)" << endl;
         
         fdsigma_dT_ER_New(File_index,0.1,0.1,WIMP_mx);//For filling the
+        cout << "Yes: " << endl;
         Possibility();
 
         for(int kkk=0; kkk<Possibilities_array.size(); kkk++)
@@ -730,7 +745,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 double v_cms_next = (velo_dist_Ave[j][2])*1e5;//cm/s
                 double v_kms_now  = (velo_dist_Ave[j][1]);// km/s
                 double dv=(v_cms_next)-(v_cms_now);
-                double dR_Factor  = N_atom_1kg_Ge_Electron*DM_density_ER/(WIMP_mx);
+                double dR_Factor  = N_atom_1kg_Xe_Electron*DM_density_ER/(WIMP_mx);
                 //double dR_Factor  = 1;
                 
                 //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*(1/sum)*velo_dist_Ave[j][3]*v_cms_next*(dv);
@@ -751,9 +766,18 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                         Vel_block=LMN;
                     }
                 }
+                double dsigma_dT_ER_temp = 0;
+                if(T[i]<0.012)dsigma_dT_ER_temp=0;else{dsigma_dT_ER_temp= fdsigma_dT_ER_New(File_index,Vel_Temp,T[i],WIMP_mx);}
                 
-                if(Conventional_or_not==1 and File_index==0)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(File_index,Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block]*(1./v_cms_next)*v_cms_next*(dv);//c1
-                if(Conventional_or_not==1 and File_index==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-18*1e-15*fdsigma_dT_ER_New(File_index,Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block]*(1./v_cms_next)*v_cms_next*(dv);//d1
+                if(Conventional_or_not==1 and File_index==0)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*dsigma_dT_ER_temp*Possibilities_array[Vel_block]*v_cms_next*(dv);//c1
+
+                //if(Conventional_or_not==1 and File_index==0)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*dsigma_dT_ER_temp*Possibilities_array[Vel_block]*(1./v_cms_next)*v_cms_next*(dv);//c1
+                //if(Conventional_or_not==1 and File_index==0)recoilX[i] = recoilX[i] + dR_Factor*1e-36*1e-15*dsigma_dT_ER_temp*Possibilities_array[Vel_block]*(1./v_cms_next)*v_cms_next*(dv);//c1
+
+                //cout << "fdsigma_dT_ER_New(File_index,Vel_Temp,T[i],WIMP_mx):  " << fdsigma_dT_ER_New(File_index,Vel_Temp,T[i],WIMP_mx) << endl;
+                //cout << "Vel_Temp: " << Vel_Temp << endl;
+                //cout << "T[i]: " << T[i] << endl;
+                if(Conventional_or_not==1 and File_index==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-18*1e-15*dsigma_dT_ER_temp*Possibilities_array[Vel_block]*v_cms_next*(dv);//d1
                 //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block]*v_cms_next*(dv);
                  //if(v_kms_now>vel_dist_ER_kms[0] and v_kms_now<vel_dist_ER_kms[1]) B_Check = B_Check + fdsigma_dT_ER_New(Vel_Temp,T[i],WIMP_mx)*Possibilities_array[Vel_block];
                 /*
@@ -848,10 +872,13 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
     for(int i=0; i<reso_T; i++)
     {
         
-            cout << "i: " << i << endl;
-            cout << "T[i]: " << T[i] << endl;
-           // cout << "T_QF[i]: " << T_QF[i] << endl;
-            cout << "RecoilX: " << recoilX[i] << endl;
+            //cout << "i: " << i << endl;
+        //cout << "WIMP_mx: " << WIMP_mx << endl;
+        //cout << "Energy_DM(WIMP_mx,779*kms1_to_c): " << Energy_DM(WIMP_mx,779*kms1_to_c) << endl;
+
+           // cout << "T[i]: " << T[i] << endl;
+            //cout << "T_QF[i]: " << T_QF[i] << endl;
+           // cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
          
     }

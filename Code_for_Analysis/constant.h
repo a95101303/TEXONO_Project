@@ -71,6 +71,7 @@ const double N_atom_Ge_1kg = 1000.0/atom_mass_Ge_g;
 const double N_atom_Xe_1kg = 1000.0/atom_mass_Xe_g;
 
 const double avogadro_number = 6.02214129e+23;
+const double N_atom_1kg_Xe_Electron = (1000.0*avogadro_number)/AXe;
 const double N_atom_1kg_Ge_Electron = (1000.0*avogadro_number)/AGe;
 
 const double DM_density_ER = 0.4; //GeV cm^{-3}

@@ -27,6 +27,7 @@
 #include "cpkkd_chi_N_v3.h"
 #include "velocity_distribution_2000_Ave.h"
 #include "cpkkd_calculation_New.h"
+#include "VrV_le_Xenon1T.h"
 
 vector<double> Rebin_two(vector<double> ValueX,vector<double> ValueY, vector<double> Sigma)
 {
@@ -43,7 +44,7 @@ vector<double> Rebin_two(vector<double> ValueX,vector<double> ValueY, vector<dou
 }
 
 
-void Hist_SetLimit_Plot_v2_Standard_ER()
+void Hist_SetLimit_Plot_v2_Standard_ER(int Index)
 {
 
 const double kms1_to_cmday1 = 100000.0*86400.0; // km/s to cm/day
@@ -69,21 +70,84 @@ double recoil[Number_mx_Candidate][reso_T];
 double v;
     double WIMP_mx[Number_mx_Candidate]={11,13,15,17,19};
 double WIMP_max_T[Number_mx_Candidate];
-for(int jjj=0; jjj<Number_mx_Candidate ; jjj++)
-{
-    WIMP_max_T[jjj] = 1000.0*max_recoil_A(WIMP_mx[jjj], 779.135*1000.0/2.99792458e8, A)+1.8; //keV
-}
-    for(int jjj=0 ; jjj<100 ; jjj++)
+    
+
+    
+    vector<double> WIMP_mx_Array;
+    vector<double> Cross_section;
+    WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+
+    //=========
+    // Data_implemented_no_rebin
+    /*
+     const int Data_element = 257;
+     double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
+     double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
+
+    for(int jjj=0 ; jjj<257 ; jjj++)
     {
-        //cout << "2+0.01*jjj: " << 2+0.01*jjj << endl;
-        //cout << "TQF(WIMP_max_T[jjj]): " << TQF(1000.0*max_recoil_A(2+0.01*jjj, 779.135*1000.0/2.99792458e8, A)) << endl;
+        RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
+        RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
+        RE_DATA_Err[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][3]*1.64458/0.994;
+        RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2];
+    }*/
+    // Data_implemented_rebi n_2
+    //============================================================================
+    //For TEXONO
+    /*
+     const int Data_element = 257;
+     double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
+     double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
+
+    for(int jjj=0 ; jjj<257 ; jjj++)
+    {
+        if(jjj==0){
+            RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0]-0.025;
+            RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
+            RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
+        else if(jjj==256){
+            RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
+            RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
+            RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
+        else{
+            RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
+            RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
+            RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
     }
-//double mx = 50.0; // GeV
+     */
+    //============================================================================
+    //For CDEX
+        /*
+         const int Data_element = 4;
+         double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
+         double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
+
+        double Data_RE_CDEX[4]= {0.185,0.235,0.285,0.325};
+        double Data_RATE_CDEX[4]= {8.2,7.6,7.4,7.9};
+        double Data_RE_Err[4]= {0,0,0,0};
+        double Data_RE_Rate_Err[4]= {3,3.5,1.5,2};
+         */
+    //============================================================================
+    
+    //For XENON1T
+        const int Data_element = 8;
+    double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
+    double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
+
+        for(int jjj=0 ; jjj<Data_element ; jjj++)
+        {
+            RE_DATA[jjj]= VrV_le_Xenon1T[jjj][0];//keV
+            RE_Rate[jjj]= VrV_le_Xenon1T[jjj][1]*(1e-3);//(count/kg*day*keV)
+            RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = VrV_le_Xenon1T[jjj][2];
+        }
+     
+    //===
+
 //========For Data
-const int Data_element = 257;
-const int Neutrino_Data_element = 2000;
-double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
-double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
 double qf0, qf1, qf2, qf3, qf4, alpha=1.0;
 qf0 = alpha*0.19816;
 qf1 = alpha*0.05052;
@@ -91,156 +155,103 @@ qf2 = alpha*0.00378;
 qf3 = alpha*0.00192;
 qf4 = alpha*0.0016;
 
-//=========
-// Data_implemented_no_rebin
-/*
-for(int jjj=0 ; jjj<257 ; jjj++)
-{
-    RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
-    RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
-    RE_DATA_Err[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][3]*1.64458/0.994;
-    RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2];
-}*/
-// Data_implemented_rebi n_2
-    
-
-for(int jjj=0 ; jjj<257 ; jjj++)
-{
-    if(jjj==0){
-        RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
-        RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
-        RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
-    else if(jjj==256){
-        RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
-        RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
-        RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
-    else{
-        RE_DATA[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][0];
-        RE_Rate[jjj]= p103_le_VrV_ON_NaI1_50eV[jjj][1];
-        RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
-}
-
-
-    double Data_RE_CDEX[4]= {0.185,0.235,0.285,0.325};
-    double Data_RATE_CDEX[4]= {8.2,7.6,7.4,7.9};
-    double Data_RE_Err[4]= {0,0,0,0};
-    double Data_RE_Rate_Err[4]= {3,3.5,1.5,2};
-/*
-for(int jjj=0 ; jjj<4 ; jjj++)
-{
- if(jjj<4){
-        RE_DATA[jjj]= Data_RE_CDEX[jjj];
-        RE_Rate[jjj]= Data_RATE_CDEX[jjj];
-        RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = Data_RE_Rate_Err[jjj]*1.64458/0.994;}
-    else{
-        RE_DATA[jjj]= 0;
-        RE_Rate[jjj]= 0;
-        RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = 0;}
-}*/
-
-    
     
     double T_Used[reso_T];double Recoil_X_Used[reso_T];
     
-    double *T_QF_Original_Bef=RecoilX_Event(0,0,1.,0,4,1,0);
-    for(int i=0;i<reso_T;i++){T_Used[i]=T_QF_Original_Bef[i];}
-    double *Recoil_X_Bef=RecoilX_Event(1,0,1.,0,4,1,0);
-    for(int i=0;i<reso_T;i++){Recoil_X_Used[i]=(Recoil_X_Bef[i]);}
-    
-    for(int i=0;i<reso_T;i++)
+    //for(int kkk=1; kkk<WIMP_mx_Array.size(); kkk++)
+    for(int kkk=Index; kkk<Index+1; kkk++)
     {
-        cout << "i: " << i << endl;
-        cout << "T_Used[i]: " << T_Used[i] << endl;
-        cout << "Recoil_X_Used[i]: " << Recoil_X_Used[i] << endl;
-    }
-    
-    double Factor[Data_element];
-    double pEx = T_Used[0];
-    double sig_E; double dEx;
-    double a0_dE = 33.4992/1000.0;
-    double a1_dE = 13.2145/1000.0;
-
-    for(int jjj=0 ; jjj<Data_element ; jjj++)
-    {
-        Factor[jjj]=0;
-        for(int j=0 ; j<dm_spec_resolution ; j++)
-        {
-            //Find the theoretical line of the rate of WIMP
-            if (Recoil_X_Used[j]>0)
-            {
-                sig_E = a0_dE + a1_dE*sqrt(T_Used[j]);
-                
-                if(j==0) { dEx = T_Used[0]; } else { dEx = T_Used[j] - pEx; }
-                
-                if( (Recoil_X_Used[j]>0)&&(T_Used[j]>=0.7e-3) )
-                {
-                    Factor[jjj] = Factor[jjj] + Recoil_X_Used[j]*exp(-pow((T_Used[j]-RE_DATA[jjj]),2)/(2*pow(sig_E,2)))*dEx/(sig_E*sqrt(2*PI));
-                }
-                pEx = T_Used[j];
-            }
-        }
-        //if(kkk==3)cout << "Factor[3][jjj]: " << Factor[3][jjj] << endl;
-    }
-
-    for(int i=0;i<Data_element;i++)
-    {
-        cout << "i: " << i << endl;
-        cout << "RE_DATA[i]: " << RE_DATA[i] << endl;
-        cout << "Factor[i]: " << Factor[i] << endl;
-    }
-
-    //Find out the scaling factor
-    /*
-    //===============================================================
-    double Initial_Factor[Number_mx_Candidate];
-    double Ratio[Number_mx_Candidate];
-    
-    for(int kkk=0 ; kkk<Number_mx_Candidate ; kkk++)
-    {
-        Initial_Factor[kkk] = Factor[kkk][0]/(RE_Rate[0]+RE_Rate_Err[0]);
-    }
+        double *T_QF_Original_Bef=RecoilX_Event(0,0,WIMP_mx_Array[kkk],0,4,1,1);
+        for(int i=0;i<reso_T;i++){T_Used[i]=0;T_Used[i]=T_QF_Original_Bef[i];}
+        double *Recoil_X_Bef=RecoilX_Event(1,0,WIMP_mx_Array[kkk],0,4,1,1);
+        for(int i=0;i<reso_T;i++){Recoil_X_Used[i]=0;Recoil_X_Used[i]=(Recoil_X_Bef[i]);}
         
-    for(int kkk=0 ; kkk<Number_mx_Candidate ; kkk++)
-    {
+        for(int i=0;i<reso_T;i++)
+        {
+            //cout << "i: " << i << endl;
+            cout << "T_Used[i]: " << T_Used[i] << endl;
+            cout << "Recoil_X_Used[i]: " << Recoil_X_Used[i] << endl;
+        }
+        
+        double Factor[Data_element];
+        double pEx = T_Used[0];
+        double sig_E; double dEx;
+        double a0_dE = 33.4992/1000.0;
+        double a1_dE = 13.2145/1000.0;
+        //double a_dE = 31.3/100.0;
+        //double b_dE = 17.0/100.0;
+
+        for(int jjj=0 ; jjj<Data_element ; jjj++)
+        {
+            Factor[jjj]=0;
+            for(int j=0 ; j<dm_spec_resolution ; j++)
+            {
+                //Find the theoretical line of the rate of WIMP
+                if (Recoil_X_Used[j]>0)
+                {
+                    sig_E = a0_dE + a1_dE*sqrt(T_Used[j]);
+                    //sig_E =  ( b_dE + a_dE/(sqrt(T_Used[j])) )*0.01;
+                    //cout << "sig_E: " << sig_E << endl;
+
+                    if(j==0) { dEx = T_Used[0]; } else { dEx = T_Used[j] - pEx; }
+                    
+                    if( (Recoil_X_Used[j]>0)&&(T_Used[j]>=0.7e-3) )
+                    {
+                        Factor[jjj] = Factor[jjj] + Recoil_X_Used[j]*exp(-pow((T_Used[j]-RE_DATA[jjj]),2)/(2*pow(sig_E,2)))*dEx/(sig_E*sqrt(2*PI));
+                    }
+                    pEx = T_Used[j];
+                }
+            }
+            cout << "Factor[jjj]: " << Factor[jjj] << endl;
+            //if(kkk==3)cout << "Factor[3][jjj]: " << Factor[3][jjj] << endl;
+        }
+        /*
+        for(int i=0;i<Data_element;i++)
+        {
+            cout << "i: " << i << endl;
+            cout << "RE_DATA[i]: " << RE_DATA[i] << endl;
+            cout << "Factor[i]: " << Factor[i] << endl;
+        }
+         */
+        //Find out the scaling factor
+        
+        //===============================================================
+        double Initial_Factor= Factor[0]/(RE_Rate[0]+RE_Rate_Err[0]);
+        
+        cout << "=======================================" << endl;
+            for(int iii=0 ; iii<Data_element ; iii++)
+            {
+                cout << "RE_DATA[iii]: " << RE_DATA[iii]  << endl;
+                cout << "Factor[iii]: " << Factor[iii] << endl;
+                cout << "RE_Rate[iii]: " << RE_Rate[iii] << endl;
+            }
+        cout << "=======================================" << endl;
+
         for(int iii=0 ; iii<Data_element ; iii++)
         {
-                double Ratio1 = (Factor[kkk][iii]/(RE_Rate[iii]+RE_Rate_Err[iii]));
-                if(iii>0 && abs(Ratio1)>Initial_Factor[kkk] && abs(1/Ratio1)!=0)
+                double Ratio1 = (Factor[iii]/(RE_Rate[iii]+RE_Rate_Err[iii]));
+                if(iii>0 && abs(Ratio1)>Initial_Factor && abs(1/Ratio1)!=0)
                 {
-                    Initial_Factor[kkk] = Ratio1;
+                    cout << "iii: " << iii << endl;
+                    cout << "Ratio1: " << Ratio1 << endl;
+                    Initial_Factor = Ratio1;
                 }
         }
-    }
-    for(int kkk=0 ; kkk<Number_mx_Candidate ; kkk++)
-    {
-        cout << "1/Ratio[kkk]: " << 1/Initial_Factor[kkk] << endl;
-
-    }
+        cout << "=======================================" << endl;
+         
+        cout << "1./Initial_Factor: " << 1./Initial_Factor << endl;
         //===============================================================
-    for(int kkk=0 ; kkk<Number_mx_Candidate ; kkk++)
-    {
-        //cout << "1/Ratio[kkk]: " << 1/Ratio[kkk] << endl;
-        for(int jjj=0 ; jjj<1000 ; jjj++)
+        for(int jjj=0 ; jjj<Data_element ; jjj++)
         {
-            Factor2[kkk][jjj] = Factor1[kkk][jjj]*(1/Initial_Factor[kkk]);
-            //Factor2[kkk][jjj] = Factor1[kkk][jjj];
-            if(kkk==3)
-            {
-                //cout << "T[jjj][i]: " << T[kkk][jjj] << endl;
-                //cout << "T_QF[kkk][jjj]: " << T_QF[kkk][jjj] << endl;
-                //cout << "Factor2[kkk][jjj]: " << Factor2[kkk][jjj] << endl;
-                //cout << "Factor1[kkk][jjj]: " << Factor1[kkk][jjj] << endl;
-            }
-        }
-    }
-    */
-        //===============================================================
-    
+            Factor[jjj] = Factor[jjj]*(1./Initial_Factor);
+            cout << "RE_DATA[jjj]: " << RE_DATA[jjj] << endl;
+            cout << "Factor[jjj]: " << Factor[jjj] << endl;
+         }
+        double Scaling = sqrt((1./Initial_Factor));
+        cout << "CS_Try(1*Scaling,0.5): " << CS_Try(1*Scaling,WIMP_mx_Array[kkk]) << endl;
+        //Cross_section.push_back(CS_Try(1*Scaling,WIMP_mx_Array[kkk]));
+            //===============================================================
+}
 /*
 TGraphErrors *cdexdata = new TGraphErrors(257,RE_DATA,RE_Rate,RE_DATA_Err,RE_Rate_Err);
 cdexdata->SetName("cdexdata");

@@ -394,7 +394,6 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
            //fill(Energy_Transfer_array.begin(), Energy_Transfer_array.end(), 0);
            //fill(dsigma_dT_array.begin(), dsigma_dT_array.end(), 0);
            //Make sure that there is no element in.
-           //Make sure that there is no element in.
            for(int N=0; N<Number_Exe; N++)
            {
                    string filename(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/%s.txt",mx.c_str(),DM_Beta[N].c_str()));
@@ -690,7 +689,6 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
     
         double v = v_int*(1e3/3e8)*1e3;
         double v_c = v_int*(1e3/3e8)*1e3;
-    
         static int Pre_mx= 0;
 
         //cout << "Mx: " << Mx << endl;
@@ -707,12 +705,15 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
 
     if(Pre_mx!=int(Mx*1e3))//IF1
     {
+        cout << "Pre_mx: " << Pre_mx ;
+        File_velocity.clear();DM_Beta_Now_String.clear();DM_Beta_for_list.clear();Check_the_arrangement.clear();
+        DM_Beta_Now.clear();
         Find_File(Find_File_index);//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
         //===============================================First, check the file and number==========================================//
 
         for(int kkk=0; kkk<S_DM_Mass.size();kkk++){
-            cout << "to_string(int(Mx*1e3)): " << to_string(int(Mx*1e3)) << endl;
-            cout << "S_DM_Mass[kkk]: " << S_DM_Mass[kkk] << endl;
+            //cout << "to_string(int(Mx*1e3)): " << to_string(int(Mx*1e3)) << endl;
+            //cout << "S_DM_Mass[kkk]: " << S_DM_Mass[kkk] << endl;
              if(S_DM_Mass[kkk]==to_string(int(Mx*1e3))){Number=kkk;}
         }//Find the position of this mass in the array
 
@@ -724,7 +725,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
             std::string::iterator it;//Run the whole address
             if(Path_to_file.find(".h")!= std::string::npos and Path_to_file.find("DM")!= std::string::npos)
             {
-                //cout << "entry.path(): " << entry.path() << endl;
+                cout << "entry.path(): " << entry.path() << endl;
                 int Prestart=0;int Realstart=0;int Digital=0;
                 string String_velocity="";
                 string String_velocity_Real="";
@@ -736,7 +737,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
                     if(Realstart==1 and byte!='V'){String_velocity = String_velocity + byte;continue;}
                     if(Realstart==1 and byte=='V'){Prestart=0;Realstart=0;continue;}
                 }
-                //cout << "Path_to_file: " << Path_to_file << endl;
+                cout << "Path_to_file: " << Path_to_file << endl;
                 File_velocity.push_back(Path_to_file);
                 //cout << "String_velocity_F: " << String_velocity << endl;
                 DM_Beta_Now_String.push_back(String_velocity);
@@ -748,13 +749,12 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
                     String_velocity_Real = String_velocity_Real + byte;
                     check = check + 1;
                 }
-                cout << "String_velocity_Real: " << String_velocity_Real << endl;
+                //cout << "String_velocity_Real: " << String_velocity_Real << endl;
                 DM_Beta_Now.push_back(stod(String_velocity_Real));
             }
             //File_velocity.push_back(String_velocity);
         }
-
-
+        for(int ppp=0; ppp<DM_Beta_Now.size();ppp++)cout << "File_velocity: " << File_velocity[ppp] << endl;
         for(int ppp=0; ppp<DM_Beta_Now.size();ppp++){DM_Beta_for_list.push_back(DM_Beta_Now[ppp]);cout << "DM_Beta_Now[ppp]: " << DM_Beta_Now[ppp] << endl;cout << "Filename: " << File_velocity[ppp] << endl;}
         cout << "==============================================================================" << endl;
         sort(DM_Beta_Now.begin(),DM_Beta_Now.end());//Sort the array
@@ -899,9 +899,9 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
                    for(int kkk=0; kkk<Counter; kkk++)
                    {
                        TG_Lower_eV_F[N][kkk+1]  = Energy_Transfer_array[N][kkk];//TGraph
-                       cout << "TG_Lower_eV_F[N][kkk+1]: " << TG_Lower_eV_F[N][kkk+1] << endl;
+                       //cout << "TG_Lower_eV_F[N][kkk+1]: " << TG_Lower_eV_F[N][kkk+1] << endl;
                        TG_dsigma_dT_F[N][kkk+1] = TMath::Log10(dsigma_dT_array[N][kkk]);//TGraaph
-                       cout << "TG_dsigma_dT_F[N][kkk+1]: " << TG_dsigma_dT_F[N][kkk+1] << endl;
+                       //cout << "TG_dsigma_dT_F[N][kkk+1]: " << TG_dsigma_dT_F[N][kkk+1] << endl;
 
                    }//For extrapolating the cross sections between 0 to 80eV
 
@@ -1018,7 +1018,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         //cout << "Now_File: " << Now_File << "v: " << v  <<endl;
         //cout << "Hist_DCS_array: " << Hist_DCS_array.size() << endl;
     //cout << "v: " << v << endl;
-    
+
     int Now_File=0;
     //For normal
     
@@ -1028,7 +1028,8 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
     
 
     if(int(v*1e4)<int(DM_Beta_Used[1]*1e4))Now_File=0;
-    
+    //cout << "Now_File: " << Now_File << "v: " << v  <<endl;
+
 
     /*
     cout << "T[keV]: " << T << endl;
@@ -1046,6 +1047,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         if(T*1e3>Right_Edge)DCS=0;
         if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4))DCS=0;
          
+
     
         //if(T*1e3>Right_Edge)DCS=0;
         //cout << "v: " << v << endl;
@@ -1082,6 +1084,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         fout->Close();
         */
     //cout << "DCS: " << DCS << endl;
+
          return DCS;
         //return 0;
 

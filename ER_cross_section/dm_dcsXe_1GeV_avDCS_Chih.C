@@ -21,16 +21,7 @@ double sub_MB_dist(double dm_vel)
   double V0    = 220E+5; //cm sec^{-1}
   double Ve    = 232E+5; //cm sec^{-1} 
   return MB_factor = dm_vel*exp(-pow((dm_vel-Ve)/V0,2));
-
- }
-
-double sub_MB_dist_Test(double dm_vel, double dm_vel_0)
-{
-  double MB_factor;
-  double V0    = 220E+5; //cm sec^{-1}
-  double Ve    = 232E+5; //cm sec^{-1}
-  return MB_factor = dm_vel*exp(-pow((dm_vel-Ve)/V0,2))*(dm_vel-dm_vel_0);
-
+  cout << "exp(pow((dm_vel-Ve)/V0,2)): " << exp(pow((dm_vel-Ve)/V0,2)) << endl;
  }
 
 double add_MB_dist(double dm_vel)
@@ -95,12 +86,17 @@ void dm_dcsXe_1GeV_avDCS_Chih()
       if(ll==0)
 	{
 	  norm_factor += vel_dist[ll]*exp(-pow((vel_dist[ll]-Ve)/V0,2))*vel_dist[ll];
+        cout << "exp(-pow((vel_dist[ll]-Ve)/V0,2)): " << exp(-pow((vel_dist[ll]-Ve)/V0,2)) << endl;
 	}
       else
 	{
-	  norm_factor += vel_dist[ll]*exp(-pow((vel_dist[ll]-Ve)/V0,2))*(vel_dist[ll]-vel_dist[ll-1]);  
+	  norm_factor += vel_dist[ll]*exp(-pow((vel_dist[ll]-Ve)/V0,2))*(vel_dist[ll]-vel_dist[ll-1]);
+        cout << "exp(-pow((vel_dist[ll]-Ve)/V0,2)): " << exp(-pow((vel_dist[ll]-Ve)/V0,2)) << endl;
+
 	}    
 }
+    cout << "norm_factor: " << norm_factor << endl;
+
   norm_factor = 1.0/norm_factor;
   printf(" Value   %e \n", norm_factor);  
 
@@ -134,7 +130,7 @@ void dm_dcsXe_1GeV_avDCS_Chih()
 
     for(int kkk=0; kkk<12; kkk++)
     {
-        cout << "sub_MB_dist_Test(vel_dist[x]): "  << sub_MB_dist_Test(vel_dist[kkk+1],vel_dist[kkk])*norm_factor << endl;
+        cout << "sub_MB_dist(vel_dist[kkk])*norm_factor: "  << sub_MB_dist(vel_dist[kkk])*norm_factor << endl;
     }
 
   

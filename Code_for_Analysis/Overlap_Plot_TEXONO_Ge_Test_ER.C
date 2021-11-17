@@ -27,7 +27,7 @@ void Overlap_Plot_TEXONO_Ge_Test_ER()
     double Sigma_SI_With_Threshold_M3_Error[Number];double Error_X[Number];
 
     double CPKKD_EXCLUSION[Number];
-    double Mass=1;//2.34
+    double Mass=0.05;//2.34
     int Take_Plot=0;
     string Type_of_Model="ER"; int Type_of_Model_INT=4;
     cout << "max_recoil_A_EM_keV(): " << max_recoil_A_EM_keV(2.34, 779.135*1000.0/2.99792458e8, AGe) << endl;
@@ -152,7 +152,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         //cout << "Factor1_Original_Aft_Array[i]: " << Factor1_Original_Aft_Array[i] << endl;
         if(T_QF_Original_Bef_Array[i]>0.175 and T_QF_Original_Bef_Array[i]<0.225)
         {
-            cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
+            //cout << "Factor1_Original_Bef_Array[i]: " << Factor1_Original_Bef_Array[i] << endl;
             RecoilX_Event_Original_M1 = RecoilX_Event_Original_M1 + Factor1_Original_Bef_Array[i];
             Bin_Number = Bin_Number + 1;
         }
@@ -168,9 +168,9 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         double Scaling = 0.2/(RecoilX_Event_Original_M1);
         double Cross_Section = CS_Try(1*sqrt(Scaling),Mass);
         
-        cout << "RecoilX_Event_Aft_EARTH_M1: " << RecoilX_Event_Aft_EARTH_M1 << endl;
-        cout << "RecoilX_Event_Original_M1: " << RecoilX_Event_Original_M1 << endl;
-        cout << "Cross_Section: " << Cross_Section << endl;
+        //cout << "RecoilX_Event_Aft_EARTH_M1: " << RecoilX_Event_Aft_EARTH_M1 << endl;
+        //cout << "RecoilX_Event_Original_M1: " << RecoilX_Event_Original_M1 << endl;
+        //cout << "Cross_Section: " << Cross_Section << endl;
 
     double EARTH_Original=0;
     double EARTH_Bigger_Than_Threshold=0;
