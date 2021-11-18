@@ -1044,10 +1044,28 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
         double Right_Edge      = Bin_Content_Max+Bin_Width*2;
                  
         double DCS = Hist_DCS_array[Now_File]->GetBinContent(binx);
-        if(T*1e3>Right_Edge)DCS=0;
-        if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4))DCS=0;
-         
 
+    if(T*1e3>Right_Edge){DCS=0;}
+
+    if(T*1e3<Right_Edge and T>1){
+        /*
+        if(v_int>600)
+        {
+            cout << "=====" << endl;
+            cout << "T*1e3:  " << T*1e3 ;
+            cout << "Right_Edge: " << Right_Edge ;
+            cout << "DCS: " << DCS << endl ;
+            cout << "=============" << endl;
+        }
+         */
+    }
+
+    
+
+    //if(int(v*1e4)>int(DM_Beta_Used[DM_Beta_Used.size()-1]*1e4)){cout << "Yes2: " << endl; DCS=0;}
+
+
+    
     
         //if(T*1e3>Right_Edge)DCS=0;
         //cout << "v: " << v << endl;
@@ -1083,7 +1101,7 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
          
         fout->Close();
         */
-    //cout << "DCS: " << DCS << endl;
+        //cout << "DCS_: " << DCS ;
 
          return DCS;
         //return 0;

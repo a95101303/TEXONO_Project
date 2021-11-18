@@ -44,7 +44,7 @@ vector<double> Rebin_two(vector<double> ValueX,vector<double> ValueY, vector<dou
 }
 
 
-void Hist_SetLimit_Plot_v2_Standard_ER(int Index)
+void Hist_SetLimit_Plot_v2_Standard_ER(int Index, int File)
 {
 
 const double kms1_to_cmday1 = 100000.0*86400.0; // km/s to cm/day
@@ -94,7 +94,7 @@ double WIMP_max_T[Number_mx_Candidate];
     // Data_implemented_rebi n_2
     //============================================================================
     //For TEXONO
-    /*
+    
      const int Data_element = 257;
      double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
      double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -117,7 +117,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
     }
-     */
+     
     //============================================================================
     //For CDEX
         /*
@@ -133,6 +133,7 @@ double WIMP_max_T[Number_mx_Candidate];
     //============================================================================
     
     //For XENON1T
+    /*
         const int Data_element = 8;
     double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
     double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -144,7 +145,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = VrV_le_Xenon1T[jjj][2];
         }
-     
+     */
     //===
 
 //========For Data
@@ -161,21 +162,22 @@ qf4 = alpha*0.0016;
     //for(int kkk=1; kkk<WIMP_mx_Array.size(); kkk++)
     for(int kkk=Index; kkk<Index+1; kkk++)
     {
-        double *T_QF_Original_Bef=RecoilX_Event(0,0,WIMP_mx_Array[kkk],0,4,1,1);
+        double *T_QF_Original_Bef=RecoilX_Event(0,0,WIMP_mx_Array[kkk],0,4,1,File);
         for(int i=0;i<reso_T;i++){T_Used[i]=0;T_Used[i]=T_QF_Original_Bef[i];}
-        double *Recoil_X_Bef=RecoilX_Event(1,0,WIMP_mx_Array[kkk],0,4,1,1);
+        double *Recoil_X_Bef=RecoilX_Event(1,0,WIMP_mx_Array[kkk],0,4,1,File);
         for(int i=0;i<reso_T;i++){Recoil_X_Used[i]=0;Recoil_X_Used[i]=(Recoil_X_Bef[i]);}
         
         for(int i=0;i<reso_T;i++)
         {
             //cout << "i: " << i << endl;
-            cout << "T_Used[i]: " << T_Used[i] << endl;
-            cout << "Recoil_X_Used[i]: " << Recoil_X_Used[i] << endl;
+            //cout << "T_Used[i]: " << T_Used[i] << endl;
+            //cout << "Recoil_X_Used[i]: " << Recoil_X_Used[i] << endl;
         }
         
         double Factor[Data_element];
         double pEx = T_Used[0];
         double sig_E; double dEx;
+        //double a0_dE = 18/1000.0;
         double a0_dE = 33.4992/1000.0;
         double a1_dE = 13.2145/1000.0;
         //double a_dE = 31.3/100.0;
@@ -197,12 +199,20 @@ qf4 = alpha*0.0016;
                     
                     if( (Recoil_X_Used[j]>0)&&(T_Used[j]>=0.7e-3) )
                     {
-                        Factor[jjj] = Factor[jjj] + Recoil_X_Used[j]*exp(-pow((T_Used[j]-RE_DATA[jjj]),2)/(2*pow(sig_E,2)))*dEx/(sig_E*sqrt(2*PI));
+                        if(dEx>0)Factor[jjj] = Factor[jjj] + Recoil_X_Used[j]*exp(-pow((T_Used[j]-RE_DATA[jjj]),2)/(2*pow(sig_E,2)))*dEx/(sig_E*sqrt(2*PI));
+                        /*
+                        if( dEx < 0){
+                            cout << "j: " << j << endl;
+                            cout << "dEx: " << dEx << endl;}
+                        if( Recoil_X_Used[j] < 0){
+                            cout << "Recoil_X_Used[j]: " << Recoil_X_Used[j] << endl;}
+                         */
+
                     }
                     pEx = T_Used[j];
                 }
             }
-            cout << "Factor[jjj]: " << Factor[jjj] << endl;
+            //cout << "Factor[jjj]: " << Factor[jjj] << endl;
             //if(kkk==3)cout << "Factor[3][jjj]: " << Factor[3][jjj] << endl;
         }
         /*
@@ -221,9 +231,9 @@ qf4 = alpha*0.0016;
         cout << "=======================================" << endl;
             for(int iii=0 ; iii<Data_element ; iii++)
             {
-                cout << "RE_DATA[iii]: " << RE_DATA[iii]  << endl;
-                cout << "Factor[iii]: " << Factor[iii] << endl;
-                cout << "RE_Rate[iii]: " << RE_Rate[iii] << endl;
+                //cout << "RE_DATA[iii]: " << RE_DATA[iii]  << endl;
+                //cout << "Factor[iii]: " << Factor[iii] << endl;
+                //cout << "RE_Rate[iii]: " << RE_Rate[iii] << endl;
             }
         cout << "=======================================" << endl;
 
@@ -232,8 +242,8 @@ qf4 = alpha*0.0016;
                 double Ratio1 = (Factor[iii]/(RE_Rate[iii]+RE_Rate_Err[iii]));
                 if(iii>0 && abs(Ratio1)>Initial_Factor && abs(1/Ratio1)!=0)
                 {
-                    cout << "iii: " << iii << endl;
-                    cout << "Ratio1: " << Ratio1 << endl;
+                    //cout << "iii: " << iii << endl;
+                    //cout << "Ratio1: " << Ratio1 << endl;
                     Initial_Factor = Ratio1;
                 }
         }
@@ -244,11 +254,13 @@ qf4 = alpha*0.0016;
         for(int jjj=0 ; jjj<Data_element ; jjj++)
         {
             Factor[jjj] = Factor[jjj]*(1./Initial_Factor);
-            cout << "RE_DATA[jjj]: " << RE_DATA[jjj] << endl;
-            cout << "Factor[jjj]: " << Factor[jjj] << endl;
+            //cout << "RE_DATA[jjj]: " << RE_DATA[jjj] << endl;
+            //cout << "Factor[jjj]: " << Factor[jjj] << endl;
          }
         double Scaling = sqrt((1./Initial_Factor));
         cout << "CS_Try(1*Scaling,0.5): " << CS_Try(1*Scaling,WIMP_mx_Array[kkk]) << endl;
+        cout << "DS_Try(1*Scaling,0.5): " << DS_Try(1e-9*Scaling,WIMP_mx_Array[kkk]) << endl;
+
         //Cross_section.push_back(CS_Try(1*Scaling,WIMP_mx_Array[kkk]));
             //===============================================================
 }
