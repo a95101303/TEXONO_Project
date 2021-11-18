@@ -1,4 +1,4 @@
-double CDEX_ER_Quick_d1[14][2] = {//<0.01keV
+double CDEX_ER_Upper_d1[14][2] = {//Quick(1km)
 2,1.10541e-20,
 1,2.79396e-21,
 0.9,1.69514e-21,

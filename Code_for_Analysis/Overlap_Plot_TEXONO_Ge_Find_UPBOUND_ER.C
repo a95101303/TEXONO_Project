@@ -24,9 +24,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     double velocitykm[velocity_N];//Filled in the next line
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
     
-    const int Index=1;
+    const int Index=0;
     const double Density = 1.8;//g/cm^3
     const double Length  = 1e5;//cm
+    //const double Length  = 3e0;//cm
     const double Threshold_keV = 0.1;//keV
     vector<string> File;
     vector<double> WIMP_mx_Array;

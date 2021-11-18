@@ -94,7 +94,7 @@ double WIMP_max_T[Number_mx_Candidate];
     // Data_implemented_rebi n_2
     //============================================================================
     //For TEXONO
-    
+    /*
      const int Data_element = 257;
      double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
      double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -117,10 +117,10 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
     }
-     
+     */
     //============================================================================
     //For CDEX
-        /*
+        
          const int Data_element = 4;
          double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
          double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -129,7 +129,15 @@ double WIMP_max_T[Number_mx_Candidate];
         double Data_RATE_CDEX[4]= {8.2,7.6,7.4,7.9};
         double Data_RE_Err[4]= {0,0,0,0};
         double Data_RE_Rate_Err[4]= {3,3.5,1.5,2};
-         */
+         
+    for(int jjj=0 ; jjj<Data_element ; jjj++)
+    {
+            RE_DATA[jjj]= Data_RE_CDEX[jjj];
+            RE_Rate[jjj]= Data_RATE_CDEX[jjj];
+            RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = Data_RE_Rate_Err[jjj]*1.64458/0.994;
+    }
+         
     //============================================================================
     
     //For XENON1T
@@ -144,6 +152,8 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_Rate[jjj]= VrV_le_Xenon1T[jjj][1]*(1e-3);//(count/kg*day*keV)
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = VrV_le_Xenon1T[jjj][2];
+            cout << "RE_DATA[jjj: " << RE_DATA[jjj] << endl;
+            cout << "RE_Rate[jjj]: " << RE_Rate[jjj] << endl;
         }
      */
     //===
@@ -242,8 +252,8 @@ qf4 = alpha*0.0016;
                 double Ratio1 = (Factor[iii]/(RE_Rate[iii]+RE_Rate_Err[iii]));
                 if(iii>0 && abs(Ratio1)>Initial_Factor && abs(1/Ratio1)!=0)
                 {
-                    //cout << "iii: " << iii << endl;
-                    //cout << "Ratio1: " << Ratio1 << endl;
+                    cout << "iii: " << iii << endl;
+                    cout << "Ratio1: " << Ratio1 << endl;
                     Initial_Factor = Ratio1;
                 }
         }

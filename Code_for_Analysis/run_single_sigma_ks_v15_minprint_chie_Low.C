@@ -7,9 +7,10 @@
 
 void run_single_sigma_ks_v15_minprint_chie_Low(double mx=2.0)
 {
-    int LLL=0;
-    int File=2;//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
-    vector<double> WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    int LLL=12;
+    int File=3;//Xe_c1[0],Xe_d1[1],Ge_c1[2],Ge_d1[3]
+    //vector<double> WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};//Xenon
+    vector<double> WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07};//Germanium
 
     for(int kkk=LLL; kkk<LLL+1; kkk++)
     {
