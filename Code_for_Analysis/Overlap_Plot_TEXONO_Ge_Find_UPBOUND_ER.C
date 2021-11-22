@@ -370,6 +370,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
             //cout << "X_Range: " << X_Range << endl;
             fitting_Line->SetParameter(0,Fitting_a[Applied_Hist]);
             fitting_Line->SetParameter(1,Fitting_b[Applied_Hist]);
+            //cout << "velocity_Used[Applied_Hist+1]: " << velocity_Used[Applied_Hist+1] << endl;
             //cout << "Applied_Hist: " << Applied_Hist << endl;
             //cout << "T_Central: " << T_Central << endl;
             //cout << "fitting_Line->Eval(T_Central): " << fitting_Line->Eval(T_Central) << endl;
@@ -384,10 +385,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
             T = T_Temp;
         }
         //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
-        cout << "Total_Count: " << Total_Count << endl;
+        //cout << "Total_Count: " << Total_Count << endl;
         
         double Scaling = (collision_Time_Ave)/(Total_Count);
-        cout << "Scaling: " << Scaling << endl;
+        //cout << "Scaling: " << Scaling << endl;
         double Scaling_Factor = sqrt(Scaling);
         
         cout << "CS_Try(1*Scaling_Factor,WIMP_mx_Array[kkk]): " << CS_Try(1,WIMP_mx_Array[kkk]) << endl;
