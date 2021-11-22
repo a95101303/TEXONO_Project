@@ -5,8 +5,8 @@
 #include "TH1.h"
 #include "Hist_SetLimit_Plot_v2_Extract_Peak.h"
 //#include "B_L_Henke_data_PE_f1_f2.h"
-#include "dsigma_dT2.h"
 #include "velocity_distribution_2000_Ave.h"
+#include "dsigma_dT2.h"
 #include "cpkkd_calculation_New.h"
 void Overlap_Plot_TEXONO_Ge_Test_ER()
 {
@@ -109,7 +109,7 @@ for(int kkk=36;kkk<37;kkk++)//for(int kkk=31;kkk<41;kkk++)
         
     CPKKD_EXCLUSION[Point_Number]=Sigma_SI_Array[Point_Number]*FACTOR;
      */
-    static int File_index=3;
+    static int File_index=0;
     double T_QF_Original_Bef_Array[reso_T]; double T_QF_Original_Aft_Array[reso_T];
     double Factor1_Original_Bef_Array[reso_T]; double Factor1_Original_Aft_Array[reso_T];
 

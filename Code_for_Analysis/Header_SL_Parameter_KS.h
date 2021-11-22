@@ -1092,15 +1092,21 @@ double fdsigma_dT_ER_New(int Find_File_index, double v_int, double T, double Mx)
     
         //Give out the root file to check the content of the DCS
         /*
-        char fout_name[100];
-        sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
-        TFile *fout=new TFile(fout_name,"recreate");
-        cout << "fout: " << fout_name << endl;
-        for(int N=0; N<Number_Exe; N++){   Hist_DCS_array[N]->Write(DM_Beta_Right_String[N].c_str());}
-        //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
-         
-        fout->Close();
-        */
+        static int Fill_Up_Tree=0;
+        if(Fill_Up_Tree==0)
+        {
+            char fout_name[100];
+            sprintf(fout_name,Form("%s/DCS.root",FileName_Full[Number].c_str()));
+            TFile *fout=new TFile(fout_name,"recreate");
+            cout << "fout: " << fout_name << endl;
+            for(int N=0; N<Number_Exe; N++){
+                cout << "DM_Beta_Right_String[N].c_str(): " << DM_Beta_Right_String[N].c_str() << endl;
+                Hist_DCS_array[N]->Write(DM_Beta_Right_String[N].c_str());}
+            //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
+            fout->Close();
+            Fill_Up_Tree = 1;
+        }
+         */
         //cout << "DCS_: " << DCS ;
 
          return DCS;
