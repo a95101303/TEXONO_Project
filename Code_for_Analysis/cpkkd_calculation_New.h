@@ -746,8 +746,8 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 double v_cms_next = (velo_dist_Ave[j][2])*1e5;//cm/s
                 double v_kms_now  = (velo_dist_Ave[j][1]);// km/s
                 double dv=(v_cms_next)-(v_cms_now);
-                //double dR_Factor  = N_atom_1kg_Ge_Electron*DM_density_ER/(WIMP_mx);
-                double dR_Factor  = 1;
+                double dR_Factor  = N_atom_1kg_Ge_Electron*DM_density_ER/(WIMP_mx);
+                //double dR_Factor  = 1;
                 
                 //if(Conventional_or_not==1)recoilX[i] = recoilX[i] + dR_Factor*86400*1e-36*1e-15*fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*(1/sum)*velo_dist_Ave[j][3]*v_cms_next*(dv);
                 //if(v_kms_now>vel_dist_ER_kms[0] and v_kms_now<vel_dist_ER_kms[1]) A_Check = A_Check + fdsigma_dT_ER_New(v_kms_now,T[i],WIMP_mx)*(1/sum)*velo_dist_Ave[j][3];
@@ -797,12 +797,12 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 //  cm3/(keV*day)
 
             }
+            /*
             cout << "T[i]: " << T[i] << endl;
             cout << "recoilX[i]: " << recoilX[i] << endl;
             cout << "check_A: " << A_Check << endl;
             cout << "check_B: " << B_Check << endl;
-             
-
+             */
         }
     }
     for(int kkk=0; kkk<Possibilities_array.size(); kkk++)

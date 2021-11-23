@@ -68,14 +68,13 @@ double T[Number_mx_Candidate][reso_T];
 double T_QF[Number_mx_Candidate][reso_T];
 double recoil[Number_mx_Candidate][reso_T];
 double v;
-    double WIMP_mx[Number_mx_Candidate]={11,13,15,17,19};
+double WIMP_mx[Number_mx_Candidate]={11,13,15,17,19};
 double WIMP_max_T[Number_mx_Candidate];
     
 
     
-    vector<double> WIMP_mx_Array;
     vector<double> Cross_section;
-    WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+    vector<double> WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07};
 
     //=========
     // Data_implemented_no_rebin
@@ -120,7 +119,7 @@ double WIMP_max_T[Number_mx_Candidate];
      */
     //============================================================================
     //For CDEX
-        
+    /*
          const int Data_element = 4;
          double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
          double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -137,7 +136,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = Data_RE_Rate_Err[jjj]*1.64458/0.994;
     }
-         
+         */
     //============================================================================
     
     //For XENON1T
@@ -157,6 +156,23 @@ double WIMP_max_T[Number_mx_Candidate];
         }
      */
     //===
+
+    //============================================================================
+    //For CDMSlite
+    
+         const int Data_element = 1;
+         double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
+         double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
+         
+    for(int jjj=0 ; jjj<Data_element ; jjj++)
+    {
+        RE_DATA[jjj]= 0.08;
+        RE_Rate[jjj]= 16.33;
+            RE_DATA_Err[jjj]= 0;
+        RE_Rate_Err[jjj] = (16.33)*1.64458/0.994;
+    }
+         
+    //============================================================================
 
 //========For Data
 double qf0, qf1, qf2, qf3, qf4, alpha=1.0;
