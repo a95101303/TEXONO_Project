@@ -93,7 +93,7 @@ double WIMP_max_T[Number_mx_Candidate];
     // Data_implemented_rebi n_2
     //============================================================================
     //For TEXONO
-    /*
+    
      const int Data_element = 257;
      double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
      double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -116,7 +116,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
     }
-     */
+     
     //============================================================================
     //For CDEX
     /*
@@ -136,7 +136,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = Data_RE_Rate_Err[jjj]*1.64458/0.994;
     }
-         */
+       */
     //============================================================================
     
     //For XENON1T
@@ -158,29 +158,29 @@ double WIMP_max_T[Number_mx_Candidate];
     //===
 
     //============================================================================
-    //For CDMSlite
-    
+    //For CDMSlite(PhysRevLett.116.071301)
+    /*
          const int Data_element = 1;
          double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
          double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
          
-    for(int jjj=0 ; jjj<Data_element ; jjj++)
-    {
-        RE_DATA[jjj]= 0.08;
-        RE_Rate[jjj]= 16.33;
-            RE_DATA_Err[jjj]= 0;
-        RE_Rate_Err[jjj] = (16.33)*1.64458/0.994;
-    }
-         
+        for(int jjj=0 ; jjj<Data_element ; jjj++)
+        {
+            RE_DATA[jjj]= 0.08;
+            RE_Rate[jjj]= 16.33;
+                RE_DATA_Err[jjj]= 0;
+            RE_Rate_Err[jjj] = (16.33)*1.64458/0.994;
+        }
+     */
     //============================================================================
 
 //========For Data
-double qf0, qf1, qf2, qf3, qf4, alpha=1.0;
-qf0 = alpha*0.19816;
-qf1 = alpha*0.05052;
-qf2 = alpha*0.00378;
-qf3 = alpha*0.00192;
-qf4 = alpha*0.0016;
+    double qf0, qf1, qf2, qf3, qf4, alpha=1.0;
+    qf0 = alpha*0.19816;
+    qf1 = alpha*0.05052;
+    qf2 = alpha*0.00378;
+    qf3 = alpha*0.00192;
+    qf4 = alpha*0.0016;
 
     
     double T_Used[reso_T];double Recoil_X_Used[reso_T];

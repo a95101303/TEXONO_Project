@@ -154,7 +154,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
 }//End_Main
 */
-
+/*
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
 {
     const int    velocity_N=13;
@@ -165,11 +165,12 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
     
     const int Index      = 1;
-    /* //CDEX
+     //CDEX
     const double Density = 1.8;//g/cm^3
     const double Length  = 1e5;//cm
-     */
+     
      //TEXONO
+    
     const double Density = 1;//g/cm^3
     const double Length  = 3e3;//cm
      
@@ -230,8 +231,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
 
     string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
     //===============electron recoil===================//
-    for(int FIle_Index=File_Start; FIle_Index<File.size(); FIle_Index++)
-    //for(int kkk=0; kkk<1; kkk++)
+    //for(int FIle_Index=File_Start; FIle_Index<File.size(); FIle_Index++)
+    for(int FIle_Index=6; FIle_Index<7; FIle_Index++)
     {
         cout << "File[FIle_Index].c_str(): " << File[FIle_Index].c_str() << endl;
         TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[FIle_Index].c_str()));
@@ -404,15 +405,15 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
             T = T_Temp;
         }
         //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
-        //cout << "Area_Integral: " << Area_Integral << endl;
-        //cout << "Total_Count: " << Total_Count << endl;
+        cout << "Area_Integral: " << Area_Integral << endl;
+        cout << "Total_Count: " << Total_Count << endl;
         
         double Scaling = (collision_Time_Ave)/(Total_Count);
         //cout << "Scaling: " << Scaling << endl;
         double Scaling_Factor = sqrt(Scaling);
         
-        //cout << "CS_Try(1*Scaling_Factor,WIMP_mx_Array[kkk]): " << CS_Try(1,WIMP_mx_Array[kkk]) << endl;
-        //cout << "DS_Try(1e-9*Scaling_Factor,WIMP_mx_Array[kkk]): " << DS_Try(1e-9,WIMP_mx_Array[kkk]) << endl;
+        cout << "CS_Try(1*Scaling_Factor,WIMP_mx_Array[kkk]): " << CS_Try(1,WIMP_mx_Array[FIle_Index]) << endl;
+        cout << "DS_Try(1e-9*Scaling_Factor,WIMP_mx_Array[kkk]): " << DS_Try(1e-9,WIMP_mx_Array[FIle_Index]) << endl;
         if(Index==0)Cross_Section_Set[FIle_Index]= ( CS_Try(1*Scaling_Factor,WIMP_mx_Array[FIle_Index]) );
         if(Index==1)Cross_Section_Set[FIle_Index]= ( DS_Try(1e-9*Scaling_Factor,WIMP_mx_Array[FIle_Index]) );
 
@@ -447,7 +448,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     //==================================================//
 
 }//End_Main
-
+*/
 
 /*
 for(int Applied_Hist=0; Applied_Hist<velocity_TH1F.size(); Applied_Hist++)
@@ -462,7 +463,7 @@ for(int Applied_Hist=0; Applied_Hist<velocity_TH1F.size(); Applied_Hist++)
  */
 
 
-/*
+
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
 {
     const int    velocity_N=13;
@@ -476,7 +477,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     const double Density = 1.8;//g/cm^3
     const double Length  = 1e5;//cm
     //const double Length  = 3e0;//cm
-    const double Threshold_keV = 0.1;//keV
+    const double Threshold_keV = 0.01;//keV
     vector<string> File;
     vector<double> WIMP_mx_Array;
     vector<double> Collision_Time_Array;
@@ -487,27 +488,41 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     if(Index==0)
     {
     File=
-            {"c1_2_0GeV","c1_1_0GeV",
+            {"c1_20_0GeV",
+            "c1_10_0GeV","c1_5_0GeV",
+            "c1_4_0GeV","c1_3_0GeV",
+            "c1_2_0GeV","c1_1_0GeV",
             "c1_0_900GeV","c1_0_800GeV",
             "c1_0_700GeV","c1_0_600GeV",
             "c1_0_500GeV","c1_0_400GeV",
             "c1_0_300GeV","c1_0_200GeV",
             "c1_0_120GeV","c1_0_090GeV",
-            "c1_0_070GeV","c1_0_050GeV"};
-        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+            "c1_0_070GeV","c1_0_050GeV",
+            "c1_0_040GeV",
+            "c1_0_020GeV","c1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05,0.04,0.02,0.01};
     }
     //Xe_d1
     if(Index==1)
     {
          File=
-            {"d1_2_0GeV","d1_1_0GeV",
+            {
+            "d1_20_0GeV",
+            "d1_10_0GeV","d1_5_0GeV",
+            "d1_4_0GeV","d1_3_0GeV",
+            "d1_2_0GeV","d1_1_0GeV",
             "d1_0_900GeV","d1_0_800GeV",
             "d1_0_700GeV","d1_0_600GeV",
             "d1_0_500GeV","d1_0_400GeV",
             "d1_0_300GeV","d1_0_200GeV",
             "d1_0_120GeV","d1_0_090GeV",
-            "d1_0_070GeV","d1_0_050GeV"};
-        WIMP_mx_Array ={2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05};
+            "d1_0_080GeV","d1_0_070GeV",
+            "d1_0_050GeV",
+            "d1_0_040GeV",
+            "d1_0_020GeV","d1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.08,0.07,0.05,0.04,0.02,0.01};
     }
     //Read the file of DCS for different masses
     vector<double> Cross_Section_Set;
@@ -515,10 +530,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     
     string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
     //===============electron recoil===================//
-    //for(int kkk=0; kkk<File.size(); kkk++)
-    for(int kkk=0; kkk<1; kkk++)
+    for(int Index_File=0; Index_File<File.size(); Index_File++)
+    //for(int Index_File=File.size()-1; Index_File<File.size(); Index_File++)
     {
-        TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[kkk].c_str()));
+        TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[Index_File].c_str()));
         vector<TH1F*> velocity_TH1F;//Mass-based
         vector<double>   velocity_Used;//km/s
         velocity_Used.push_back(0);
@@ -527,7 +542,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
             TH1F *Velocity_TH1F_temp=(TH1F*)fin->Get(velocity_s[kkk].c_str());
             if(Velocity_TH1F_temp!=NULL)
             {
-                //cout << "File: " << velocity_s[kkk].c_str() << endl;
+                cout << "File: " << velocity_s[kkk].c_str() << endl;
                 //cout << "velocitykm: " << velocitykm[kkk] << endl;
                 velocity_TH1F.push_back(Velocity_TH1F_temp);
                 velocity_Used.push_back(velocitykm[kkk]);
@@ -536,32 +551,51 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         
         int    Applied_Hist=0;
         double Velocity_DM_Now=779;//km/s
-        if(Velocity_DM_Now>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
-        if(Applied_Hist==0)
-        {
-            for(int kkk=0; kkk<velocity_Used.size(); kkk++)
-            {
-                if(Velocity_DM_Now>velocity_Used[kkk] and Velocity_DM_Now<velocity_Used[kkk+1]){Applied_Hist=kkk;}
-            }
-        }
         //cout << "Applied_Hist: " << Applied_Hist << endl;
         double v_c = Velocity_DM_Now*1e3/3e8;//c
-        double Max_Recoil = DM_E(WIMP_mx_Array[kkk],Velocity_DM_Now);//Max_Recoil(keV) given by mass
+        double Max_Recoil = DM_E(WIMP_mx_Array[Index_File],Velocity_DM_Now);//Max_Recoil(keV) given by mass
         Int_t Maximum_Bin = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Max_Recoil*1e3);//Max_Recoil_Bin
-        cout << "Maximum_Bin: " << Maximum_Bin << endl;
+        //cout << "Maximum_Bin: " << Maximum_Bin << endl;
         int LastBin = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
-        cout << "LastBin: " << LastBin << endl;
+        //cout << "LastBin: " << LastBin << endl;
 
+        //
+        vector<double> Fitting_a;vector<double> Fitting_b;
+        Fitting_a.clear();Fitting_b.clear();
+        for(int Applied_Hist_1=velocity_TH1F.size()-1; Applied_Hist_1<velocity_TH1F.size(); Applied_Hist_1++)
+        //for(int Applied_Hist=0; Applied_Hist<3; Applied_Hist++)
+        {
+            vector<double> TGraph_Recoil_Energy;vector<double> TGraph_dsigma_dT;
+            
+            Int_t Minimum_Bin = velocity_TH1F[Applied_Hist_1]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin = velocity_TH1F[Applied_Hist_1]->FindLastBinAbove();//Max_Recoil_Bin
+            for(int LLL=Minimum_Bin; LLL<Maximum_Bin+1; LLL++)
+            {
+                TGraph_Recoil_Energy.push_back( velocity_TH1F[Applied_Hist_1]->GetXaxis()->GetBinCenter(LLL) );//keV recoil energy
+                TGraph_dsigma_dT.push_back( TMath::Log10(velocity_TH1F[Applied_Hist_1]->GetBinContent(LLL)*1e-15*TMath::Power(Scaling[Index],2)) );//Real dsigma_dT
+            }
+            TGraph * g = new TGraph((int)TGraph_Recoil_Energy.size(), &TGraph_Recoil_Energy[0], &TGraph_dsigma_dT[0]);
+            TF1 *fitting_Line = new TF1("fitting_Line","[0]*x+[1]",12,velocity_TH1F[Applied_Hist_1]->GetXaxis()->GetBinCenter( Maximum_Bin-1 ));//Fitting
+            g->Fit(fitting_Line,"R");
+            Double_t par[9];
+            fitting_Line->GetParameters(&par[0]);
+            Fitting_a.push_back(par[0]);
+            Fitting_b.push_back(par[1]);
+            cout << "par[0]: " << par[0] << endl;
+            cout << "par[1]: " << par[1] << endl;
+        }
+
+        
         //=======================================Start interacting=======================================//
         
         int Event_Number=0;
         double collision_Time_Total=0;
         double Energy_Loss_eV_collision=0;
-        while(Event_Number<50)
+        while(Event_Number<20)
         {
             //cout << "=====Event_Number: " << Event_Number << endl;
             double Velocity_DM_Temp = 779;//Initial Energy and iteration =>km/s
-            double Energy_DM_Temp   = DM_E(WIMP_mx_Array[kkk],779);//Initial Energy and iteration =>keV
+            double Energy_DM_Temp   = DM_E(WIMP_mx_Array[Index_File],779);//Initial Energy and iteration =>keV
             int collision_Time=0;
             double Energy_Loss_Inidivual=0;
             //for(int kkk=0; kkk<1; kkk++)
@@ -571,16 +605,9 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
                 gRandom = new TRandom3(0);
                 gRandom->SetSeed(0);
                 
-                //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
-                //cout << "Energy_DM_Temp: " << Energy_DM_Temp << endl;
-                //Find the file
                 if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])
                 {
-                  //  cout << "vel>650: " << endl;
-                  //  cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
-                  //  cout << "velocity_Used[velocity_Used.size()-1]: " << velocity_Used[velocity_Used.size()-1] << endl;
                     Applied_Hist=(velocity_TH1F.size())-1;
-                  //  cout << "Applied_Hist: " << Applied_Hist << endl;
                 }
                 if(Applied_Hist==0)
                 {
@@ -588,11 +615,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
                     {
                         if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1])
                         {
-                            //cout << "velocity_Used[kkk]: " << velocity_Used[kkk] << endl;
-                            //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;
-                            //cout << "velocity_Used[kkk+1]: " << velocity_Used[kkk+1] << endl;
                             Applied_Hist=kkk;
-                            //cout << "Applied_Hist: " << Applied_Hist << endl;
                         }
                     }
                 }
@@ -602,19 +625,19 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
                 int LastBin_Loss = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_from_Hist
                 if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
                 double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
-                velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(0,Max_X);
+                velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(12,Max_X);
                 double Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();//Energy_Loss(eV)
                 double Energy_Loss_keV = Energy_Loss_eV*1e-3;//Energy_Loss(keV)
-                //cout << "Energy_Loss_(keV): " << Energy_Loss_keV << endl;
+                //cout << "Energy_Loss_(eV): " << Energy_Loss_eV << endl;
                 Energy_DM_Temp   = Energy_DM_Temp - Energy_Loss_keV;
                 //cout << "Energy_DM_Temp(keV): " << Energy_DM_Temp << endl;
-                Velocity_DM_Temp = sqrt(2*Energy_DM_Temp/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);//km/s
+                Velocity_DM_Temp = sqrt(2*Energy_DM_Temp/(WIMP_mx_Array[Index_File]*1e6))*(3e8/1e3);//km/s
                 //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;//km/s
                 Energy_Loss_Inidivual = Energy_Loss_Inidivual + Energy_Loss_keV;
                 collision_Time = collision_Time + 1;
                 Applied_Hist =0;
             }
-            cout << "collision_Time: " << collision_Time << endl;
+            //cout << "collision_Time: " << collision_Time << endl;
             //if(collision_Time>0)cout << "Energy_Loss_Inidivual/collision_Time: " << Energy_Loss_Inidivual/collision_Time << endl;
             Energy_Loss_eV_collision = Energy_Loss_eV_collision + Energy_Loss_Inidivual/collision_Time;
             collision_Time_Total = collision_Time_Total + collision_Time;
@@ -622,11 +645,11 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         }
         double collision_Time_Ave = collision_Time_Total / Event_Number;
         Collision_Time_Array.push_back(collision_Time_Ave);//Count for every DM
-        cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
-        double Energy_Loss_Real = Energy_DM(WIMP_mx_Array[kkk],779*(1e3/3e8))-Threshold_keV;
-        
+        //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
+        double Energy_Loss_Real = Energy_DM(WIMP_mx_Array[Index_File],779*(1e3/3e8))-Threshold_keV;
+        //cout << "Energy_Loss_Real: " << Energy_Loss_Real << endl;
         Energy_Loss_eV_collision = (1./Energy_Loss_Real) * (Energy_Loss_eV_collision/Event_Number) ;
-        Energy_Loss_Per_Collision.push_back(Energy_Loss_eV_collision);
+        Energy_Loss_Per_Collision.push_back(Energy_Loss_eV_collision/Event_Number);
         //cout << "Threshold: " << sqrt(2*0.16/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);
         //cout << "DM_E(WIMP_mx_Array[kkk],779) : " << DM_E(WIMP_mx_Array[kkk],779) << endl;;
         //cout << "Energy_Loss_eV_collision: " << Energy_Loss_eV_collision << endl;
@@ -634,30 +657,75 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         
         //double Target_Total_Cross_Section = collision_Time_Ave*(unified_atomic_mass_g*(ASi))/(Density*Length);
         
-        double Total_Count;
-        
+        if(Velocity_DM_Now>velocity_Used[velocity_Used.size()-1])Applied_Hist=(velocity_TH1F.size())-1;
+        if(Applied_Hist==0)
+        {
+            for(int kkk=0; kkk<velocity_Used.size(); kkk++)
+            {
+                if(Velocity_DM_Now>velocity_Used[kkk] and Velocity_DM_Now<velocity_Used[kkk+1]){Applied_Hist=kkk;}
+            }
+        }
+        double Total_Count=0;
+        const double constant_for_total_count = Length*(Density/((unified_atomic_mass_g*(ASi))));
         for(int kkk=1; kkk<Maximum_Bin-1; kkk++)
         {
-            //cout << "kkk:: " << kkk << endl;
+            //cout << "Applied_Hist: " << Applied_Hist << endl;
+            //cout << "velocity_TH1F[Applied_Hist]->GetBinContent(kkk): " << velocity_TH1F[Applied_Hist]->GetBinContent(kkk) << endl;
             double dsigma_dT  = velocity_TH1F[Applied_Hist]->GetBinContent(kkk)*1e-15*TMath::Power(Scaling[Index],2);
             double dT         = velocity_TH1F[Applied_Hist]->GetBinWidth(kkk)*1e-3;
             //cout << "velocity_TH1F[Applied_Hist]->GetBinContent(kkk): " << velocity_TH1F[Applied_Hist]->GetBinContent(kkk) << endl;
             //cout << "1e-15*TMath::Power(Scaling[Index],2): " << 1e-15*TMath::Power(Scaling[Index],2) << endl;
             //cout << "dsigma_dT: " << dsigma_dT << endl;
             //cout << "dT: " << dT << endl;
-            Total_Count = Total_Count + Length*(Density/((unified_atomic_mass_g*(ASi))))*(dsigma_dT)*(dT);//(cm^2/keV)*(keV)=cm^2
+            //cout << "velocity_TH1F[Applied_Hist]->GetBinContent(kkk): " << velocity_TH1F[Applied_Hist]->GetBinContent(kkk) << endl;
+            //cout << "velocity_TH1F[Applied_Hist]->GetBinCenter(kkk): " << velocity_TH1F[Applied_Hist]->GetBinCenter(kkk) << endl;
+
+            if(velocity_TH1F[Applied_Hist]->GetBinCenter(kkk)>12)Total_Count = Total_Count + (dsigma_dT)*(dT);//(cm^2/keV)*(keV)=cm^2
             //cout << "Total_Count: " << Total_Count << endl;
         }
+        double X_Range         =  Max_Recoil*1e3;//eV
+        double X_Pre_Range     =  DM_E(WIMP_mx_Array[Index_File],650)*1e3;//eV
+
+        double X_Range_Bin = (Max_Recoil*1e3)*2e-3;//eV
+        double T           =  0;
+        double Total_Count_1= 0;
+        double T_Temp       = 0;double dT      = 0;double T_Central = 0;
+        //cout << "Fitting_a[0]: " << Fitting_a[0] << endl;
+        //cout << "Fitting_b[0]: " << Fitting_b[0] << endl;
+        for(int kkk=1; kkk<499; kkk++)
+        {
+            //cout << kkk << endl;
+            T_Temp    = T_Temp + X_Range_Bin;
+            dT        = (T_Temp - T)*1e-3;//keV
+            //cout << "Max_Recoil: " << Max_Recoil << endl;
+            T_Central = (T + T_Temp)*0.5;//eV
+            TF1 *fitting_Line = new TF1("fitting_Line","TMath::Power(10,([0]*x+[1]))",0,X_Range);
+            fitting_Line->SetParameter(0,Fitting_a[0]);
+            fitting_Line->SetParameter(1,Fitting_b[0]);
+            double dsigma_dT  = fitting_Line->Eval(T_Central);
+            //cout << "T_Central: " << T_Central <<endl;
+            //cout << "dsigma_dT: " << dsigma_dT << endl;
+            if(T_Central>X_Pre_Range and T_Central<X_Range) Total_Count_1 = Total_Count_1 + (dsigma_dT)*(dT);//(cm^2/keV)*(keV)=cm^2
+            T = T_Temp;
+        }
+        cout << "Total_Count: " << Total_Count  << endl;
+        cout << "Total_Count_1: " << Total_Count_1  << endl;
+        Total_Count = Total_Count + Total_Count_1;
+        //cout << "X_Range: " << X_Range << endl;
+        Total_Count = Total_Count*constant_for_total_count;
         //cout << "velocity_TH1F[Applied_Hist]->GetMean(): " << velocity_TH1F[Applied_Hist]->GetMean() << endl;
         //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
-        cout << "Total_Count: " << Total_Count << endl;
+        //cout << "Total_Count: " << Total_Count << endl;
         
         double Scaling = (collision_Time_Ave)/(Total_Count);
-        //cout << "Scaling: " << Scaling << endl;
+        cout << "WIMP_mx_Array[Index_File]: " << WIMP_mx_Array[Index_File] << endl;
+        cout << "Scaling: " << Scaling << endl;
         double c1_GeV2 = sqrt(Scaling);
         double d1      = sqrt(Scaling);
-        if(Index==0)Cross_Section_Set.push_back( CS_Try(1*c1_GeV2,WIMP_mx_Array[kkk]) );
-        if(Index==1)Cross_Section_Set.push_back( DS_Try(1e-9*d1,WIMP_mx_Array[kkk]) );
+        cout << "CS_Try(1*c1_GeV2,WIMP_mx_Array[Index_File]): " << CS_Try(1*c1_GeV2,WIMP_mx_Array[Index_File]) << endl;
+        cout << "DS_Try(1e-9*d1,WIMP_mx_Array[Index_File]): " << DS_Try(1e-9*d1,WIMP_mx_Array[Index_File]) << endl;
+        if(Index==0)Cross_Section_Set.push_back( CS_Try(1*c1_GeV2,WIMP_mx_Array[Index_File]) );
+        if(Index==1)Cross_Section_Set.push_back( DS_Try(1e-9*d1,WIMP_mx_Array[Index_File]) );
 
         //cout << "WIMP_mx_Array[kkk]: " << WIMP_mx_Array[kkk] << endl;
     }
@@ -684,7 +752,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     //==================================================//
 
 }//End_Main
-*/
+
      
 
 
