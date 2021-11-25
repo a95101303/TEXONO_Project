@@ -473,11 +473,17 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     double velocitykm[velocity_N];//Filled in the next line
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
     
-    const int Index=0;
+    const int Index=1;
+    /*
     const double Density = 1.8;//g/cm^3
     const double Length  = 1e5;//cm
+     */
+     
+    const double Density = 1;//g/cm^3
+    const double Length  = 3e4;//cm
+      
     //const double Length  = 3e0;//cm
-    const double Threshold_keV = 0.01;//keV
+    const double Threshold_keV = 0.2;//keV
     vector<string> File;
     vector<double> WIMP_mx_Array;
     vector<double> Collision_Time_Array;
@@ -647,7 +653,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         Collision_Time_Array.push_back(collision_Time_Ave);//Count for every DM
         //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
         double Energy_Loss_Real = Energy_DM(WIMP_mx_Array[Index_File],779*(1e3/3e8))-Threshold_keV;
-        //cout << "Energy_Loss_Real: " << Energy_Loss_Real << endl;
+        cout << "Energy_Loss_Real: " << Energy_Loss_Real << endl;
         Energy_Loss_eV_collision = (1./Energy_Loss_Real) * (Energy_Loss_eV_collision/Event_Number) ;
         Energy_Loss_Per_Collision.push_back(Energy_Loss_eV_collision/Event_Number);
         //cout << "Threshold: " << sqrt(2*0.16/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);

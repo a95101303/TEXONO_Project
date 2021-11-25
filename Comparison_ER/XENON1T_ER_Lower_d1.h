@@ -1,4 +1,4 @@
-double XENON1T_ER_Lower_d1_12e[7][2] = {//
+double XENON1T_ER_Lower_d1_12e[6][2] = {//
     10.0, 5e-33,
     0.3 , 2.5e-34,
     0.2 , 3.5e-34,
@@ -16,3 +16,6 @@ double XENON1T_ER_Lower_d1[8][2] = {//
     0.03, 1.2e-32,
     0.025, 1.0e-30,
 };
+
+
+

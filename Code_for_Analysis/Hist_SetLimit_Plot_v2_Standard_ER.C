@@ -93,7 +93,7 @@ double WIMP_max_T[Number_mx_Candidate];
     // Data_implemented_rebi n_2
     //============================================================================
     //For TEXONO
-    
+    /*
      const int Data_element = 257;
      double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
      double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -116,10 +116,10 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = p103_le_VrV_ON_NaI1_50eV[jjj][2]*1.64458/0.994;}
     }
-     
+     */
     //============================================================================
     //For CDEX
-    /*
+    
          const int Data_element = 4;
          double RE_DATA[Data_element]; double RE_Rate[Data_element]; double RE_DATA_Err[Data_element]; double RE_Rate_Err[Data_element];
          double RE_DATA_KL_extracted[Data_element]; double RE_Rate_KL_extracted[Data_element]; double RE_DATA_Err_KL_extracted[Data_element]; double RE_Rate_Err_KL_extracted[Data_element];
@@ -136,7 +136,7 @@ double WIMP_max_T[Number_mx_Candidate];
             RE_DATA_Err[jjj]= 0;
             RE_Rate_Err[jjj] = Data_RE_Rate_Err[jjj]*1.64458/0.994;
     }
-       */
+       
     //============================================================================
     
     //For XENON1T

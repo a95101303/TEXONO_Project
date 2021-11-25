@@ -97,6 +97,14 @@ void SetLimits_c1()
       Graph_CDMSlite_ER_Lower_c1->SetLineWidth(8);
       Graph_CDMSlite_ER_Lower_c1->Draw("L");
 
+    TLatex *Line_CDMSlite_Index = new TLatex(3,2e-38,"CDMSlite");
+    Line_CDMSlite_Index->SetTextFont(42);
+    Line_CDMSlite_Index->SetTextSize(0.04);
+    Line_CDMSlite_Index->SetLineWidth(2);
+    Line_CDMSlite_Index->SetTextColor(2);
+    Line_CDMSlite_Index->SetTextAngle(5);
+    Line_CDMSlite_Index->Draw("Lsame");
+
     //=========================================XENON1T(12e-)=======================================
     TGraph *Graph_XENON1T_12e_ER_Lower_c1 = new TGraph(); Graph_XENON1T_12e_ER_Lower_c1->SetName("Graph_XENON1T_12e_ER_Lower_c1");
     int Row_XENON1T_12e = sizeof(XENON1T_ER_Lower_c1_12e)/sizeof(XENON1T_ER_Lower_c1_12e[0]);
@@ -108,9 +116,17 @@ void SetLimits_c1()
         cout << "XENON1T_ER_Lower_c1_12e[i][1]: " << XENON1T_ER_Lower_c1_12e[i][1] <<  endl;
     }
       Graph_XENON1T_12e_ER_Lower_c1->SetLineStyle(1);
-      Graph_XENON1T_12e_ER_Lower_c1->SetLineColor(5);
+      Graph_XENON1T_12e_ER_Lower_c1->SetLineColor(7);
       Graph_XENON1T_12e_ER_Lower_c1->SetLineWidth(8);
       Graph_XENON1T_12e_ER_Lower_c1->Draw("Lsame");
+
+    TLatex *Line_XENON1T_12e_Index = new TLatex(1,5e-40,"XENON1T(>12e-)");
+    Line_XENON1T_12e_Index->SetTextFont(42);
+    Line_XENON1T_12e_Index->SetTextSize(0.04);
+    Line_XENON1T_12e_Index->SetLineWidth(2);
+    Line_XENON1T_12e_Index->SetTextColor(7);
+    Line_XENON1T_12e_Index->SetTextAngle(5);
+    Line_XENON1T_12e_Index->Draw("Lsame");
 
     //=========================================XENON1T(12e-)=======================================
     TGraph *Graph_XENON1T_ER_Lower_c1 = new TGraph(); Graph_XENON1T_ER_Lower_c1->SetName("Graph_XENON1T_ER_Lower_c1");
@@ -127,10 +143,18 @@ void SetLimits_c1()
       Graph_XENON1T_ER_Lower_c1->SetLineWidth(8);
       Graph_XENON1T_ER_Lower_c1->Draw("Lsame");
 
-  //===========================================CDEX=============================================
+    TLatex *Line_XENON1T_Index = new TLatex(3,1.5e-40,"XENON1T");
+    Line_XENON1T_Index->SetTextFont(42);
+    Line_XENON1T_Index->SetTextSize(0.04);
+    Line_XENON1T_Index->SetLineWidth(2);
+    Line_XENON1T_Index->SetTextColor(6);
+    Line_XENON1T_Index->SetTextAngle(5);
+    Line_XENON1T_Index->Draw("Lsame");
+
+  //===========================================CDEX_Lower=============================================
   TGraph *Graph_CDEX_ER_Lower_c1 = new TGraph(); Graph_CDEX_ER_Lower_c1->SetName("Graph_CDEX_ER_Lower_c1");
-  int Row_CDEX = sizeof(CDEX_ER_Lower_c1)/sizeof(CDEX_ER_Lower_c1[0]);
-  for(int i=0;i<Row_CDEX;i++)
+  int Row_CDEX_Lower = sizeof(CDEX_ER_Lower_c1)/sizeof(CDEX_ER_Lower_c1[0]);
+  for(int i=0;i<Row_CDEX_Lower;i++)
   {
       Graph_CDEX_ER_Lower_c1->SetPoint((i), CDEX_ER_Lower_c1[i][0], CDEX_ER_Lower_c1[i][1]);
       cout << "CDEX_ER_Lower_c1.h[i][0]: " << CDEX_ER_Lower_c1[i][0] <<  endl;
@@ -141,21 +165,78 @@ void SetLimits_c1()
     Graph_CDEX_ER_Lower_c1->SetLineWidth(8);
     Graph_CDEX_ER_Lower_c1->Draw("Lsame");
 
-    
+    //===========================================CDEX_Upper=============================================
     TGraph *Graph_CDEX_ER_Upper_c1 = new TGraph(); Graph_CDEX_ER_Upper_c1->SetName("Graph_CDEX_ER_Upper_c1");
-    for(int i=0;i<13;i++)
+    int Row_CDEX_Upper = sizeof(CDEX_ER_Upper_c1)/sizeof(CDEX_ER_Upper_c1[0]);
+    for(int i=0;i<Row_CDEX_Upper;i++)
     {
         Graph_CDEX_ER_Upper_c1->SetPoint((i), CDEX_ER_Upper_c1[i][0], CDEX_ER_Upper_c1[i][1]);
-        cout << "CDEX_ER_Upper_c1[i][0][i][0]: " << CDEX_ER_Upper_c1[i][0] <<  endl;
-        cout << "CDEX_ER_Upper_c1[i][1]: " << CDEX_ER_Upper_c1[i][1] <<  endl;
+        cout << "CDEX_ER_Upper_c1.h[i][0]: " << CDEX_ER_Upper_c1[i][0] <<  endl;
+        cout << "CDEX_ER_Upper_c1.h[i][1]: " << CDEX_ER_Upper_c1[i][1] <<  endl;
     }
-      Graph_CDEX_ER_Upper_c1->SetFillColor(kAzure+6);
-      Graph_CDEX_ER_Upper_c1->SetLineStyle(5);
-      Graph_CDEX_ER_Upper_c1->SetLineColor(2);
-      //Graph_CDEX_ER_Lower_c1->SetFillStyle(3114);
-      //Graph_CDEX_ER_Upper_c1->Draw("Lsame");
+      Graph_CDEX_ER_Upper_c1->SetLineStyle(2);
+      Graph_CDEX_ER_Upper_c1->SetLineColor(3);
+      Graph_CDEX_ER_Upper_c1->SetLineWidth(8);
+      Graph_CDEX_ER_Upper_c1->Draw("Lsame");
+
+    //===========================================CDEX_Boundaries=============================================
+    TLine *Line_CDEX = new TLine(CDEX_ER_Lower_c1[Row_CDEX_Lower-1][0],CDEX_ER_Lower_c1[Row_CDEX_Lower-1][1],CDEX_ER_Upper_c1[Row_CDEX_Upper-1][0],CDEX_ER_Upper_c1[Row_CDEX_Upper-1][1]);
+    Line_CDEX->SetLineColor(3);
+    Line_CDEX->SetLineWidth(6);
+    Line_CDEX->SetLineStyle(10);
+    Line_CDEX->Draw("Lsame");
+    TLatex *Line_CDEX_Index = new TLatex(3,2.5e-37,"CDEX-1B");
+    Line_CDEX_Index->SetTextFont(42);
+    Line_CDEX_Index->SetTextSize(0.04);
+    Line_CDEX_Index->SetLineWidth(2);
+    Line_CDEX_Index->SetTextColor(3);
+    Line_CDEX_Index->SetTextAngle(5);
+    Line_CDEX_Index->Draw("Lsame");
 
     
+      //===========================================TEXONO_Lower=============================================
+    TGraph *Graph_TEXONO_ER_Lower_c1 = new TGraph(); Graph_TEXONO_ER_Lower_c1->SetName("Graph_TEXONO_ER_Lower_c1");
+    int Row_TEXONO_Lower = sizeof(TEXONO_ER_Lower_c1)/sizeof(TEXONO_ER_Lower_c1[0]);
+    for(int i=0;i<Row_TEXONO_Lower;i++)
+    {
+        Graph_TEXONO_ER_Lower_c1->SetPoint((i), TEXONO_ER_Lower_c1[i][0], TEXONO_ER_Lower_c1[i][1]);
+        cout << "TEXONO_ER_Lower_c1.h[i][0]: " << TEXONO_ER_Lower_c1[i][0] <<  endl;
+        cout << "TEXONO_ER_Lower_c1.h[i][1]: " << TEXONO_ER_Lower_c1[i][1] <<  endl;
+    }
+      Graph_TEXONO_ER_Lower_c1->SetLineStyle(1);
+      Graph_TEXONO_ER_Lower_c1->SetLineColor(4);
+      Graph_TEXONO_ER_Lower_c1->SetLineWidth(8);
+      Graph_TEXONO_ER_Lower_c1->Draw("Lsame");
+
+    //===========================================TEXONO_Upper=============================================
+    TGraph *Graph_TEXONO_ER_Upper_c1 = new TGraph(); Graph_TEXONO_ER_Upper_c1->SetName("Graph_TEXONO_ER_Upper_c1");
+    int Row_TEXONO_Upper = sizeof(TEXONO_ER_Upper_c1)/sizeof(TEXONO_ER_Upper_c1[0]);
+    for(int i=0;i<Row_TEXONO_Upper;i++)
+    {
+        Graph_TEXONO_ER_Upper_c1->SetPoint((i), TEXONO_ER_Upper_c1[i][0], TEXONO_ER_Upper_c1[i][1]);
+        cout << "TEXONO_ER_Upper_c1.h[i][0]: " << TEXONO_ER_Upper_c1[i][0] <<  endl;
+        cout << "TEXONO_ER_Upper_c1.h[i][1]: " << TEXONO_ER_Upper_c1[i][1] <<  endl;
+    }
+      Graph_TEXONO_ER_Upper_c1->SetLineStyle(2);
+      Graph_TEXONO_ER_Upper_c1->SetLineColor(4);
+      Graph_TEXONO_ER_Upper_c1->SetLineWidth(8);
+      Graph_TEXONO_ER_Upper_c1->Draw("Lsame");
+
+    //===========================================TEXONO_Boundaries=============================================
+    TLine *Line_TEXONO = new TLine(TEXONO_ER_Lower_c1[Row_TEXONO_Lower-1][0],TEXONO_ER_Lower_c1[Row_TEXONO_Lower-1][1],TEXONO_ER_Upper_c1[Row_TEXONO_Upper-1][0],TEXONO_ER_Upper_c1[Row_TEXONO_Upper-1][1]);
+    Line_TEXONO->SetLineColor(4);
+    Line_TEXONO->SetLineWidth(6);
+    Line_TEXONO->SetLineStyle(10);
+    Line_TEXONO->Draw("Lsame");
+
+    TLatex *Line_TEXONO_Index = new TLatex(3,2e-36,"TEXONO");
+    Line_TEXONO_Index->SetTextFont(42);
+    Line_TEXONO_Index->SetTextSize(0.04);
+    Line_TEXONO_Index->SetLineWidth(2);
+    Line_TEXONO_Index->SetTextColor(4);
+    Line_TEXONO_Index->SetTextAngle(5);
+    Line_TEXONO_Index->Draw("Lsame");
+
     cout << "===========================================================================================" << endl;
 
     
@@ -181,5 +262,5 @@ void SetLimits_c1()
      */
     //plot->Print("Both_Earth_Chi_TEXONO.pdf");
 
-  plot->Print("Both_Earth_Chi_CDEX.pdf");
+  plot->Print("Chie_c1.pdf");
 }
