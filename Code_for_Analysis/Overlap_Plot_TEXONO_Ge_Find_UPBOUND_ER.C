@@ -473,7 +473,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     double velocitykm[velocity_N];//Filled in the next line
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
     
-    const int Index=1;
+    const int Index=0;
     /*
     const double Density = 1.8;//g/cm^3
     const double Length  = 1e5;//cm
@@ -536,8 +536,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
     
     string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
     //===============electron recoil===================//
-    for(int Index_File=0; Index_File<File.size(); Index_File++)
-    //for(int Index_File=File.size()-1; Index_File<File.size(); Index_File++)
+    //for(int Index_File=0; Index_File<File.size(); Index_File++)
+    for(int Index_File=0; Index_File<1; Index_File++)
     {
         TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[Index_File].c_str()));
         vector<TH1F*> velocity_TH1F;//Mass-based
@@ -597,7 +597,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         int Event_Number=0;
         double collision_Time_Total=0;
         double Energy_Loss_eV_collision=0;
-        while(Event_Number<20)
+        while(Event_Number<50)
         {
             //cout << "=====Event_Number: " << Event_Number << endl;
             double Velocity_DM_Temp = 779;//Initial Energy and iteration =>km/s
@@ -632,20 +632,23 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
                 if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
                 double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
                 velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(12,Max_X);
-                double Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();//Energy_Loss(eV)
+                double Energy_Loss_eV = 0;//Energy_Loss(eV)
+                while(Energy_Loss_eV<12)
+                {Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();}
                 double Energy_Loss_keV = Energy_Loss_eV*1e-3;//Energy_Loss(keV)
-                //cout << "Energy_Loss_(eV): " << Energy_Loss_eV << endl;
+                cout << "Energy_Loss_(keV): " << Energy_Loss_eV*1e-3 << endl;
                 Energy_DM_Temp   = Energy_DM_Temp - Energy_Loss_keV;
-                //cout << "Energy_DM_Temp(keV): " << Energy_DM_Temp << endl;
+                cout << "Energy_DM_Temp(keV): " << Energy_DM_Temp << endl;
                 Velocity_DM_Temp = sqrt(2*Energy_DM_Temp/(WIMP_mx_Array[Index_File]*1e6))*(3e8/1e3);//km/s
                 //cout << "Velocity_DM_Temp: " << Velocity_DM_Temp << endl;//km/s
                 Energy_Loss_Inidivual = Energy_Loss_Inidivual + Energy_Loss_keV;
                 collision_Time = collision_Time + 1;
+                cout << "collision_Time: " << collision_Time << endl;
                 Applied_Hist =0;
             }
             //cout << "collision_Time: " << collision_Time << endl;
-            //if(collision_Time>0)cout << "Energy_Loss_Inidivual/collision_Time: " << Energy_Loss_Inidivual/collision_Time << endl;
-            Energy_Loss_eV_collision = Energy_Loss_eV_collision + Energy_Loss_Inidivual/collision_Time;
+            if(collision_Time>0)cout << "Energy_Loss_Inidivual/collision_Time: " << Energy_Loss_Inidivual*1e3/collision_Time << endl;
+            Energy_Loss_eV_collision = Energy_Loss_eV_collision + Energy_Loss_Inidivual*1e3/collision_Time;
             collision_Time_Total = collision_Time_Total + collision_Time;
             Event_Number = Event_Number + 1;
         }
@@ -653,8 +656,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
         Collision_Time_Array.push_back(collision_Time_Ave);//Count for every DM
         //cout << "collision_Time_Ave: " << collision_Time_Ave << endl;
         double Energy_Loss_Real = Energy_DM(WIMP_mx_Array[Index_File],779*(1e3/3e8))-Threshold_keV;
-        cout << "Energy_Loss_Real: " << Energy_Loss_Real << endl;
-        Energy_Loss_eV_collision = (1./Energy_Loss_Real) * (Energy_Loss_eV_collision/Event_Number) ;
+        //cout << "Energy_Loss_Real: " << Energy_Loss_Real << endl;
+        //Energy_Loss_eV_collision = (1./Energy_Loss_Real) * (Energy_Loss_eV_collision/Event_Number) ;
         Energy_Loss_Per_Collision.push_back(Energy_Loss_eV_collision/Event_Number);
         //cout << "Threshold: " << sqrt(2*0.16/(WIMP_mx_Array[kkk]*1e6))*(3e8/1e3);
         //cout << "DM_E(WIMP_mx_Array[kkk],779) : " << DM_E(WIMP_mx_Array[kkk],779) << endl;;

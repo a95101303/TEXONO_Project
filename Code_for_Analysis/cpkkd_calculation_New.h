@@ -782,7 +782,7 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
                 }
                 if(File_index==2 or File_index==3)
                 {
-                    if(T[i]<0.08)//Xe doesn't have the data of the DCS for recoil energy below 0.08keV
+                    if(T[i]<0.08)//Ge doesn't have the data of the DCS for recoil energy below 0.08keV
                     {
                         dsigma_dT_ER_temp=0;
                     }
@@ -870,20 +870,16 @@ double *RecoilX_Event(int Option, TH1F *Flux,double WIMP_mx,double Sigma_SI,int 
         }
     }
     
-    cout << "2: " << endl;
 
     for(int i=0; i<reso_T; i++)
     {
-        
             //cout << "i: " << i << endl;
-        //cout << "WIMP_mx: " << WIMP_mx << endl;
-        //cout << "Energy_DM(WIMP_mx,779*kms1_to_c): " << Energy_DM(WIMP_mx,779*kms1_to_c) << endl;
-
-            cout << "T[i]: " << T[i] << endl;
+            //cout << "WIMP_mx: " << WIMP_mx << endl;
+            //cout << "Energy_DM(WIMP_mx,779*kms1_to_c): " << Energy_DM(WIMP_mx,779*kms1_to_c) << endl;
+            //cout << "T[i]: " << T[i] << endl;
             //cout << "T_QF[i]: " << T_QF[i] << endl;
-            cout << "RecoilX: " << recoilX[i] << endl;
+            //cout << "RecoilX: " << recoilX[i] << endl;
             //cout << "Factor1: " << Factor1[i] << endl;
-         
     }
     
     cout << "WIMP_max_T: " << WIMP_max_T << endl;

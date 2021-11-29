@@ -67,7 +67,7 @@ void SetLimits_c1()
   pad1->SetTickx(1);
   pad1->SetTicky(1);
 
-//  TH2F *frame = new TH2F("frame","",100,3.0,200,100,5e-43,1e-39);
+    //TH2F *frame = new TH2F("frame","",100,1e-2,10,100,1e-41,1e-34);
   TH2F *frame = new TH2F("frame","",100,1e-2,10,100,4e-42,1e-25);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
@@ -94,7 +94,7 @@ void SetLimits_c1()
     }
       Graph_CDMSlite_ER_Lower_c1->SetLineStyle(1);
       Graph_CDMSlite_ER_Lower_c1->SetLineColor(2);
-      Graph_CDMSlite_ER_Lower_c1->SetLineWidth(8);
+      Graph_CDMSlite_ER_Lower_c1->SetLineWidth(4);
       Graph_CDMSlite_ER_Lower_c1->Draw("L");
 
     TLatex *Line_CDMSlite_Index = new TLatex(3,2e-38,"CDMSlite");
@@ -117,7 +117,7 @@ void SetLimits_c1()
     }
       Graph_XENON1T_12e_ER_Lower_c1->SetLineStyle(1);
       Graph_XENON1T_12e_ER_Lower_c1->SetLineColor(7);
-      Graph_XENON1T_12e_ER_Lower_c1->SetLineWidth(8);
+      Graph_XENON1T_12e_ER_Lower_c1->SetLineWidth(4);
       Graph_XENON1T_12e_ER_Lower_c1->Draw("Lsame");
 
     TLatex *Line_XENON1T_12e_Index = new TLatex(1,5e-40,"XENON1T(>12e-)");
@@ -140,7 +140,7 @@ void SetLimits_c1()
     }
       Graph_XENON1T_ER_Lower_c1->SetLineStyle(1);
       Graph_XENON1T_ER_Lower_c1->SetLineColor(6);
-      Graph_XENON1T_ER_Lower_c1->SetLineWidth(8);
+      Graph_XENON1T_ER_Lower_c1->SetLineWidth(4);
       Graph_XENON1T_ER_Lower_c1->Draw("Lsame");
 
     TLatex *Line_XENON1T_Index = new TLatex(3,1.5e-40,"XENON1T");
@@ -162,7 +162,7 @@ void SetLimits_c1()
   }
     Graph_CDEX_ER_Lower_c1->SetLineStyle(1);
     Graph_CDEX_ER_Lower_c1->SetLineColor(3);
-    Graph_CDEX_ER_Lower_c1->SetLineWidth(8);
+    Graph_CDEX_ER_Lower_c1->SetLineWidth(4);
     Graph_CDEX_ER_Lower_c1->Draw("Lsame");
 
     //===========================================CDEX_Upper=============================================
@@ -176,7 +176,7 @@ void SetLimits_c1()
     }
       Graph_CDEX_ER_Upper_c1->SetLineStyle(2);
       Graph_CDEX_ER_Upper_c1->SetLineColor(3);
-      Graph_CDEX_ER_Upper_c1->SetLineWidth(8);
+      Graph_CDEX_ER_Upper_c1->SetLineWidth(4);
       Graph_CDEX_ER_Upper_c1->Draw("Lsame");
 
     //===========================================CDEX_Boundaries=============================================
@@ -205,7 +205,7 @@ void SetLimits_c1()
     }
       Graph_TEXONO_ER_Lower_c1->SetLineStyle(1);
       Graph_TEXONO_ER_Lower_c1->SetLineColor(4);
-      Graph_TEXONO_ER_Lower_c1->SetLineWidth(8);
+      Graph_TEXONO_ER_Lower_c1->SetLineWidth(4);
       Graph_TEXONO_ER_Lower_c1->Draw("Lsame");
 
     //===========================================TEXONO_Upper=============================================
@@ -219,7 +219,7 @@ void SetLimits_c1()
     }
       Graph_TEXONO_ER_Upper_c1->SetLineStyle(2);
       Graph_TEXONO_ER_Upper_c1->SetLineColor(4);
-      Graph_TEXONO_ER_Upper_c1->SetLineWidth(8);
+      Graph_TEXONO_ER_Upper_c1->SetLineWidth(4);
       Graph_TEXONO_ER_Upper_c1->Draw("Lsame");
 
     //===========================================TEXONO_Boundaries=============================================

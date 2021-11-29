@@ -166,10 +166,10 @@ double WIMP_max_T[Number_mx_Candidate];
          
         for(int jjj=0 ; jjj<Data_element ; jjj++)
         {
-            RE_DATA[jjj]= 0.08;
-            RE_Rate[jjj]= 16.33;
+            RE_DATA[jjj]= 0.17;
+            RE_Rate[jjj]= 5.5;
                 RE_DATA_Err[jjj]= 0;
-            RE_Rate_Err[jjj] = (16.33)*1.64458/0.994;
+            RE_Rate_Err[jjj] = (1.0)*1.64458/0.994;
         }
      */
     //============================================================================
@@ -263,25 +263,25 @@ double WIMP_max_T[Number_mx_Candidate];
             }
         cout << "=======================================" << endl;
 
+        int Bin_Possion_Bin=0;
         for(int iii=0 ; iii<Data_element ; iii++)
         {
                 double Ratio1 = (Factor[iii]/(RE_Rate[iii]+RE_Rate_Err[iii]));
                 if(iii>0 && abs(Ratio1)>Initial_Factor && abs(1/Ratio1)!=0)
                 {
-                    cout << "iii: " << iii << endl;
-                    cout << "Ratio1: " << Ratio1 << endl;
+                    Bin_Possion_Bin = iii;
                     Initial_Factor = Ratio1;
                 }
         }
         cout << "=======================================" << endl;
-         
+        cout << "Bin_Possion_Bin: " << Bin_Possion_Bin << endl;
         cout << "1./Initial_Factor: " << 1./Initial_Factor << endl;
         //===============================================================
         for(int jjj=0 ; jjj<Data_element ; jjj++)
         {
             Factor[jjj] = Factor[jjj]*(1./Initial_Factor);
-            //cout << "RE_DATA[jjj]: " << RE_DATA[jjj] << endl;
-            //cout << "Factor[jjj]: " << Factor[jjj] << endl;
+            cout << "RE_DATA[jjj]: " << RE_DATA[jjj] << endl;
+            cout << "Factor[jjj]: " << Factor[jjj] << endl;
          }
         double Scaling = sqrt((1./Initial_Factor));
         cout << "CS_Try(1*Scaling,0.5): " << CS_Try(1*Scaling,WIMP_mx_Array[kkk]) << endl;

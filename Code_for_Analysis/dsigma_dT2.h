@@ -1206,11 +1206,102 @@ double *Velocity_Aft_collision_Coupled(int Collision_Time=0, double mx=10, doubl
 
 */
 
+//======================================================================electron recoil=========================================================================
 
-double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0)
-{
-    static double RETURN_VALUE[4];//(1)Final_Velocity(2)Energy_Difference(T1+T2+...)(3)Energy_Difference(E_Final-E_initial)
+/*
+//=========================This one is for electron recoil -> File management====================
+const int    velocity_N=13;
+const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
+string velocity_s[velocity_N]={"01667","03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};
+const double velocity_d[velocity_N]={0.1667,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};
+const double velocitykm[velocity_N];//Filled in the next line
+for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
+
+const vector<double> Scaling_for_c1_and_d1={1e-18,1e-9};//c1, d1
+string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
+static vector<TH1F*> velocity_TH1F;//Mass-based
+static vector<double>   velocity_Used;//km/s
+//===============================================================================================
+
+
+double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0, int ER_Kind=0)
+{//Index==0(c1),Index==1(d1)
     
+    fdsigma_dT_ER_New(File_index,0.1,0.1,WIMP_mx);//For filling the
+
+    static double RETURN_VALUE[4];//(1)Final_Velocity(2)Energy_Difference(T1+T2+...)(3)Energy_Difference(E_Final-E_initial)
+    //==========================================Prepare for the files==========================================
+    if(ER_Kind==0)
+    {
+        File=
+            {
+            "c1_20_0GeV",
+            "c1_10_0GeV","c1_5_0GeV",
+            "c1_4_0GeV","c1_3_0GeV",
+            "c1_2_0GeV","c1_1_0GeV",
+            "c1_0_900GeV","c1_0_800GeV",
+            "c1_0_700GeV","c1_0_600GeV",
+            "c1_0_500GeV","c1_0_400GeV",
+            "c1_0_300GeV","c1_0_200GeV",
+            "c1_0_120GeV","c1_0_090GeV",
+            "c1_0_070GeV","c1_0_050GeV",
+            "c1_0_040GeV",
+            "c1_0_020GeV","c1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05,0.04,0.02,0.01};
+    }
+    //Xe_d1
+    if(ER_Kind==1)
+    {
+         File=
+            {
+            "d1_20_0GeV",
+            "d1_10_0GeV","d1_5_0GeV",
+            "d1_4_0GeV","d1_3_0GeV",
+            "d1_2_0GeV","d1_1_0GeV",
+            "d1_0_900GeV","d1_0_800GeV",
+            "d1_0_700GeV","d1_0_600GeV",
+            "d1_0_500GeV","d1_0_400GeV",
+            "d1_0_300GeV","d1_0_200GeV",
+            "d1_0_120GeV","d1_0_090GeV",
+            "d1_0_080GeV","d1_0_070GeV",
+            "d1_0_050GeV",
+            "d1_0_040GeV",
+            "d1_0_020GeV","d1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.08,0.07,0.05,0.04,0.02,0.01};
+    }
+    //===========================================Check the mass we are using now==========================================
+    int Mass_Scaled = (int)mx*1e3;//For checking the mass
+    int Mass_Filed  = (int)WIMP_mx_Array[Index_File]*1e3;//
+    static int Index_File  = -1;
+
+    if(Mass_Scaled!=Mass_Filed)
+    {
+        velocity_TH1F.clear();
+        //================Find the right mass============
+        for(int Mass_Check=0; Mass_Check<WIMP_mx_Array.size(); Mass_Check++)
+        {
+            int Mass_Array = (int)WIMP_mx_Array[Mass_Check]*1e3;
+            if(Mass_Array==Mass_Scaled) Index_File = Mass_Check;
+        }
+        
+        //================Include the file inside============
+        TFile *fin = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[ER_Kind].c_str(),File[Index_File].c_str()));
+        velocity_Used.push_back(0);
+        for(int kkk=0; kkk<velocity_N; kkk++)
+        {
+            TH1F *Velocity_TH1F_temp=(TH1F*)fin->Get(velocity_s[kkk].c_str());
+            if(Velocity_TH1F_temp!=NULL)
+            {
+                cout << "File: " << velocity_s[kkk].c_str() << endl;
+                velocity_TH1F.push_back(Velocity_TH1F_temp);
+                velocity_Used.push_back(velocitykm[kkk]);
+            }
+        }
+    }
+    
+    //==========================================
     // Percentage of the material of the earth
     if(Initial_Velocity!=0)
     {
@@ -1219,23 +1310,47 @@ double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sig
         double DM_Energy_Aft_Colliding=Energy_DM(mx,Initial_Velocity*1e3/3e8);
         double DM_Velocity_Aft_Colliding=Initial_Velocity;
         double Energy_Lost_Total=0;
-        int Count=0;
+        int Count=0;int Applied_Hist=0;
+        gRandom = new TRandom3(0);
+        gRandom->SetSeed(0);
+
         if(Collision_Time!=0 and DM_Velocity_Aft_Colliding>1)
         {
             for(int kkk=0 ; kkk<Collision_Time_Temp ; kkk++)
             {
-                TF1 *f3 = new TF1("f3","dsigma_dT_keV_ER([0],[1],x,[2],[3])",0,0.01);
-                f3->SetParameter(0,Sigma_SI_Default);f3->SetParameter(1,1);f3->SetParameter(2,mx);f3->SetParameter(3,28);
-                double Random_Energy= f3->GetRandom();
-                Energy_Lost_Total = Energy_Lost_Total + Random_Energy;
-                cout << "Random_Energy: " << Random_Energy << endl;
-                DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Random_Energy);
+                cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+                //========================Check the Hist I need to use========================
+                if(Velocity_DM_Temp>velocity_Used[velocity_Used.size()-1])
+                {
+                    Applied_Hist=(velocity_TH1F.size())-1;
+                }
+                if(Applied_Hist==0)
+                {
+                    for(int kkk=0; kkk<velocity_Used.size(); kkk++)
+                    {
+                        if(Velocity_DM_Temp>velocity_Used[kkk] and Velocity_DM_Temp<velocity_Used[kkk+1])
+                        {
+                            Applied_Hist=kkk;
+                        }
+                    }
+                }
+                //========================Fine the energy loss========================
+                int Maximum_Bin_Loss = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_DM_Temp*1e3);//Max_Recoil_Bin
+                //cout << "Applied_Hist: " << Applied_Hist << endl;
+                int LastBin_Loss = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_from_Hist
+                if(Maximum_Bin_Loss>LastBin_Loss)Maximum_Bin_Loss=LastBin_Loss;
+                double  Max_X        = velocity_TH1F[Applied_Hist]->GetBinCenter(Maximum_Bin_Loss);
+                velocity_TH1F[Applied_Hist]->GetXaxis()->SetRange(12,Max_X);
+                double Energy_Loss_eV = velocity_TH1F[Applied_Hist]->GetRandom();//Energy_Loss(eV)
+                double Energy_Loss_keV = Energy_Loss_eV*1e-3;//Energy_Loss(keV)
+                
+                Energy_Lost_Total = Energy_Lost_Total + Random_Energy;//keV
+                cout << "Energy_Loss_keV " << Energy_Loss_keV << endl;
+                DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Energy_Loss_keV);
                 cout << "DM_Energy_Aft_Colliding: " << DM_Energy_Aft_Colliding << endl;
                 DM_Velocity_Aft_Colliding = Velocity_DM(mx,DM_Energy_Aft_Colliding);
                 Count = Count + 1;
-                cout << "Collision_Time_Temp: " << Collision_Time_Temp << endl;
-                cout << "Count: " << Count << endl;
-                if(DM_Energy_Aft_Colliding<1e-3 or Random_Energy==0)
+                if(DM_Energy_Aft_Colliding<1e-2 or Random_Energy==0)
                 {
                     break;
                 }
@@ -1244,7 +1359,6 @@ double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sig
         }
         else
         {
-            //cout << "GHGH: " << endl;
             DM_Velocity_Aft_Colliding=Initial_Velocity;
         }
         //cout << "Count: " << Count << endl;
@@ -1259,6 +1373,11 @@ double *Velocity_Aft_collision_ER(int Collision_Time=0, double mx=10, double Sig
     { RETURN_VALUE[0]=0; RETURN_VALUE[1]=0; RETURN_VALUE[2]=0;RETURN_VALUE[3]=0;
         return RETURN_VALUE;}
 }
+//================================================================================================================================================================
+*/
+
+
+
 
 //Energy_Aft_multiple_collision(GOOD)
 double *Velocity_Aft_collision(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0, int Earth_or_air_S=0)
