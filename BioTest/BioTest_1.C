@@ -14,9 +14,18 @@ Fitting_b.push_back(par[1]);
 cout << "par[0]: " << par[0] << endl;
 cout << "par[1]: " << par[1] << endl;
 */
+double Get_the_P_Value()
+{
+    
+}
+
 
 void BioTest_1()
 {
+    
+    double alpha = 0.05;//Type 1 error( Like the dollar 0.05 cent you use to bet )
+    
+    
     gRandom = new TRandom3(0);
     gRandom->SetSeed(0);
 

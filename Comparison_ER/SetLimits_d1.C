@@ -14,6 +14,8 @@
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_ER/XENON_ER_Upper_d1.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_ER/XENON1T_ER_Lower_d1.h"
 
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_ER/twokmRock_ER_Upper_d1.h"
+
 
 void SetLimits_d1()
 {
@@ -68,7 +70,7 @@ void SetLimits_d1()
   pad1->SetTicky(1);
 
 //  TH2F *frame = new TH2F("frame","",100,3.0,200,100,5e-43,1e-39);
-  TH2F *frame = new TH2F("frame","",100,1e-2,10,100,1e-35,1e-21);
+  TH2F *frame = new TH2F("frame","",100,1e-2,10,100,1e-35,1e-19);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
   //frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
@@ -236,6 +238,30 @@ void SetLimits_d1()
     Line_TEXONO_Index->SetTextColor(4);
     Line_TEXONO_Index->SetTextAngle(5);
     Line_TEXONO_Index->Draw("Lsame");
+
+    cout << "===========================================================================================" << endl;
+
+    //===========================================2kmrock_Upper=============================================
+    TGraph *Graph_2kmrock_ER_Upper_d1_from_paper = new TGraph(); Graph_2kmrock_ER_Upper_d1_from_paper->SetName("Graph_2kmrock_ER_Upper_d1_from_paper");
+    int Row_2kmrock_ER_Upper_d1_from_paper = sizeof(twokmRock_ER_Upper_d1)/sizeof(twokmRock_ER_Upper_d1[0]);
+    for(int i=0;i<Row_2kmrock_ER_Upper_d1_from_paper;i++)
+    {
+        Graph_2kmrock_ER_Upper_d1_from_paper->SetPoint((i), twokmRock_ER_Upper_d1[i][0], twokmRock_ER_Upper_d1[i][1]);
+        cout << "twokmRock_ER_Upper_d1[i][0]: " << twokmRock_ER_Upper_d1[i][0] <<  endl;
+        cout << "twokmRock_ER_Upper_d1[i][1]: " << twokmRock_ER_Upper_d1[i][1] <<  endl;
+    }
+      Graph_2kmrock_ER_Upper_d1_from_paper->SetLineStyle(2);
+      Graph_2kmrock_ER_Upper_d1_from_paper->SetLineColor(8);
+      Graph_2kmrock_ER_Upper_d1_from_paper->SetLineWidth(4);
+      Graph_2kmrock_ER_Upper_d1_from_paper->Draw("Lsame");
+
+    TLatex *Line_2kmrock_Index = new TLatex(0.03,1e-21,"2kmrock");
+    Line_2kmrock_Index->SetTextFont(42);
+    Line_2kmrock_Index->SetTextSize(0.04);
+    Line_2kmrock_Index->SetLineWidth(2);
+    Line_2kmrock_Index->SetTextColor(8);
+    Line_2kmrock_Index->SetTextAngle(5);
+    Line_2kmrock_Index->Draw("Lsame");
 
     cout << "===========================================================================================" << endl;
 
