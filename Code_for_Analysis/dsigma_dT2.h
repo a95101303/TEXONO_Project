@@ -1487,7 +1487,7 @@ double *Velocity_Aft_collision_Bent(int Collision_Time=0, double mx=10, double S
             DM_Velocity_Aft_Colliding=Initial_Velocity;
         }
         //cout << "Count: " << Count << endl;
-        cout << "Fun_DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
+        //cout << "Fun_DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
         RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;
         RETURN_VALUE[1]=Energy_Lost_Total;
         RETURN_VALUE[2]=Energy_DM(mx,Initial_Velocity*1e3/3e8)-Energy_DM(mx,DM_Velocity_Aft_Colliding*1e3/3e8);
@@ -1854,17 +1854,20 @@ double insert(double x, double x0, double y0, double x1, double y1)
 
  double Length_for_asking_the_collision(double Collision_Time, double WIMP_mx, double Velocity, double Sigma_SI_Default, double Density, double A_on_the_path)//km
  {//The example of count: (11.34*(15))/(unified_atomic_mass_g*(APb))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,APb))
+     /*
      cout << "Collision_Time: " << Collision_Time << endl;
      cout << "WIMP_mx: " << WIMP_mx << endl;
      cout << "Velocity: " << Velocity << endl;
      cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
      cout << "Density: " << Density << endl;
      cout << "A_on_the_path:" << A_on_the_path << endl;
-     
+     */
      double First_Term = ((Density)/(unified_atomic_mass_g*(A_on_the_path))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path)));
+     /*
      cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,A_on_the_path) <<endl;
      cout << "First_Term: " << First_Term << endl;
      cout << "(Collision_Time/First_Term)*1e-5: " << (Collision_Time/First_Term)*1e-5 << endl;
+      */
      return (Collision_Time/First_Term)*1e-5;//km
  }
 double Averaged_Collision_Time_with_Length(double Length, double WIMP_mx, double Velocity, double Sigma_SI_Default, double Density, double A_on_the_path)//km

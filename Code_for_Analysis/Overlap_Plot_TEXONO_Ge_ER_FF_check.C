@@ -715,11 +715,14 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
 
         vector<int> Velocity_Index;
         int    TGraph_element_number=0;
-        double dsigma_dT_total_array[velocity_N];
+        double dsigma_dT_total_array[velocity_N];double Ratio1_over_Ratio2_array[velocity_N];
         double total_FF_Ge_Xe_comparison[velocity_N];double total_FF_Si_Xe_comparison[velocity_N];double total_FF_O_Xe_comparison[velocity_N];
+        double Scaling_O=0; double Scaling_Si=0; double Scaling_averaged_element=0;
         for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
         {
             double JJJ=0;double dsigma_dT_total=0;double total_FF_Ge_Xe=0;double total_FF_Si_Xe=0;double total_FF_O_Xe=0;
+            double Ratio1_over_Ratio2=0;
+            double Real_Bin_Number = 0;
             if(velocity_TH1F[Applied_Hist]!=NULL and velocity_TH1F_FF[Applied_Hist]!=NULL)
             {
                 TGraph_element_number = TGraph_element_number + 1;
@@ -753,21 +756,219 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
                     double O_f2        = O_FF_f2->GetBinContent(O_FF_Bin);
                     double total_FF_O_square  = (O_f1*O_f1+O_f2*O_f2);
 
-                    //if(T_1*1e3 > 80.)cout << "dsigma_dT_1/dsigma_dT_2: " << dsigma_dT_1/dsigma_dT_2 << endl;// (DCS of Xe/DCS of Ge)
-                    //if(T_1*1e3 > 80.)cout << "total_FF_Xe_square/total_FF_Ge_square: " << total_FF_Xe_square/total_FF_Ge_square << endl;// (DCS of Xe/DCS of Ge)
-                    //if(T_1*1e3 > 80.)cout << "total_FF_O_square/total_FF_Xe_square: " << total_FF_O_square/total_FF_Xe_square << endl;// (DCS of O/DCS of Ge)
+                    double Ratio_1     = dsigma_dT_1/dsigma_dT_2;
+                    double Ratio_2     = total_FF_Xe_square/total_FF_Ge_square;
+                    double Ratio_3     = total_FF_Xe_square/total_FF_Si_square;
+                    double Ratio_4     = total_FF_Xe_square/total_FF_O_square;
+                     
+                    if(T_1*1e3 > 12.)
+                    {
+                        total_FF_Si_Xe   = total_FF_Si_Xe   + total_FF_Si_square/total_FF_Xe_square;//O/Xe
+                        total_FF_O_Xe   = total_FF_O_Xe   + total_FF_O_square/total_FF_Xe_square;//O/Xe
+                        Real_Bin_Number = Real_Bin_Number + 1;
+                    }
+                }
+                cout << "total_FF_O_Xe/(Real_Bin_Number*2.5): " << total_FF_O_Xe/(Real_Bin_Number*2.5) << endl;
+                cout << "total_FF_Si_Xe/(Real_Bin_Number*2.5): " << total_FF_Si_Xe/(Real_Bin_Number*2.5) << endl;;
+                
+                Scaling_O  = Scaling_O  + total_FF_O_Xe/(Real_Bin_Number*2.5);
+                Scaling_Si = Scaling_Si + total_FF_Si_Xe/(Real_Bin_Number*2.5);
+                Scaling_averaged_element = Scaling_averaged_element + 1;
+                //cout << "dsigma_dT_total: " << dsigma_dT_total << endl;
+            }
+        }
+        cout << "Scaling_O/Scaling_averaged_element: "  << Scaling_O/Scaling_averaged_element << endl;
+        cout << "Scaling_Si/Scaling_averaged_element: " << Scaling_Si/Scaling_averaged_element << endl;
+        double Velocity_for_TGraph[TGraph_element_number];
+        for(int Velocity_Index_number=0; Velocity_Index_number<Velocity_Index.size(); Velocity_Index_number++)
+        {
+            Velocity_for_TGraph[Velocity_Index_number] = velocitykm[Velocity_Index[Velocity_Index_number]];
+            
+            cout << "Velocity: " << velocity_d[Velocity_Index[Velocity_Index_number]] << endl;
 
+        }
+        
+
+    }//for(int Index_File=6; Index_File<7; Index_File++) //For 1.0GeV
+}//End_Main
+
+
+
+/*
+void Overlap_Plot_TEXONO_Ge_ER_FF_check()
+{
+    
+    const int    velocity_N=13;
+    const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
+    string velocity_s[velocity_N]={"01667","03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};
+    double velocity_d[velocity_N]={0.1667,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};
+    double velocitykm[velocity_N];//Filled in the next line
+    for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
+    
+    const int Index=0;
+    
+    //const double Length  = 3e0;//cm
+    const double Threshold_keV = 0.2;//keV
+    vector<string> File;
+    vector<double> WIMP_mx_Array;
+    vector<double> Collision_Time_Array;
+    vector<double> dE_dX_1_from_mukesh_array;
+    vector<double> dE_dX_2_from_Paper_array;
+
+    vector<double> Energy_Loss_Per_Collision;
+    vector<double> Scaling={1e-18,1e-9};
+    //=========Define the file==========//
+    //Xe_c1
+    if(Index==0)
+    {
+    File=
+            {"c1_20_0GeV",
+            "c1_10_0GeV","c1_5_0GeV",
+            "c1_4_0GeV","c1_3_0GeV",
+            "c1_2_0GeV","c1_1_0GeV",
+            "c1_0_900GeV","c1_0_800GeV",
+            "c1_0_700GeV","c1_0_600GeV",
+            "c1_0_500GeV","c1_0_400GeV",
+            "c1_0_300GeV","c1_0_200GeV",
+            "c1_0_120GeV","c1_0_090GeV",
+            "c1_0_070GeV","c1_0_050GeV",
+            "c1_0_040GeV",
+            "c1_0_020GeV","c1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.07,0.05,0.04,0.02,0.01};
+    }
+    //Xe_d1
+    if(Index==1)
+    {
+         File=
+            {
+            "d1_20_0GeV",
+            "d1_10_0GeV","d1_5_0GeV",
+            "d1_4_0GeV","d1_3_0GeV",
+            "d1_2_0GeV","d1_1_0GeV",
+            "d1_0_900GeV","d1_0_800GeV",
+            "d1_0_700GeV","d1_0_600GeV",
+            "d1_0_500GeV","d1_0_400GeV",
+            "d1_0_300GeV","d1_0_200GeV",
+            "d1_0_120GeV","d1_0_090GeV",
+            "d1_0_080GeV","d1_0_070GeV",
+            "d1_0_050GeV",
+            "d1_0_040GeV",
+            "d1_0_020GeV","d1_0_010GeV",
+            };
+        WIMP_mx_Array ={20.0,10.0,5.0,4.0,3.0,2.0,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.12,0.09,0.08,0.07,0.05,0.04,0.02,0.01};
+    }
+    //Read the file of DCS for different masses
+    vector<double> Cross_Section_Set;
+
+    
+    string c1_d1_Xe_Ge_index[4]={"SI_c1_XeData_Vel","SI_d1_XeData_Vel","SI_c1_GeData_Vel","SI_d1_GeData_Vel"};
+    //===============electron recoil===================//
+    //for(int Index_File=0; Index_File<File.size(); Index_File++)
+    for(int Index_File=6; Index_File<7; Index_File++) //For 1.0GeV
+    //for(int Index_File=15; Index_File<16; Index_File++) //For 0.1GeV
+    //for(int Index_File=File.size()-1; Index_File<File.size(); Index_File++) //For 0.01GeV
+    {
+        TFile *fin    = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[Index_File].c_str()));
+        TFile *fin_FF = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index+2].c_str(),File[Index_File].c_str()));
+
+        //vector<TH1F*> velocity_TH1F   ;//Mass-based
+        //vector<TH1F*> velocity_TH1F_FF;//Mass-based for Form factor check
+
+        TH1F *velocity_TH1F[velocity_N];TH1F *velocity_TH1F_FF[velocity_N];
+        vector<double>   velocity_Used;//km/s
+        velocity_Used.push_back(0);
+        for(int kkk=0; kkk<velocity_N; kkk++)
+        {
+            TH1F *Velocity_TH1F_temp   =(TH1F*)fin->Get(velocity_s[kkk].c_str());
+                velocity_TH1F[kkk] = (Velocity_TH1F_temp);
+            
+            //===============Form Factor check==============
+            
+            TH1F *Velocity_TH1F_temp_FF=(TH1F*)fin_FF->Get(velocity_s[kkk].c_str());//Mass-based for Form factor check
+                velocity_TH1F_FF[kkk] = (Velocity_TH1F_temp_FF);
+            
+             
+            //===============Form Factor check==============
+        }
+        TFile *Xe_FF   =  TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/Xe_FF.root");
+        TH1F *Xe_FF_f1 = (TH1F*)Xe_FF->Get("f1");TH1F *Xe_FF_f2 = (TH1F*)Xe_FF->Get("f2");
+        TFile *Ge_FF   = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/Ge_FF.root");
+        TH1F *Ge_FF_f1 = (TH1F*)Ge_FF->Get("f1");TH1F *Ge_FF_f2 = (TH1F*)Ge_FF->Get("f2");
+        TFile *Si_FF   = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/Si_FF.root");
+        TH1F *Si_FF_f1 = (TH1F*)Si_FF->Get("f1");TH1F *Si_FF_f2 = (TH1F*)Si_FF->Get("f2");
+        TFile *O_FF   = TFile::Open("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/O_FF.root");
+        TH1F *O_FF_f1 = (TH1F*)O_FF->Get("f1");TH1F *O_FF_f2 = (TH1F*)O_FF->Get("f2");
+
+        vector<int> Velocity_Index;
+        int    TGraph_element_number=0;
+        double dsigma_dT_total_array[velocity_N];double Ratio1_over_Ratio2_array[velocity_N];
+        double total_FF_Ge_Xe_comparison[velocity_N];double total_FF_Si_Xe_comparison[velocity_N];double total_FF_O_Xe_comparison[velocity_N];
+        for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
+        {
+            double JJJ=0;double dsigma_dT_total=0;double total_FF_Ge_Xe=0;double total_FF_Si_Xe=0;double total_FF_O_Xe=0;
+            double Ratio1_over_Ratio2=0;
+            int Real_Bin_Number = 0;
+            if(velocity_TH1F[Applied_Hist]!=NULL and velocity_TH1F_FF[Applied_Hist]!=NULL)
+            {
+                TGraph_element_number = TGraph_element_number + 1;
+                Velocity_Index.push_back(Applied_Hist);
+                for(int kkk=1; kkk<10057; kkk++)
+                {
+                    double dsigma_dT_1  = velocity_TH1F[Applied_Hist]->GetBinContent(kkk)*1e-15*TMath::Power(Scaling[Index],2);//Xe
+                    double dT_1         = velocity_TH1F[Applied_Hist]->GetBinWidth(kkk)*1e-3;
+                    double T_1          = velocity_TH1F[Applied_Hist]->GetBinCenter(kkk)*1e-3;//keV
+                    
+                    int    Bin_2        = velocity_TH1F_FF[Applied_Hist]->GetXaxis()->FindBin(T_1*1e3);//Ge
+                    double dsigma_dT_2  = velocity_TH1F_FF[Applied_Hist]->GetBinContent(Bin_2)*1e-15*TMath::Power(Scaling[Index],2);//
+                    //For Form Factor(FF)
+                    int    Xe_FF_Bin    = Xe_FF_f1->GetXaxis()->FindBin(T_1*1e3);
+                    double Xe_f1        = Xe_FF_f1->GetBinContent(Xe_FF_Bin);
+                    double Xe_f2        = Xe_FF_f2->GetBinContent(Xe_FF_Bin);
+                    double total_FF_Xe_square  = (Xe_f1*Xe_f1+Xe_f2*Xe_f2);
+                    
+                    int    Ge_FF_Bin    = Ge_FF_f1->GetXaxis()->FindBin(T_1*1e3);
+                    double Ge_f1        = Ge_FF_f1->GetBinContent(Ge_FF_Bin);
+                    double Ge_f2        = Ge_FF_f2->GetBinContent(Ge_FF_Bin);
+                    double total_FF_Ge_square  = (Ge_f1*Ge_f1+Ge_f2*Ge_f2);
+
+                    int    Si_FF_Bin    = Si_FF_f1->GetXaxis()->FindBin(T_1*1e3);
+                    double Si_f1        = Si_FF_f1->GetBinContent(Si_FF_Bin);
+                    double Si_f2        = Si_FF_f2->GetBinContent(Si_FF_Bin);
+                    double total_FF_Si_square  = (Si_f1*Si_f1+Si_f2*Si_f2);
+
+                    int    O_FF_Bin    = O_FF_f1->GetXaxis()->FindBin(T_1*1e3);
+                    double O_f1        = O_FF_f1->GetBinContent(O_FF_Bin);
+                    double O_f2        = O_FF_f2->GetBinContent(O_FF_Bin);
+                    double total_FF_O_square  = (O_f1*O_f1+O_f2*O_f2);
+
+                    double Ratio_1     = dsigma_dT_1/dsigma_dT_2;
+                    double Ratio_2     = total_FF_Xe_square/total_FF_Ge_square;
+                    double Ratio_3     = total_FF_Xe_square/total_FF_Si_square;
+                    double Ratio_4     = total_FF_Xe_square/total_FF_O_square;
+
+                    if(T_1*1e3 > 80.)cout << "Ratio_1/Ratio_2: " << Ratio_1/Ratio_2 << endl;
+                    
+                    if(T_1*1e3 > 80.)cout << "dsigma_dT_1/dsigma_dT_2: " << dsigma_dT_1/dsigma_dT_2 << endl;// (DCS of Xe/DCS of Ge)
+                    if(T_1*1e3 > 80.)cout << "total_FF_Xe_square/total_FF_Ge_square: " << total_FF_Xe_square/total_FF_Ge_square << endl;// (DCS of Xe/DCS of Ge)
+                    if(T_1*1e3 > 80.)cout << "total_FF_O_square/total_FF_Xe_square: " << total_FF_O_square/total_FF_Xe_square << endl;// (DCS of O/DCS of Ge)
+                     
+                    
                     //dsigma_dT_total = dsigma_dT_total + dsigma_dT_2/dsigma_dT_1;//Ge/Xe
                     //total_FF_Ge_Xe  = total_FF_Ge_Xe  + total_FF_Ge_square/total_FF_Xe_square;//Ge/Xe
-                    dsigma_dT_total = dsigma_dT_total + dsigma_dT_1/dsigma_dT_2;//Ge/Xe
-                    total_FF_Ge_Xe  = total_FF_Ge_Xe  + total_FF_Xe_square/total_FF_Ge_square;//Ge/Xe
+                    //dsigma_dT_total = dsigma_dT_total + dsigma_dT_2/dsigma_dT_1;//Ge/Xe
+                    if(T_1*1e3 > 80.)Ratio1_over_Ratio2 = Ratio1_over_Ratio2 + Ratio_1/Ratio_2;//Ge/Xe
+                    if(T_1*1e3 > 80.)JJJ = JJJ + 1;
 
-                    total_FF_Si_Xe  = total_FF_Si_Xe  + total_FF_Xe_square/total_FF_Si_square;//Si/Xe
-                    total_FF_O_Xe   = total_FF_O_Xe   + total_FF_Xe_square/total_FF_O_square;//O/Xe
-                    JJJ = JJJ + 1;
+                    dsigma_dT_total = dsigma_dT_total + dsigma_dT_1/dsigma_dT_2;//Ge/Xe
+                    total_FF_Ge_Xe  = total_FF_Ge_Xe  + total_FF_Ge_square/total_FF_Xe_square;//Ge/Xe
+                    total_FF_Si_Xe  = total_FF_Si_Xe  + total_FF_Si_square/total_FF_Xe_square;//Si/Xe
+                    total_FF_O_Xe   = total_FF_O_Xe   + total_FF_O_square/total_FF_Xe_square;//O/Xe
                 }
                 dsigma_dT_total = dsigma_dT_total / (JJJ);total_FF_Ge_Xe  = total_FF_Ge_Xe / (JJJ);total_FF_Si_Xe   = total_FF_Si_Xe / (JJJ);total_FF_O_Xe   = total_FF_O_Xe / (JJJ);
+                Ratio1_over_Ratio2 = Ratio1_over_Ratio2 / (JJJ);
                 dsigma_dT_total_array[Applied_Hist]       = dsigma_dT_total;
+                Ratio1_over_Ratio2_array[Applied_Hist]    = Ratio1_over_Ratio2;
                 total_FF_Ge_Xe_comparison[Applied_Hist]   = total_FF_Ge_Xe;
                 total_FF_Si_Xe_comparison[Applied_Hist]   = total_FF_Si_Xe;
                 total_FF_O_Xe_comparison[Applied_Hist]    = total_FF_O_Xe;
@@ -781,6 +982,7 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
             Velocity_for_TGraph[Velocity_Index_number] = velocitykm[Velocity_Index[Velocity_Index_number]];
             
             cout << "Velocity: " << velocity_d[Velocity_Index[Velocity_Index_number]] << endl;
+            cout << "Ratio1_over_Ratio2_array " << Ratio1_over_Ratio2_array[Velocity_Index[Velocity_Index_number]] << endl;
             cout << "total_FF_Ge_Xe_comparison: " << total_FF_Ge_Xe_comparison[Velocity_Index[Velocity_Index_number]] << endl;
             cout << "total_FF_Si_Xe_comparison: " << total_FF_Si_Xe_comparison[Velocity_Index[Velocity_Index_number]] << endl;
             cout << "total_FF_O_Xe_comparison: " << total_FF_O_Xe_comparison[Velocity_Index[Velocity_Index_number]] << endl;
@@ -791,8 +993,17 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
         gStyle->SetOptFit(0);
         gStyle->SetOptStat(0);
 
+        TGraph* gr_Ratio1_over_Ratio2 = new TGraph(TGraph_element_number,Velocity_for_TGraph,Ratio1_over_Ratio2_array);
+        gr_Ratio1_over_Ratio2->GetXaxis()->SetRangeUser(260,800);
+        gr_Ratio1_over_Ratio2->GetYaxis()->SetRangeUser(1e-3,1e3);
+        gr_Ratio1_over_Ratio2->SetLineColor(2);
+        gr_Ratio1_over_Ratio2->SetLineStyle(1);
+        gr_Ratio1_over_Ratio2->SetLineWidth(5);
+        gr_Ratio1_over_Ratio2->GetXaxis()->SetTitle("V_{#chi}(km/s)");
+        gr_Ratio1_over_Ratio2->GetYaxis()->SetTitle("");
+
         TGraph* gr_dsigma_dT = new TGraph(TGraph_element_number,Velocity_for_TGraph,dsigma_dT_total_array);
-        gr_dsigma_dT->GetXaxis()->SetRangeUser(0,800);
+        gr_dsigma_dT->GetXaxis()->SetRangeUser(260,800);
         gr_dsigma_dT->GetYaxis()->SetRangeUser(1e-3,1e4);
         gr_dsigma_dT->SetLineColor(2);
         gr_dsigma_dT->SetLineStyle(1);
@@ -804,7 +1015,7 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
         gr_Ge_Xe->SetLineColor(3);
         gr_Ge_Xe->SetLineStyle(1);
         gr_Ge_Xe->SetLineWidth(5);
-        gr_Ge_Xe->GetXaxis()->SetRangeUser(0,800);
+        gr_Ge_Xe->GetXaxis()->SetRangeUser(260,800);
         gr_Ge_Xe->GetYaxis()->SetRangeUser(1e-3,1e2);
         gr_Ge_Xe->GetXaxis()->SetTitle("V_{#chi}(km/s)");
         gr_Ge_Xe->GetYaxis()->SetTitle("");
@@ -813,7 +1024,7 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
         gr_Si_Xe->SetLineColor(4);
         gr_Si_Xe->SetLineStyle(1);
         gr_Si_Xe->SetLineWidth(5);
-        gr_Si_Xe->GetXaxis()->SetRangeUser(0,800);
+        gr_Si_Xe->GetXaxis()->SetRangeUser(260,800);
         gr_Si_Xe->GetYaxis()->SetRangeUser(1e-3,1e2);
         gr_Si_Xe->GetXaxis()->SetTitle("V_{#chi}(km/s)");
         gr_Si_Xe->GetYaxis()->SetTitle("");
@@ -823,11 +1034,12 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
         gr_O_Xe->SetLineStyle(1);
         gr_O_Xe->SetLineWidth(5);
 
-        gr_dsigma_dT->Draw("AL");
+        gr_Ratio1_over_Ratio2->Draw("AL");
+        
         gr_Ge_Xe->Draw("Lsame");
         gr_Si_Xe->Draw("Lsame");
         gr_O_Xe->Draw("Lsame");
-
+         
         c3->SetLogy();
         
         c3->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/Form_Factor_Comparison.pdf");
@@ -835,8 +1047,7 @@ void Overlap_Plot_TEXONO_Ge_ER_FF_check()
 
     }//for(int Index_File=6; Index_File<7; Index_File++) //For 1.0GeV
 }//End_Main
-
-
+*/
 
 //cout << "Applied_Hist: " << Applied_Hist << endl;
 //cout << "velocity_TH1F[Applied_Hist]->GetBinContent(kkk): " << velocity_TH1F[Applied_Hist]->GetBinContent(kkk) << endl;
