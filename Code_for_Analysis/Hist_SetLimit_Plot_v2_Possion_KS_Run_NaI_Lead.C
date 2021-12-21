@@ -26,32 +26,48 @@
 #include "velocity_distribution_2000_Ave.h"
 #include "dsigma_dT2.h"
 
-const int          Simulated_Event_Number = 500;
-const double       Max_V                  = 779;//(km/s)
-const double       WIMP_Mass              = 1;
+const int          Simulated_Event_Number = 1;
+const double       Max_V                  = 779.;//(km/s)
+const double       WIMP_Mass              = 0.2;
 //Constant
 const double       NaI_Density            = 3.67;//3.67(g/cm^3)
 const double       NaI_Atomic_Mass        = 22.98*0.5+126*0.5;//
 const double       Pb_Density             = 11.29;//3.67(g/cm^3)
 const double       Pb_Atomic_Mass         = 207.2;//
 
+const double       Fixed_Length           = 3.;//cm
+
+double Mean_free_Path_check(double Density, double Atomic_Mass, double Sigma_SI)
+{
+    double MFP_Calculated = 1./((Density)/(unified_atomic_mass_g*(Atomic_Mass))*total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
+    double Collision_Time   = (Density*(MFP_Calculated))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
+    double Collision_Time_2 = (Density*(15.))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
+
+    cout << "Atomic_Mass: " << Atomic_Mass << endl;
+    cout << "Once: " << (Density*(3))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,1.5e-27,WIMP_Mass,Atomic_Mass)) << endl;;
+    cout << "MFP_Calculated: "    << MFP_Calculated << endl;
+    cout << "Collision_Time: "    << Collision_Time << endl;
+    cout << "Collision_Time_2: "  << Collision_Time_2 << endl;
+    return MFP_Calculated;//cm
+}
 
 double *Run_Program(double Density, double Atomic_Mass, double Sigma_SI)//Density, Atomic mass
 {
     static double Array[2];
     double Initial_V      = Max_V;
     double Length_added   = 0;
-    int    Collision_Time = 0;
-    double Collision_Time = (Density*())/(unified_atomic_mass_g*(APb))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,APb))
-
-    while(Energy_DM(WIMP_Mass,Initial_V*1e3/3e8)>0.01)
+    double Collision_Time = (Density*(Fixed_Length))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
+    while((int)Collision_Time>0)
     {
-        double Length_DM = Length_for_asking_the_collision(0.001,WIMP_Mass,Initial_V,Sigma_SI,Density,Atomic_Mass);//
         double *V_aft    = Velocity_Aft_collision_Bent(1,WIMP_Mass,Sigma_SI,Initial_V,Atomic_Mass);
         Initial_V        = V_aft[0];
-        Length_added     = Length_added + Length_DM;//km
+        Collision_Time    = Collision_Time - 1;//
+        //cout << "Initial_V: " << Initial_V << endl;
+        //cout << "Collision_Time: " << Collision_Time << endl;
     }
-    Array[0]=Initial_V;Array[1]=Length_added*1e5;
+    //cout << "Initial_E: " << Energy_DM(WIMP_Mass,Initial_V*1e3/3e8);
+    //cout << "Initial_V: " << Initial_V << endl;
+    Array[0]=Initial_V;
     return Array;
 }
 
@@ -59,26 +75,35 @@ double *Run_Program(double Density, double Atomic_Mass, double Sigma_SI)//Densit
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 {
-    const double       Sigma_SI_NaI           = 1e-26;
-    const double       Sigma_SI_Pb            = 1e-26;
+    const double       Same_Sigma             = 1e-27;
+    const double       Sigma_SI_NaI           = Same_Sigma;
+    const double       Sigma_SI_Pb            = Same_Sigma;
 
     int NaI_Event=0;int Pb_Event=0;
+    /*
     for(int kkk=0; kkk<Simulated_Event_Number; kkk++)
     {
         cout << "=============(NaI)Event: " << kkk << endl;
         double *NaI_Parameter = Run_Program(NaI_Density,NaI_Atomic_Mass,Sigma_SI_NaI);
         double Final_E_NaI    = Energy_DM(WIMP_Mass,NaI_Parameter[0]*1e3/3e8);//keV
-        if(Final_E_NaI<0.01)NaI_Event = NaI_Event + 1;
+        if(Final_E_NaI>0.01)NaI_Event = NaI_Event + 1;
     }
-    
+     */
+     /*
     for(int kkk=0; kkk<Simulated_Event_Number; kkk++)
     {
         cout << "=============(Pb)Event: " << kkk << endl;
         double *Pb_Parameter  = Run_Program(Pb_Density,Pb_Atomic_Mass,Sigma_SI_Pb);
         double Final_E_Pb     = Energy_DM(WIMP_Mass,Pb_Parameter[0]*1e3/3e8);//keV
-        if(Final_E_Pb<0.01)Pb_Event = Pb_Event + 1;
+        cout << "Pb_Parameter[0]: " << Pb_Parameter[0] << endl;
+        if(Pb_Parameter[0]>425.){cout << "Big!!Fuck!!" << endl;Pb_Event = Pb_Event + 1;}
     }
-    cout << "NaI_Event/Simulated_Event_Number:" << NaI_Event/Simulated_Event_Number << endl;
+    //cout << "NaI_Event/Simulated_Event_Number:" << NaI_Event/Simulated_Event_Number << endl;
     cout << "Pb_Event/Simulated_Event_Number:"  << Pb_Event/Simulated_Event_Number << endl;
+    */
+    double MFP_NaI = Mean_free_Path_check(NaI_Density,NaI_Atomic_Mass,Sigma_SI_NaI);
+   // double MFP_Pb  = Mean_free_Path_check(Pb_Density ,Pb_Atomic_Mass ,Sigma_SI_Pb) ;
+    cout << "MFP_NaI: " << MFP_NaI << endl;
+    //cout << "MFP_Pb:  " << MFP_Pb  << endl;
 }
 

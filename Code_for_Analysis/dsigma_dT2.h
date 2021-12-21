@@ -1526,6 +1526,35 @@ double total_Sigma(int Option=0, double Velocity=0, double Sigma_SI=0, double WI
     }
     return total_Sigma;
 }
+
+double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
+ {
+    //cout << "Option: " << Option << endl;
+    //cout << "Velocity: " << Velocity << endl;
+    
+    int reso_T=1000;double T[reso_T];double total_Sigma=0;double MFP=0;
+     double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A); //keV
+    //======
+    for(int i=0;i<reso_T;i++)
+    {
+        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+    }
+    //======
+    double dEx=0;
+    double pEx = T[0];
+    for(int i=0;i<reso_T;i++)
+    {
+        if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
+        if(Option==0 or (Option==1 and Velocity!=0))
+            {
+                total_Sigma = total_Sigma + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
+            }
+        pEx = T[i];
+    }
+
+    return MFP;
+}
+
 double total_C_AAAA(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
  {//Check for High-Mass Range above 10^10GeV
     //cout << "Option: " << Option << endl;
