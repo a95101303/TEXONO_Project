@@ -1449,6 +1449,9 @@ double *Velocity_Aft_collision_Bent(int Collision_Time=0, double mx=10, double S
     
     //cout <<"Velocity_Aft_collision_Collision_TIme: " << Collision_Time << endl;
     // Percentage of the material of the earth
+    gRandom = new TRandom3(0);
+    gRandom->SetSeed(0);
+
     if(Initial_Velocity!=0)
     {
         int Collision_Time_Temp=Collision_Time;
@@ -1521,9 +1524,58 @@ double total_Sigma(int Option=0, double Velocity=0, double Sigma_SI=0, double WI
         if(Option==0 or (Option==1 and Velocity!=0))
             {
                 total_Sigma = total_Sigma + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
+                //cout << "T[i]: " << T[i] << endl;
+                //cout << "fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]): " << fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]) << endl;
             }
         pEx = T[i];
     }
+
+    return total_Sigma;
+}
+
+double total_Sigma_Modified(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
+ {
+    //cout << "Option: " << Option << endl;
+    //cout << "Velocity: " << Velocity << endl;
+    
+    int reso_T=1000;double T[reso_T];double total_Sigma=0;double total_DCS=0;
+     double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, Velocity*1000.0/2.99792458e8, A)+0.2; //keV
+    //======
+    for(int i=0;i<reso_T;i++)
+    {
+        T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T); // keV
+    }
+    //======
+    double dEx=0;
+    double pEx = T[0];
+    for(int i=0;i<reso_T;i++)
+    {
+        if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
+        if(Option==0 or (Option==1 and Velocity!=0))
+            {
+                total_Sigma = total_Sigma + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
+                total_DCS   = total_DCS   + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]));
+                //cout << "T[i]: " << T[i] << endl;
+                //cout << "fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]): " << fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]) << endl;
+            }
+        pEx = T[i];
+    }
+     double Check_average_energy_Loss=0;
+     for(int i=0;i<reso_T;i++)
+     {
+         if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
+         if(Option==0 or (Option==1 and Velocity!=0))
+             {
+                 Check_average_energy_Loss = Check_average_energy_Loss + T[i]*(fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])/total_DCS);
+                 //cout << "fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]/fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i]" << fdsigma_dT_keV(WIMP_mx, 8e-28, (Velocity*1e3/3e8), A, T[i])/fdsigma_dT_keV(WIMP_mx, 1e-27, (Velocity*1e3/3e8), A, T[i]) << endl;
+             }
+         pEx = T[i];
+     }
+     
+     cout << "WIMP_mx: "  << WIMP_mx  << endl;
+     cout << "Sigma_SI: " << Sigma_SI << endl;
+     cout << "Check_average_energy_Loss: " << Check_average_energy_Loss << endl;
+
     return total_Sigma;
 }
 

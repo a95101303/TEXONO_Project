@@ -35,7 +35,7 @@ const double       NaI_Atomic_Mass        = 22.98*0.5+126*0.5;//
 const double       Pb_Density             = 11.29;//3.67(g/cm^3)
 const double       Pb_Atomic_Mass         = 207.2;//
 
-const double       Fixed_Length           = 30.;//cm
+const double       Fixed_Length           = 20.;//cm
 
 double Mean_free_Path_check(double WIMP_Mass, double Density, double Atomic_Mass, double Sigma_SI)
 {
@@ -53,25 +53,40 @@ double Mean_free_Path_check(double WIMP_Mass, double Density, double Atomic_Mass
 
 double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double Sigma_SI)//Density, Atomic mass
 {
-    static double Array[2];
-    double Initial_V                = Max_V;
-    double Last_V                   = Max_V;
+    static double Array[3];
+    double Initial_V                      = Max_V;
+    double Last_V                         = Max_V;
     double Energy_Loss_Percentage_total   = 0;
-    double Collision_Time = (Density*(Fixed_Length))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
-    double Collision_Time_Int       = 0;
-    while((int)Collision_Time>0)
+    double Collision_Time                 = (Density*(Fixed_Length))/(unified_atomic_mass_g*(Atomic_Mass))*(total_Sigma(1,Max_V,Sigma_SI,WIMP_Mass,Atomic_Mass));
+    double Collision_Time_Int             = 0;
+    double Energy_Loss_Average            = 0;
+    //cout << "Collision_Time: " << Collision_Time << endl;
+    while((int)Collision_Time>0 and Energy_DM(WIMP_Mass,Last_V*1e3/3e8)>0.01)
     {
         double *V_aft      = Velocity_Aft_collision_Bent(1,WIMP_Mass,Sigma_SI,Initial_V,Atomic_Mass);
         Initial_V          = V_aft[0];
         double Energy_Loss = Energy_DM(WIMP_Mass,Last_V*1e3/3e8)-Energy_DM(WIMP_Mass,Initial_V*1e3/3e8);//keV
         double Energy_Loss_Percentage = (Energy_Loss)/Energy_DM(WIMP_Mass,Last_V*1e3/3e8);
+        //cout << "Energy_Loss: " << Energy_Loss << endl;
+        //double Energy_Loss_Percentage = (Energy_Loss)/(Energy_DM(WIMP_Mass,Max_V*1e3/3e8)-0.01);
+        //cout << "Energy_Loss_Percentage: " << Energy_Loss_Percentage << endl;
+        Energy_Loss_Average          = Energy_Loss_Average + Energy_Loss;
         Energy_Loss_Percentage_total = Energy_Loss_Percentage_total + Energy_Loss_Percentage;
         Last_V             = Initial_V;
         Collision_Time     = Collision_Time - 1;//
         Collision_Time_Int = Collision_Time_Int + 1;
     }
+    double Energy_Diff = Energy_DM(WIMP_Mass,Max_V*1e3/3e8)-Energy_DM(WIMP_Mass,Last_V*1e3/3e8);
+    double Expected_Loss = Energy_DM(WIMP_Mass,Max_V*1e3/3e8)-0.01;
+    cout << "Energy_Diff/Fixed_Length: " << Energy_Diff/Fixed_Length << endl;
+    cout << "(Energy_Diff/Fixed_Length)/(Expected_Loss): " << (Energy_Diff/Fixed_Length)/(Expected_Loss) << endl;
+    cout << "Fixed_Length/Collision_Time_Int: " << Fixed_Length/Collision_Time_Int << endl;
+
+    //cout << "Collision_Time_Int: " << Collision_Time_Int  << endl;
     Energy_Loss_Percentage_total = Energy_Loss_Percentage_total/(Collision_Time_Int);
-    Array[0]=Initial_V;Array[1]=Energy_Loss_Percentage_total;
+    Energy_Loss_Average          = Energy_Loss_Average/(Collision_Time_Int);
+    //Energy_Loss_Average          = Energy_Loss_Average/(Collision_Time_Int*Energy_Diff);
+    Array[0]=Initial_V;Array[1]=Energy_Loss_Percentage_total;Array[2]=Energy_Loss_Average;
     return Array;
 }
 
@@ -79,41 +94,87 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 {
-    const double       Same_Sigma             = 1e-27;
+    const double       Same_Sigma             = 4e-28;
     const double       Sigma_SI_NaI           = Same_Sigma;
     const double       Sigma_SI_Pb            = Same_Sigma;
 
+    vector<double> Cross_Section_Array={4e-28,2e-27};
+
     //vector<double> Mass_Array={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};
     vector<double> Mass_Array={2,0.2};
-
+    
     int NaI_Event=0;int Pb_Event=0;
     
     
-    
-    for(int Mass_Index=0; Mass_Index<Mass_Array.size(); Mass_Index++)
+for(int Mass_Index=0; Mass_Index<2; Mass_Index++)
+{
+    cout << "=========Mass_Array[Mass_Index]==========" << Mass_Array[Mass_Index] << endl;
+    for(int Cross_Section_IDX=0; Cross_Section_IDX<Cross_Section_Array.size(); Cross_Section_IDX++)
     {
-        double Energy_Ratio_NaI =0;double Energy_Ratio_Pb =0;
-        for(int Event_Index=0; Event_Index<Simulated_Event_Number; Event_Index++)
-        {
-            cout << "=============(NaI)Event: " << Event_Index << endl;
-            double *NaI_Parameter = Run_Program(Mass_Array[Mass_Index],NaI_Density,NaI_Atomic_Mass,Sigma_SI_NaI);
-            cout << "NaI_Parameter[1]: " << NaI_Parameter[1] << endl;
-            Energy_Ratio_NaI = Energy_Ratio_NaI + NaI_Parameter[1];
-            //if(Final_E_NaI>0.01)NaI_Event = NaI_Event + 1;
+        cout << "=========Cross_Section_Array[Cross_Section_IDX]==========" << Cross_Section_Array[Cross_Section_IDX] << endl;
+            double Energy_Ratio_NaI =0;double Energy_Ratio_Pb =0;
+            double Energy_Loss_NaI =0; double Energy_Loss_Pb =0;
+            for(int Event_Index=0; Event_Index<Simulated_Event_Number; Event_Index++)
+            {
+                //cout << "=============(NaI)Event: " << Event_Index << endl;
+                double *NaI_Parameter = Run_Program(Mass_Array[Mass_Index],NaI_Density,NaI_Atomic_Mass,Cross_Section_Array[Cross_Section_IDX]);
+                //cout << "NaI_Energy_Loss_%: "     << NaI_Parameter[1] << endl;
+                //cout << "NaI_Energy_Loss_value: " << NaI_Parameter[2] << endl;
+                Energy_Ratio_NaI = Energy_Ratio_NaI + NaI_Parameter[1];
+                Energy_Loss_NaI = Energy_Loss_NaI + NaI_Parameter[2];
+
+                //if(Final_E_NaI>0.01)NaI_Event = NaI_Event + 1;
+            }
+             
+             
+            for(int Event_Index=0; Event_Index<Simulated_Event_Number; Event_Index++)
+            {
+                //cout << "=============(Pb)Event: " << Event_Index << endl;
+                double *Pb_Parameter  = Run_Program(Mass_Array[Mass_Index],Pb_Density,Pb_Atomic_Mass,Cross_Section_Array[Cross_Section_IDX]);
+                //cout << "Pb_Energy_Loss_%: "     << Pb_Parameter[1] << endl;
+                //cout << "Pb_Energy_Loss_value: " << Pb_Parameter[2] << endl;
+                Energy_Ratio_Pb = Energy_Ratio_Pb + Pb_Parameter[1];
+                Energy_Loss_Pb  = Energy_Loss_Pb  + Pb_Parameter[2];
+
+                //if(Pb_Parameter[0]>425.){cout << "Big!!Fuck!!" << endl;Pb_Event = Pb_Event + 1;}
+            }
+            cout << "Energy_Ratio_NaI/Simulated_Event_Number:" << Energy_Ratio_NaI/Simulated_Event_Number << endl;
+            cout << "Energy_Ratio_Pb/Simulated_Event_Number:"  << Energy_Ratio_Pb/Simulated_Event_Number << endl;
+            cout << "Energy_Loss_NaI/Simulated_Event_Number:"  << Energy_Loss_NaI/Simulated_Event_Number << endl;
+            cout << "Energy_Loss_Pb/Simulated_Event_Number:"  << Energy_Loss_Pb/Simulated_Event_Number << endl;
+
         }
-         
-         
-        for(int Event_Index=0; Event_Index<Simulated_Event_Number; Event_Index++)
-        {
-            cout << "=============(Pb)Event: " << Event_Index << endl;
-            double *Pb_Parameter  = Run_Program(Mass_Array[Mass_Index],Pb_Density,Pb_Atomic_Mass,Sigma_SI_Pb);
-            cout << "Pb_Parameter[1]: " << Pb_Parameter[1] << endl;
-            Energy_Ratio_Pb = Energy_Ratio_Pb + Pb_Parameter[1];
-            //if(Pb_Parameter[0]>425.){cout << "Big!!Fuck!!" << endl;Pb_Event = Pb_Event + 1;}
-        }
-        cout << "Energy_Ratio_NaI/Simulated_Event_Number:" << Energy_Ratio_NaI/Simulated_Event_Number << endl;
-        cout << "Energy_Ratio_Pb/Simulated_Event_Number:"  << Energy_Ratio_Pb/Simulated_Event_Number << endl;
     }
+     
+    /*
+    vector<double> Sigma_Array={8e-38,1e-27,3e-27};
+    vector<double> Velocity_Array={400,600,800};
+    for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
+    {
+        cout << "==================================" << endl;
+        cout << "Sigma_Array[Cross_Section_index]: " << Sigma_Array[Cross_Section_index] << endl;
+        for(int Velocity_Index=0; Velocity_Index<Velocity_Array.size(); Velocity_Index++)
+        {
+        cout << "Velocity_Array[Velocity_Index]: " << Velocity_Array[Velocity_Index] << endl;
+            double Pb_2GeV    = total_Sigma_Modified(1,Velocity_Array[Velocity_Index],Sigma_Array[Cross_Section_index],  2,Pb_Atomic_Mass);
+            cout << "Pb_2GeV: " << Pb_2GeV << endl;
+        }
+        cout << "==================================" << endl;
+    }
+     */
+    /*
+    for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
+    {
+        cout << "Sigma_Array[Cross_Section_index]: " << Sigma_Array[Cross_Section_index] << endl;
+        double NaI_2GeV    = total_Sigma(1,779,Sigma_Array[Cross_Section_index],  2,NaI_Atomic_Mass);
+        cout << "NaI_2GeV: " << NaI_2GeV << endl;
+        cout << "==================================" << endl;
+        double NaI_0P2GeV  = total_Sigma(1,779,Sigma_Array[Cross_Section_index],0.2,NaI_Atomic_Mass);
+        cout << "NaI_0P2GeV: " << NaI_0P2GeV << endl;
+        cout << "==================================" << endl;
+        cout << "Ratio: " << (NaI_0P2GeV)/(NaI_2GeV) << endl;
+    }
+     */
     /*
      
     double MFP_NaI = Mean_free_Path_check(NaI_Density,NaI_Atomic_Mass,Sigma_SI_NaI);
