@@ -1579,8 +1579,8 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
     //cout << "Option: " << Option << endl;
     //cout << "Velocity: " << Velocity << endl;
     
-    int reso_T=1000;double T[reso_T];double MFP=0;
-     double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A); //keV
+     int reso_T=1000;double T[reso_T];double MFP=0;double total_Cross_Section=0;
+     double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, Velocity*1000.0/2.99792458e8, A); //keV
     //======
     for(int i=0;i<reso_T;i++)
     {
@@ -1595,11 +1595,19 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
         if(Option==0 or (Option==1 and Velocity!=0))
             {
                 MFP = MFP + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
+                total_Cross_Section = total_Cross_Section + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
+                /*
+                cout << "Sigma_SI: " << Sigma_SI << endl;
+                double A_1 = (fdsigma_dT_keV(WIMP_mx, 1e-26, (Velocity*1e3/3e8), A, T[i]));
+                double B_1 = (fdsigma_dT_keV(WIMP_mx, 7e-27, (Velocity*1e3/3e8), A, T[i]));
+                cout << "A_1/B_1: " << A_1/B_1 << endl;
+                 */
             }
         pEx = T[i];
     }
      
-    return MFP;
+     if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm)
+     if(Option==0)return 1e3*(MFP/total_Cross_Section);//eV averaged energy loss per collision
 }
 
 double total_C_AAAA(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)

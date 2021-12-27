@@ -28,7 +28,6 @@
 
 const int          Simulated_Event_Number = 10;
 const double       Max_V                  = 779.;//(km/s)
-//const double       WIMP_Mass              = 0.2;
 //Constant
 const double       NaI_Density            = 3.67;//3.67(g/cm^3)
 const double       NaI_Atomic_Mass        = 22.98*0.5+126*0.5;//
@@ -36,8 +35,14 @@ const double       Pb_Density             = 11.29;//3.67(g/cm^3)
 const double       Pb_Atomic_Mass         = 207.2;//
 const double       Fixed_Length           = 20.;//cm
 
-const double Density_Array[3]    ={1 ,Pb_Density    ,NaI_Density};
-const double Atomic_Mass_Array[3]={18,Pb_Atomic_Mass,NaI_Atomic_Mass};
+const double Density_Array[3]           ={2.8 ,Pb_Density    ,NaI_Density};
+const double Atomic_Mass_Array[3]={Weighted_Atomic_Number_Cement,Pb_Atomic_Mass,NaI_Atomic_Mass};
+const double Number_Density_Array[3]    ={
+                                          Density_Array[0]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[0])) ,
+                                          Density_Array[1]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])) ,
+                                          Density_Array[1]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[2]))
+                                        };
+
 const double Length_Array[3]     ={30*1e2,25,15};//30 meter-water-equivalent, 25cm lead, 15cm NaI
 
 double Mean_free_Path_check(double WIMP_Mass, double Density, double Atomic_Mass, double Sigma_SI)
@@ -155,27 +160,48 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     }
      */
      
-    
-    vector<double> Sigma_Array={5e-28,7e-28,9e-28,2e-27};
     vector<double> Mass_Array={0.1,0.09,0.08,0.07,0.06,0.05};
+    vector<double> Sigma_Array={5e-28,7e-28,9e-28,2e-27,4e-27,7e-27,1e-26};
+    const int      Material_Number=3;
+    
+    double Energy_Loss_per_collision_Array_Water[Mass_Array.size()][Sigma_Array.size()];
+    double Energy_Loss_per_collision_Array_Pb[Mass_Array.size()][Sigma_Array.size()];
+    double Energy_Loss_per_collision_Array_NaI[Mass_Array.size()][Sigma_Array.size()];
 
     for(int Mass=0; Mass<Mass_Array.size(); Mass++)//Every Mass I got three values for one Cross-section
     {
-        cout << "=========================================Mass=========================================: "      << Mass_Array[Mass] << endl;
-        
-        for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
+    
+        cout << "============================Mass==============================: "      << Mass_Array[Mass] << endl;
+        for(int Material_Index=0; Material_Index<3; Material_Index++)
         {
-            cout << "Sigma_Array[Cross_Section_index]: "      << Sigma_Array[Cross_Section_index] << endl;
-            double Water_MFP  = Mean_free_Path_check(Mass_Array[Mass], Density_Array[0], Atomic_Mass_Array[0], Sigma_Array[Cross_Section_index]);
-            double Pb_MFP     = Mean_free_Path_check(Mass_Array[Mass], Density_Array[1], Atomic_Mass_Array[1], Sigma_Array[Cross_Section_index]);
-            double NaI_MFP    = Mean_free_Path_check(Mass_Array[Mass], Density_Array[2], Atomic_Mass_Array[2], Sigma_Array[Cross_Section_index]);
-            cout << "Water_MFP: " << Water_MFP << endl;
-            cout << "Pb_MFP: "    << Pb_MFP    << endl;
-            cout << "NaI_MFP: "   << NaI_MFP   << endl;
+            for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
+            {
+                cout << "Sigma_Array[Cross_Section_index]: "      << Sigma_Array[Cross_Section_index] << endl;
+        Energy_Loss_per_collision_Array[Mass][Material_Index] = (  MFP_from_DCS_Part(0,Max_V,Sigma_Array[Cross_Section_index], Mass_Array[Mass], Atomic_Mass_Array[Material_Index]) );
+                cout << "Water_ELoss_per_collision "  << Energy_Loss_per_collision_Array[0] << endl;
+                cout << "Pb_ELoss_per_collision: "    << Energy_Loss_per_collision_Array[1] << endl;
+                cout << "NaI_ELoss_per_collision: "   << Energy_Loss_per_collision_Array[2] << endl;
+            }
         }
         cout << "=====================================================================================: "  << endl;
     }
     
+        /*
+        TGraph * g_Energy_Loss_per_collision_Array = new TGraph((int)Mass_Array.size(), Energy_H_Check, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
+        g_Xe_Ge->SetMarkerStyle(20);
+        g_Xe_Ge->SetMarkerColor(2);
+        g_Xe_Ge->SetMarkerColor(2);
+        g_Xe_Ge->GetYaxis()->SetRangeUser(0,20);
+        g_Xe_Ge->GetXaxis()->SetTitle("Recoil Energy(eV)");
+        g_Xe_Ge->GetXaxis()->SetTitle("Log10(Ratio of DCS)");
+        g_Xe_Ge->Draw("apl");
+        
+        TGraph * g_Xe_H = new TGraph(7, Energy_H_Check, &TGraph_dsigma_dT_Xe_H_Check[0]);
+        g_Xe_H->SetMarkerStyle(20);
+        g_Xe_H->SetMarkerColor(3);
+        g_Xe_H->Draw("plsame");
+         */
+
     /*
     for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
     {
@@ -199,3 +225,20 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 }
 
 //double Final_E_NaI    = Energy_DM(WIMP_Mass,NaI_Parameter[0]*1e3/3e8);//keV
+
+    /*
+    for(int Material_Index=0; Material_Index<3; Material_Index++)
+    {
+MFP_Array.push_back(  Mean_free_Path_check(Mass_Array[Mass], Density_Array[Material_Index], Atomic_Mass_Array[Material_Index], Sigma_Array[Cross_Section_index]) );
+    }
+    cout << "Water_MFP: " << MFP_Array[0] << endl;
+    cout << "Pb_MFP: "    << MFP_Array[1] << endl;
+    cout << "NaI_MFP: "   << MFP_Array[2] << endl;
+    for(int Material_Index=0; Material_Index<3; Material_Index++)
+    {
+dEdX_Array.push_back(  Number_Density_Array[Material_Index]*MFP_from_DCS_Part(1,Max_V,Sigma_Array[Cross_Section_index], Mass_Array[Mass], Atomic_Mass_Array[Material_Index]) );
+    }
+    cout << "Water_dEdX: " << dEdX_Array[0] << endl;
+    cout << "Pb_dEdX: "    << dEdX_Array[1] << endl;
+    cout << "NaI_dEdX: "   << dEdX_Array[2] << endl;
+     */
