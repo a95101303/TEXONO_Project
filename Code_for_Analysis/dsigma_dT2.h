@@ -695,11 +695,6 @@ double Energy_DM(double mx, double beta)
 //Inverse the Energy of DM to the velocity of DM with the formula in the previous function
 double Velocity_DM(double mx, double Energy)//Outcome:[km/s]
 {
-    //cout << "WHATWHAT???" << endl;
-    //cout << "2*Energy:" << 2*Energy << endl;
-    //cout << "mx*1e6: " << mx*1e6 << endl;
-    //cout << "sqrt(2*Energy/(mx*1e6)): " << sqrt(2*Energy/(mx*1e6)) << endl;
-    
     return sqrt(2*Energy/(mx*1e6))*(3e8/1e3); //[km/s]
 }
 double Function_of_material_possibility(int Earth_or_air) // 1 is earth 2 is air
@@ -1584,7 +1579,7 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
     //cout << "Option: " << Option << endl;
     //cout << "Velocity: " << Velocity << endl;
     
-    int reso_T=1000;double T[reso_T];double total_Sigma=0;double MFP=0;
+    int reso_T=1000;double T[reso_T];double MFP=0;
      double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, 779.135*1000.0/2.99792458e8, A); //keV
     //======
     for(int i=0;i<reso_T;i++)
@@ -1599,11 +1594,11 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
         if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
         if(Option==0 or (Option==1 and Velocity!=0))
             {
-                total_Sigma = total_Sigma + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
+                MFP = MFP + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
             }
         pEx = T[i];
     }
-
+     
     return MFP;
 }
 
