@@ -221,6 +221,14 @@ cout << "DCS_Inidividual/Total_Cross_Section_Ge: " << DCS_Inidividual/Total_Cros
 cout << "================================" << endl;
  */
 
+
+const double MeVinverse2_to_GeVinverse2_Plus_UT=1e+4*1e-24;//UT(Unit transform)
+const double Energy_H_Point[7]={80,120,150,200,300,400,480};//eV
+const double DCS_H_Point[7]={1e-18,1e-19,1e-20,1e-21,1e-22,1e-23,1e-24};//1e-24cm^2/keV,1/MeV^2
+//const double Energy_H_Point[11]={17,25,35,50,80,120,150,200,300,400,480};//eV
+//const double DCS_H_Point[11]={1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20,1e-21,1e-22,1e-23,1e-24};//1e-24cm^2/keV,1/MeV^2
+
+/*
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
@@ -283,18 +291,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             (1E-8*UT)
         };//1e-24cm^2/keV,1/MeV^2
 
-    double Energy_H[12]={12,20,28,38,55,82,120,170,220,320,400,480};//eV
-    double DCS_H[12]=
-    {
-            TMath::Log10(3.5E+2*UT),
-            TMath::Log10(2.5E+2*UT),TMath::Log10(1E+2*UT),
-            TMath::Log10(1E+1*UT),TMath::Log10(1E+0*UT),
-            TMath::Log10(1E-1*UT),TMath::Log10(1E-2*UT),
-            TMath::Log10(1E-3*UT),TMath::Log10(1E-4*UT),
-            TMath::Log10(1E-5*UT),TMath::Log10(1E-6*UT),
-            TMath::Log10(1E-7*UT)
-        };//1e-24cm^2/keV,1/MeV^2
-
+    
     //===============electron recoil===================//
     //for(int kkk=0; kkk<File.size(); kkk++)
     for(int kkk=1; kkk<2; kkk++)
@@ -346,31 +343,14 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double Slope_Ge       = (Highest_Y_Ge - Lowest_Y_Ge)/(Length_Ge_X);
 
             double Length_H_X     = (480.-80.);
-            double Slope_H        = ((DCS_H[11]) - (DCS_H[5]))/(Length_H_X);
+            double Slope_H        = (TMath::Log10(DCS_H_Point[6]) - TMath::Log10(DCS_H_Point[0]))/(Length_H_X);
             
             cout << "Lowest_Y_Xe : " << Lowest_Y_Xe  << endl;
             cout << "Lowest_Y_Ge : " << Lowest_Y_Ge  << endl;
-            cout << "Lowest_Y_H : "  << DCS_H[5]  << endl;
 
             cout << "Slope_Xe: " << Slope_Xe << endl;
             cout << "Slope_Ge: " << Slope_Ge << endl;
-            cout << "Slope_H: " << Slope_H << endl;
-            
-            /*
-            double Xe_FF_Total=0;
-            for(int Xe_F=0; Xe_F<BIN_henke_f_Xe_f1; Xe_F++)
-            {
-                double Xe_F1 = f1_henke_Xe[Xe_F][1];
-                double Xe_F2 = f2_henke_Xe[Xe_F][1];
-                Xe_FF_Total = sqrt(Xe_F1*Xe_F1+Xe_F2*Xe_F2);
-            }
-            for(int Xe_F=0; Xe_F<BIN_henke_f_Xe_f1; Xe_F++)
-            {
-                double Xe_F1 = f1_henke_Xe[Xe_F][1];
-                double Xe_F2 = f2_henke_Xe[Xe_F][1];
-                Xe_FF_Total = sqrt(Xe_F1*Xe_F1+Xe_F2*Xe_F2);
-            }
-             */
+            cout << "Slope_H: "  << Slope_H  << endl;
             
         }
         
@@ -379,10 +359,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     //==================================================//
 
 }//End_Main
+*/
 
 
 
-/*
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
@@ -512,7 +492,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             }
             for(int MMM=0; MMM<7; MMM++)
             {
-                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_H_Check[MMM]);
+                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(Energy_H_Point[MMM]);
                 TGraph_dsigma_dT_Xe_Check.push_back(velocity_TH1F[Applied_Hist]->GetBinContent(Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
             }
             
@@ -538,33 +518,82 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             }
             for(int MMM=0; MMM<7; MMM++)
             {
-                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]->GetXaxis()->FindBin(Energy_H_Check[MMM]);
+                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]->GetXaxis()->FindBin(Energy_H_Point[MMM]);
+                cout << "Bin_Ge: " << Bin_Ge << endl;
                 TGraph_dsigma_dT_Ge_Check.push_back(velocity_TH1F_2[Applied_Hist]->GetBinContent(Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
             }
             for(int MMM=0; MMM<7; MMM++)
             {
                 TGraph_dsigma_dT_Xe_Ge_Check.push_back(TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/TGraph_dsigma_dT_Ge_Check[MMM]));
-                TGraph_dsigma_dT_Xe_H_Check.push_back(TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H_Check[MMM]));
             }
+            
+            double Energy_H[7];double DCS_H[7];
+            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){DCS_H[DCS_Filled]=DCS_H_Point[DCS_Filled]*MeVinverse2_to_GeVinverse2_Plus_UT;}
+            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){cout << "DCS_H[DCS_Filled]: " << DCS_H[DCS_Filled] << endl;}
+
             for(int MMM=0; MMM<7; MMM++)
             {
+                cout << "TGraph_dsigma_dT_Xe_Check[MMM]: " << TGraph_dsigma_dT_Xe_Check[MMM] << endl;
+                cout << "DCS_H[MMM]: " << DCS_H[MMM] << endl;
+                cout << "TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H[MMM]: " << TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H[MMM] << endl;
+                cout << "TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H[MMM]): " << TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H[MMM]) << endl;
+                TGraph_dsigma_dT_Xe_H_Check.push_back(TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/DCS_H[MMM]));
+            }
+
+            for(int MMM=0; MMM<7; MMM++)
+            {
+                cout << "DCS_H[MMM]: " << DCS_H[MMM] << endl;
                 cout << "TGraph_dsigma_dT_Xe_Ge_Check: " << TGraph_dsigma_dT_Xe_Ge_Check[MMM] << endl;
                 cout << "TGraph_dsigma_dT_Xe_H_Check: " << TGraph_dsigma_dT_Xe_H_Check[MMM] << endl;
             }
-
-            TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Check, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
+            /*
+            TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
             g_Xe_Ge->SetMarkerStyle(20);
             g_Xe_Ge->SetMarkerColor(2);
             g_Xe_Ge->SetMarkerColor(2);
             g_Xe_Ge->GetYaxis()->SetRangeUser(0,20);
             g_Xe_Ge->GetXaxis()->SetTitle("Recoil Energy(eV)");
-            g_Xe_Ge->GetXaxis()->SetTitle("Log10(Ratio of DCS)");
+            g_Xe_Ge->GetYaxis()->SetTitle("Log10(Ratio of DCS)");
             g_Xe_Ge->Draw("apl");
-            
-            TGraph * g_Xe_H = new TGraph(7, Energy_H_Check, &TGraph_dsigma_dT_Xe_H_Check[0]);
+
+            TGraph * g_Xe_H = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_H_Check[0]);
             g_Xe_H->SetMarkerStyle(20);
             g_Xe_H->SetMarkerColor(3);
             g_Xe_H->Draw("plsame");
+             */
+            
+            TGraph * g_Xe = new TGraph((int)TGraph_Recoil_Energy_Xe.size(), &TGraph_Recoil_Energy_Xe[0], &TGraph_dsigma_dT_Xe[0]);
+            g_Xe->SetMarkerStyle(20);
+            g_Xe->SetMarkerColor(2);
+            g_Xe->SetMarkerColor(2);
+            g_Xe->GetXaxis()->SetRangeUser(0,500);
+            g_Xe->GetYaxis()->SetRangeUser(-45,-30);
+            g_Xe->Draw("apl");
+
+            TGraph * g_Ge = new TGraph((int)TGraph_Recoil_Energy_Ge.size(), &TGraph_Recoil_Energy_Ge[0], &TGraph_dsigma_dT_Ge[0]);
+            g_Ge->SetMarkerStyle(20);
+            g_Ge->SetMarkerColor(3);
+            g_Ge->Draw("plsame");
+
+            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){DCS_H[DCS_Filled]=TMath::Log10(DCS_H[DCS_Filled]);}
+
+            TGraph * g_H = new TGraph(7, Energy_H_Point, DCS_H);
+            g_H->SetMarkerStyle(20);
+            g_H->SetMarkerColor(4);
+            g_H->SetLineWidth(5);
+            g_H->Draw("plsame");
+
+            TLegend *leg = new TLegend(0.7,0.7,0.9,0.9);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(g_Xe,"Xe","lP");
+            leg->AddEntry(g_Ge,"Ge","lP");
+            leg->AddEntry(g_H,"H","lP");
+            leg->Draw();
+             
 
             
         }
@@ -574,38 +603,58 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     //==================================================//
 
 }//End_Main
-*/
+ 
 
 /*
-TGraph * g_Xe = new TGraph((int)TGraph_Recoil_Energy_Xe.size(), &TGraph_Recoil_Energy_Xe[0], &TGraph_dsigma_dT_Xe[0]);
-g_Xe->SetMarkerStyle(20);
-g_Xe->SetMarkerColor(2);
-g_Xe->SetMarkerColor(2);
-g_Xe->GetYaxis()->SetRangeUser(-45,-30);
-g_Xe->Draw("apl");
+TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
+g_Xe_Ge->SetMarkerStyle(20);
+g_Xe_Ge->SetMarkerColor(2);
+g_Xe_Ge->SetMarkerColor(2);
+g_Xe_Ge->GetYaxis()->SetRangeUser(0,20);
+g_Xe_Ge->GetXaxis()->SetTitle("Recoil Energy(eV)");
+g_Xe_Ge->GetXaxis()->SetTitle("Log10(Ratio of DCS)");
+g_Xe_Ge->Draw("apl");
 
-TGraph * g_Ge = new TGraph((int)TGraph_Recoil_Energy_Ge.size(), &TGraph_Recoil_Energy_Ge[0], &TGraph_dsigma_dT_Ge[0]);
-g_Ge->SetMarkerStyle(20);
-g_Ge->SetMarkerColor(3);
-g_Ge->Draw("plsame");
-
-TGraph * g_H = new TGraph(12, Energy_H, DCS_H);
-g_H->SetMarkerStyle(20);
-g_H->SetMarkerColor(4);
-g_H->SetLineWidth(5);
-g_H->Draw("plsame");
-
-TLegend *leg = new TLegend(0.7,0.7,0.9,0.9);
-leg->SetFillColor(0);
-leg->SetFillStyle(0);
-leg->SetTextSize(0.04);
-leg->SetBorderSize(0);
-leg->SetTextFont(22);
-leg->AddEntry(g_Xe,"Xe","lP");
-leg->AddEntry(g_Ge,"Ge","lP");
-leg->AddEntry(g_H,"H","lP");
-leg->Draw();
+TGraph * g_Xe_H = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_H_Check[0]);
+g_Xe_H->SetMarkerStyle(20);
+g_Xe_H->SetMarkerColor(3);
+g_Xe_H->Draw("plsame");
  */
+
+/*
+ TGraph * g_Xe = new TGraph((int)TGraph_Recoil_Energy_Xe.size(), &TGraph_Recoil_Energy_Xe[0], &TGraph_dsigma_dT_Xe[0]);
+ g_Xe->SetMarkerStyle(20);
+ g_Xe->SetMarkerColor(2);
+ g_Xe->SetMarkerColor(2);
+ g_Xe->GetXaxis()->SetRangeUser(0,500);
+ g_Xe->GetYaxis()->SetRangeUser(-60,-30);
+ g_Xe->Draw("apl");
+
+ TGraph * g_Ge = new TGraph((int)TGraph_Recoil_Energy_Ge.size(), &TGraph_Recoil_Energy_Ge[0], &TGraph_dsigma_dT_Ge[0]);
+ g_Ge->SetMarkerStyle(20);
+ g_Ge->SetMarkerColor(3);
+ g_Ge->Draw("plsame");
+
+ TGraph * g_H = new TGraph(11, Energy_H_Point, DCS_H);
+ g_H->SetMarkerStyle(20);
+ g_H->SetMarkerColor(4);
+ g_H->SetLineWidth(5);
+ g_H->Draw("plsame");
+
+ TLegend *leg = new TLegend(0.7,0.7,0.9,0.9);
+ leg->SetFillColor(0);
+ leg->SetFillStyle(0);
+ leg->SetTextSize(0.04);
+ leg->SetBorderSize(0);
+ leg->SetTextFont(22);
+ leg->AddEntry(g_Xe,"Xe","lP");
+ leg->AddEntry(g_Ge,"Ge","lP");
+ leg->AddEntry(g_H,"H","lP");
+ leg->Draw();
+  
+*/
+ 
+
 
 /*
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()

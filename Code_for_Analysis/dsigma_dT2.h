@@ -1592,7 +1592,7 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
     for(int i=0;i<reso_T;i++)
     {
         if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
-        if(Option==0 or (Option==1 and Velocity!=0))
+        if(Option==0 or (Option==1 and Velocity!=0) or Option==2)
             {
                 MFP = MFP + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
                 total_Cross_Section = total_Cross_Section + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
@@ -1605,9 +1605,9 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
             }
         pEx = T[i];
     }
-     
-     if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm)
-     if(Option==0)return 1e3*(MFP/total_Cross_Section);//eV averaged energy loss per collision
+     if(Option==0)return 1e3*(MFP/total_Cross_Section);//(eV) averaged energy loss per collision
+     if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm) [Part of it! You should time with n)
+     if(Option==2)return total_Cross_Section;//
 }
 
 double total_C_AAAA(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
