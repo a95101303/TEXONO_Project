@@ -104,24 +104,170 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
     return Array;
 }
 
+void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
+{
+    const double Total_Bin_Number = 2000;
+    vector<string> Mass_Point       ={"0P1","0P09","0P08"};
+    vector<double> Mass_Point_Vector={0.1,0.09,0.08};
 
+    double TEXONO_Threshold_E = 0.2;//keV
+
+    for(int KKK=1; KKK<2; KKK++)
+    {
+        double Min_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
+        int   N_FILE = 0;
+        vector<double>Cross_Section;
+        vector<double>N_aft_divide_N_Bef_element;
+        vector<double>Mean_Energy;
+        for(int FILE=1; FILE<28; FILE++)
+        {
+            //Include the FILE and the HIST
+            TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/Recoil_Spectrum/MD_%i.root",Mass_Point[KKK].c_str(),FILE));
+            TFile *FILE_Index = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[KKK].c_str(),FILE));
+
+            if(ROOT_FILE!=NULL)
+            {
+                TH1F *Flux_HIST_Random;TH1F *Flux_HIST_Aft_Collision_EARTH;
+                ES_HIST_Random             =(TH1F*)ROOT_FILE->Get("ER_Spectrum_Bef");//Energy Spectrum(ES)
+                ES_Aft_Collision_EARTH     =(TH1F*)ROOT_FILE->Get("ER_Spectrum_Aft");//
+                
+                TTree *T1_TREE = (TTree*)FILE_Index->Get("t1");
+                Double_t mx,sigma_si;
+                T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+                T1_TREE->GetEntry(0);
+                
+                //
+                double 
+                for(int Bin=0; Bin<Total_Bin_Number; Bin++)
+                {
+                    double Recoil_Energy = 0.16+0.005*(double)Bin;//keV
+                    double ES_Value_Bef  = ES_HIST_Random        ->Eval(Recoil_Energy);
+                    double ES_Value_Aft  = ES_Aft_Collision_EARTH->Eval(Recoil_Energy);
+                }
+                cout << "sigma_si: " << sigma_si << endl;
+                //cout << "Event_Aft/Event_Bef: " << Event_Aft/Event_Bef << endl;
+                cout << "Mean_Value_Aft: " << Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8) << endl;
+                Cross_Section.push_back(sigma_si);
+                N_aft_divide_N_Bef_element.push_back(Event_Aft/Event_Bef);
+                Mean_Energy.push_back(1e3*Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8));
+                N_FILE = N_FILE + 1;
+            }
+        }
+        TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+        gStyle->SetOptStat(0);
+        gStyle->SetTitleSize(0.04,"XY");
+        gStyle->SetTitleFont(62,"XY");
+        gStyle->SetLegendFont(62);
+        
+        TGraph *TGraph_Mean_Energy = new TGraph(N_FILE, &Cross_Section[0], &Mean_Energy[0]);
+        TGraph_Mean_Energy->SetMarkerStyle(20);
+        TGraph_Mean_Energy->SetMarkerColor(2);
+        TGraph_Mean_Energy->SetMarkerColor(2);
+        TGraph_Mean_Energy->GetXaxis()->SetRangeUser(1e-40,1e-26);
+        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1e3);
+        TGraph_Mean_Energy->GetYaxis()->SetTitle("<T>(eV)");
+        TGraph_Mean_Energy->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
+        TGraph_Mean_Energy->Draw("apl");
+
+        c1->SetLogx();
+        //c1->SetLogy();
+
+    }
+}
+
+/*
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
 {
-    vector<string> Mass_Point={"0P1","0P09",};
+    const double Total_Bin_Number = 2000;
+    vector<string> Mass_Point       ={"0P1","0P09","0P08"};
+    vector<double> Mass_Point_Vector={0.1,0.09,0.08};
 
-    for(int KKK=0; KKK<Mass_Point.size(); KKK++)
+    double TEXONO_Threshold_E = 0.2;//keV
+
+    for(int KKK=1; KKK<2; KKK++)
     {
-        for(int FILE=0; FILE<27; FILE++)
+        double Min_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
+        int   N_FILE = 0;
+        vector<double>Cross_Section;
+        vector<double>N_aft_divide_N_Bef_element;
+        vector<double>Mean_Energy;
+        for(int FILE=1; FILE<28; FILE++)
         {
-        TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[Mass_INT].c_str(),FILE));
-        
-        TH1F *Flux_HIST_Random;TH1F *Flux_HIST_Aft_Collision_EARTH;
-        Flux_HIST_Random=(TH1F*)ROOT_FILE->Get("Flux_HIST_Random");
-        Flux_HIST_Aft_Collision_EARTH=(TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");
+            //Include the FILE and the HIST
+            TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/%i.root",Mass_Point[KKK].c_str(),FILE));
+            if(ROOT_FILE!=NULL)
+            {
+                TH1F *Flux_HIST_Random;TH1F *Flux_HIST_Aft_Collision_EARTH;
+                Flux_HIST_Random             =(TH1F*)ROOT_FILE->Get("Flux_HIST_Random");//Flux_HIST_Random(FHR)
+                Flux_HIST_Aft_Collision_EARTH=(TH1F*)ROOT_FILE->Get("Flux_HIST_Aft_Collision_EARTH");//Flux_HIST_Aft_Collision_EARTH(FHACE)
+                
+                TTree *T1_TREE = (TTree*)ROOT_FILE->Get("t1");
+                Double_t mx,sigma_si;
+                T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
+                T1_TREE->GetEntry(0);
+
+                double Mean_Value_Aft_V   = Flux_HIST_Aft_Collision_EARTH->GetMean();//(km/s)
+                cout << "Mean_Value_Aft_V: " << Mean_Value_Aft_V << endl;
+                //
+                double TEXONO_Threshold_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
+
+                //Int_t Maximum_Bin_FHR   = Flux_HIST_Random              ->FindLastBinAbove();
+                //Int_t Maximum_Bin_FHACE = Flux_HIST_Aft_Collision_EARTH->FindLastBinAbove();
+                double Event_Bef=0;double Event_Aft=0;
+                for(int Bin=0; Bin<Total_Bin_Number; Bin++)
+                {
+                    double Velocity_Bef = Flux_HIST_Random             ->GetXaxis()->GetBinCenter(Bin);//(km/s)
+                    double Number_Bef   = Flux_HIST_Random             ->GetBinContent(Bin);//(km/s)
+                    double Velocity_Aft = Flux_HIST_Aft_Collision_EARTH->GetXaxis()->GetBinCenter(Bin);//(km/s)
+                    double Number_Aft   = Flux_HIST_Aft_Collision_EARTH->GetBinContent(Bin);//(km/s)
+
+                    if(Velocity_Bef>TEXONO_Threshold_V)Event_Bef = Event_Bef + Number_Bef;
+                    if(Velocity_Aft>TEXONO_Threshold_V)Event_Aft = Event_Aft + Number_Aft;
+                }
+                cout << "sigma_si: " << sigma_si << endl;
+                //cout << "Event_Aft/Event_Bef: " << Event_Aft/Event_Bef << endl;
+                cout << "Mean_Value_Aft: " << Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8) << endl;
+                Cross_Section.push_back(sigma_si);
+                N_aft_divide_N_Bef_element.push_back(Event_Aft/Event_Bef);
+                Mean_Energy.push_back(1e3*Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8));
+                N_FILE = N_FILE + 1;
+            }
         }
+        TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+        gStyle->SetOptStat(0);
+        gStyle->SetTitleSize(0.04,"XY");
+        gStyle->SetTitleFont(62,"XY");
+        gStyle->SetLegendFont(62);
+        
+        TGraph *TGraph_Mean_Energy = new TGraph(N_FILE, &Cross_Section[0], &Mean_Energy[0]);
+        TGraph_Mean_Energy->SetMarkerStyle(20);
+        TGraph_Mean_Energy->SetMarkerColor(2);
+        TGraph_Mean_Energy->SetMarkerColor(2);
+        TGraph_Mean_Energy->GetXaxis()->SetRangeUser(1e-40,1e-26);
+        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1e3);
+        TGraph_Mean_Energy->GetYaxis()->SetTitle("<T>(eV)");
+        TGraph_Mean_Energy->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
+        TGraph_Mean_Energy->Draw("apl");
+
+        c1->SetLogx();
+        //c1->SetLogy();
+
     }
 }
+*/
+/*
+TGraph *N_aft_divide_N_Bef = new TGraph(N_FILE, &Cross_Section[0], &N_aft_divide_N_Bef_element[0]);
+N_aft_divide_N_Bef->SetMarkerStyle(20);
+N_aft_divide_N_Bef->SetMarkerColor(2);
+N_aft_divide_N_Bef->SetMarkerColor(2);
+N_aft_divide_N_Bef->GetXaxis()->SetRangeUser(1e-40,1e-26);
+N_aft_divide_N_Bef->GetYaxis()->SetRangeUser(0,1);
+N_aft_divide_N_Bef->GetYaxis()->SetTitle("Earth/Vacuum");
+N_aft_divide_N_Bef->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
+N_aft_divide_N_Bef->Draw("apl");
+ */
+
 /*
 TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
 gStyle->SetOptStat(0);

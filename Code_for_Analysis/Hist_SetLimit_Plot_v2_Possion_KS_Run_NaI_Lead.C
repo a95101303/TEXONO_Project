@@ -164,8 +164,6 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     {
         double Length_Passed = (atm_table[ATM_Number+1][0]-atm_table[ATM_Number][0])*1e2;//cm
         double Density       = 1e-3*((atm_table[ATM_Number+1][4]+atm_table[ATM_Number][4])*0.5);//g/cm^3
-        //cout << "Length_Passed: " << Length_Passed << endl;
-        //cout << "Density: " << Density << endl;
         Collision_Air_Part   = Collision_Air_Part + Length_Passed*Density*1./(unified_atomic_mass_g*(15.)) ;
     }
     
