@@ -103,23 +103,23 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
     Array[0]=Initial_V;Array[1]=Energy_Loss_Percentage_total;Array[2]=Energy_Loss_Average;
     return Array;
 }
-
+/*
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
 {
-    const double Total_Bin_Number = 2000;
-    vector<string> Mass_Point       ={"0P1","0P09","0P08"};
-    vector<double> Mass_Point_Vector={0.1,0.09,0.08};
+    const double Total_Bin_Number   = 10000;
+    vector<string> Mass_Point       = {"1","0P5","0P1","0P06"};
+    vector<double> Mass_Point_Vector= {1.0,0.5,0.1,0.06};
 
     double TEXONO_Threshold_E = 0.2;//keV
 
-    for(int KKK=1; KKK<2; KKK++)
+    for(int KKK=3; KKK<4; KKK++)
     {
         double Min_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
         int   N_FILE = 0;
-        vector<double>Cross_Section;
-        vector<double>N_aft_divide_N_Bef_element;
+        vector<double>Cross_Section;vector<double>Cross_Section_Error;
+        vector<double>ES_Ratio_Vector;vector<double>ES_Ratio_Error_Vector;
         vector<double>Mean_Energy;
-        for(int FILE=1; FILE<28; FILE++)
+        for(int FILE=1; FILE<40; FILE++)
         {
             //Include the FILE and the HIST
             TFile *ROOT_FILE = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/2_TEXONO_Flux_CAT/%sGeV/Recoil_Spectrum/MD_%i.root",Mass_Point[KKK].c_str(),FILE));
@@ -127,9 +127,9 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
 
             if(ROOT_FILE!=NULL)
             {
-                TH1F *Flux_HIST_Random;TH1F *Flux_HIST_Aft_Collision_EARTH;
-                ES_HIST_Random             =(TH1F*)ROOT_FILE->Get("ER_Spectrum_Bef");//Energy Spectrum(ES)
-                ES_Aft_Collision_EARTH     =(TH1F*)ROOT_FILE->Get("ER_Spectrum_Aft");//
+                TGraph *ES_HIST_Random ;TGraph *ES_Aft_Collision_EARTH;
+                ES_HIST_Random             =(TGraph*)ROOT_FILE->Get("ER_Spectrum_Bef");//Energy Spectrum(ES)
+                ES_Aft_Collision_EARTH     =(TGraph*)ROOT_FILE->Get("ER_Spectrum_Aft");//
                 
                 TTree *T1_TREE = (TTree*)FILE_Index->Get("t1");
                 Double_t mx,sigma_si;
@@ -137,19 +137,39 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
                 T1_TREE->GetEntry(0);
                 
                 //
-                double 
+                double ES_Ratio = 0;
+                double ES_Value_Bef_Total = 0;double ES_Value_Aft_Total = 0;
+                double ES_Ratio_Error = 0;
+                double Test_Time      = 0;
                 for(int Bin=0; Bin<Total_Bin_Number; Bin++)
                 {
                     double Recoil_Energy = 0.16+0.005*(double)Bin;//keV
                     double ES_Value_Bef  = ES_HIST_Random        ->Eval(Recoil_Energy);
                     double ES_Value_Aft  = ES_Aft_Collision_EARTH->Eval(Recoil_Energy);
+
+                    if(ES_Value_Bef>0)
+                    {
+                        ES_Value_Bef_Total  = ES_Value_Bef_Total + ES_Value_Bef;
+                        Test_Time = Test_Time + 1;
+                        //cout << "ES_HIST_Random: " << ES_Value_Bef << endl;
+                        //cout << "ES_Value_Bef: " << ES_Value_Bef << endl;
+                    }
+                    if(ES_Value_Aft>0)
+                    {
+                        ES_Value_Aft_Total  = ES_Value_Aft_Total + ES_Aft_Collision_EARTH->Eval(Recoil_Energy);
+                        //cout << "ES_Aft_Collision_EARTH: " << ES_Value_Aft << endl;
+                        //cout << "ES_Value_Aft: " << ES_Value_Aft << endl;
+                    }
                 }
-                cout << "sigma_si: " << sigma_si << endl;
-                //cout << "Event_Aft/Event_Bef: " << Event_Aft/Event_Bef << endl;
-                cout << "Mean_Value_Aft: " << Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8) << endl;
+                ES_Ratio = ES_Value_Aft_Total/ES_Value_Bef_Total;
+                ES_Ratio_Error = sqrt(ES_Ratio*(1.-ES_Ratio)/Test_Time);
+                ES_Ratio_Vector.push_back(ES_Ratio);
                 Cross_Section.push_back(sigma_si);
-                N_aft_divide_N_Bef_element.push_back(Event_Aft/Event_Bef);
-                Mean_Energy.push_back(1e3*Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8));
+                Cross_Section_Error.push_back(0.);
+                ES_Ratio_Error_Vector.push_back(ES_Ratio_Error);
+                cout << "sigma_si: " << sigma_si << endl;
+                cout << "ES_Ratio: " << ES_Ratio << endl;
+                cout << "ES_Ratio_Error: " << ES_Ratio_Error << endl;
                 N_FILE = N_FILE + 1;
             }
         }
@@ -159,39 +179,41 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
         gStyle->SetTitleFont(62,"XY");
         gStyle->SetLegendFont(62);
         
-        TGraph *TGraph_Mean_Energy = new TGraph(N_FILE, &Cross_Section[0], &Mean_Energy[0]);
+        TGraphErrors *TGraph_Mean_Energy = new TGraphErrors(N_FILE, &Cross_Section[0], &ES_Ratio_Vector[0],&Cross_Section_Error[0],&ES_Ratio_Error_Vector[0]);
         TGraph_Mean_Energy->SetMarkerStyle(20);
         TGraph_Mean_Energy->SetMarkerColor(2);
         TGraph_Mean_Energy->SetMarkerColor(2);
         TGraph_Mean_Energy->GetXaxis()->SetRangeUser(1e-40,1e-26);
-        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1e3);
-        TGraph_Mean_Energy->GetYaxis()->SetTitle("<T>(eV)");
+        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1);
+        TGraph_Mean_Energy->GetYaxis()->SetTitle("Earth/Vacuum");
         TGraph_Mean_Energy->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
         TGraph_Mean_Energy->Draw("apl");
 
         c1->SetLogx();
         //c1->SetLogy();
+        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Ratio_Earth_Effect/ER_%sGeV.pdf",Mass_Point[KKK].c_str()));
+
 
     }
 }
+*/
 
-/*
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
 {
     const double Total_Bin_Number = 2000;
-    vector<string> Mass_Point       ={"0P1","0P09","0P08"};
-    vector<double> Mass_Point_Vector={0.1,0.09,0.08};
+    vector<string> Mass_Point       = {"1","0P5","0P1","0P06"};
+    vector<double> Mass_Point_Vector= {1.0,0.5,0.1,0.06};
 
     double TEXONO_Threshold_E = 0.2;//keV
 
-    for(int KKK=1; KKK<2; KKK++)
+    for(int KKK=0; KKK<4; KKK++)
     {
         double Min_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
         int   N_FILE = 0;
-        vector<double>Cross_Section;
-        vector<double>N_aft_divide_N_Bef_element;
-        vector<double>Mean_Energy;
+        vector<double>Cross_Section;vector<double>Cross_Section_Error;
+        vector<double>N_aft_divide_N_Bef_element;vector<double>N_aft_divide_N_Bef_element_Error;
+        vector<double>Mean_Energy;vector<double>Mean_Energy_Error;
         for(int FILE=1; FILE<28; FILE++)
         {
             //Include the FILE and the HIST
@@ -207,14 +229,22 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
                 T1_TREE->SetBranchAddress("mx",&mx);T1_TREE->SetBranchAddress("sigma_si",&sigma_si);
                 T1_TREE->GetEntry(0);
 
-                double Mean_Value_Aft_V   = Flux_HIST_Aft_Collision_EARTH->GetMean();//(km/s)
-                cout << "Mean_Value_Aft_V: " << Mean_Value_Aft_V << endl;
                 //
                 double TEXONO_Threshold_V = Velocity_DM(Mass_Point_Vector[KKK],TEXONO_Threshold_E);
 
-                //Int_t Maximum_Bin_FHR   = Flux_HIST_Random              ->FindLastBinAbove();
-                //Int_t Maximum_Bin_FHACE = Flux_HIST_Aft_Collision_EARTH->FindLastBinAbove();
+                double N_Total_Bef=0;double N_Total_Aft=0;
+                for(int Bin=0; Bin<Total_Bin_Number; Bin++)
+                {
+                    double Velocity_Bef = Flux_HIST_Random             ->GetXaxis()->GetBinCenter(Bin);//(km/s)
+                    double Number_Bef   = Flux_HIST_Random             ->GetBinContent(Bin);//(km/s)
+                    double Velocity_Aft = Flux_HIST_Aft_Collision_EARTH->GetXaxis()->GetBinCenter(Bin);//(km/s)
+                    double Number_Aft   = Flux_HIST_Aft_Collision_EARTH->GetBinContent(Bin);//(km/s)
+                    if(Velocity_Bef>TEXONO_Threshold_V){N_Total_Bef = N_Total_Bef + Number_Bef;}
+                    if(Velocity_Aft>TEXONO_Threshold_V){N_Total_Aft = N_Total_Aft + Number_Aft;}
+                }
+
                 double Event_Bef=0;double Event_Aft=0;
+                double Event_Bef_Mean_E=0;double Event_Aft_Mean_E=0;
                 for(int Bin=0; Bin<Total_Bin_Number; Bin++)
                 {
                     double Velocity_Bef = Flux_HIST_Random             ->GetXaxis()->GetBinCenter(Bin);//(km/s)
@@ -222,15 +252,45 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
                     double Velocity_Aft = Flux_HIST_Aft_Collision_EARTH->GetXaxis()->GetBinCenter(Bin);//(km/s)
                     double Number_Aft   = Flux_HIST_Aft_Collision_EARTH->GetBinContent(Bin);//(km/s)
 
-                    if(Velocity_Bef>TEXONO_Threshold_V)Event_Bef = Event_Bef + Number_Bef;
-                    if(Velocity_Aft>TEXONO_Threshold_V)Event_Aft = Event_Aft + Number_Aft;
+                    if(Velocity_Bef>TEXONO_Threshold_V)
+                    {
+                        Event_Bef         = Event_Bef        + Number_Bef;
+                        Event_Bef_Mean_E  = Event_Bef_Mean_E + 1e3*Energy_DM(Mass_Point_Vector[KKK],Velocity_Bef*1e3/3e8)*(Number_Bef/N_Total_Bef);
+                    }
+                    if(Velocity_Aft>TEXONO_Threshold_V)
+                    {
+                        Event_Aft         = Event_Aft        + Number_Aft;
+                        //Event_Aft_Mean_E  = Event_Aft_Mean_E + 1e3*Energy_DM(Mass_Point_Vector[KKK],Velocity_Aft*1e3/3e8)*(Number_Aft/N_Total_Aft);
+                    }
+                    Event_Aft_Mean_E  = Event_Aft_Mean_E + 1e3*Energy_DM(Mass_Point_Vector[KKK],Velocity_Aft*1e3/3e8)*(Number_Aft/5000.);
+
                 }
+                //cout << "Event_Bef        : " << Event_Bef << endl;
+                //cout << "Event_Bef_Mean_E : " << Event_Bef_Mean_E << endl;
+                //cout << "Event_Aft        : " << Event_Aft << endl;
+                //cout << "Event_Aft_Mean_E : " << Event_Aft_Mean_E << endl;
+
+                double Event_Aft_Error_E=0;
+                for(int Bin=0; Bin<Total_Bin_Number; Bin++)
+                {
+                    double Velocity_Aft = Flux_HIST_Aft_Collision_EARTH->GetXaxis()->GetBinCenter(Bin);//(km/s)
+                    double Number_Aft   = Flux_HIST_Aft_Collision_EARTH->GetBinContent(Bin);//(km/s)
+
+                        double Diff = Event_Aft_Mean_E-1e3*Energy_DM(Mass_Point_Vector[KKK],Velocity_Aft*1e3/3e8);
+                        Event_Aft_Error_E  = Event_Aft_Error_E + (abs(Diff*Diff)/N_Total_Aft);
+                }
+                Event_Aft_Error_E = sqrt(Event_Aft_Error_E);
                 cout << "sigma_si: " << sigma_si << endl;
-                //cout << "Event_Aft/Event_Bef: " << Event_Aft/Event_Bef << endl;
-                cout << "Mean_Value_Aft: " << Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8) << endl;
-                Cross_Section.push_back(sigma_si);
+                //cout << "Mean_Value_Aft: " << Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8) << endl;
+                Cross_Section.push_back(sigma_si);Cross_Section_Error.push_back(0.);
                 N_aft_divide_N_Bef_element.push_back(Event_Aft/Event_Bef);
-                Mean_Energy.push_back(1e3*Energy_DM(Mass_Point_Vector[KKK],Mean_Value_Aft_V*1e3/3e8));
+                double N_aft_divide_N_Bef_Error = sqrt((Event_Aft/Event_Bef)*(1-Event_Aft/Event_Bef)/Event_Bef);
+                N_aft_divide_N_Bef_element_Error.push_back(N_aft_divide_N_Bef_Error);
+                cout << "Event_Aft_Mean_E: "  << Event_Aft_Mean_E  << endl;
+                cout << "Event_Aft_Error_E: " << Event_Aft_Error_E << endl;
+                Mean_Energy.push_back(Event_Aft_Mean_E);
+                if(Event_Aft_Error_E>0)Mean_Energy_Error.push_back(0.);
+                else{Mean_Energy_Error.push_back(0.);}
                 N_FILE = N_FILE + 1;
             }
         }
@@ -240,22 +300,38 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_V_shifed()
         gStyle->SetTitleFont(62,"XY");
         gStyle->SetLegendFont(62);
         
-        TGraph *TGraph_Mean_Energy = new TGraph(N_FILE, &Cross_Section[0], &Mean_Energy[0]);
+        /*
+        TGraphErrors *N_aft_divide_N_Bef = new TGraphErrors(N_FILE, &Cross_Section[0], &N_aft_divide_N_Bef_element[0], &Cross_Section_Error[0], &N_aft_divide_N_Bef_element_Error[0]);
+        N_aft_divide_N_Bef->SetMarkerStyle(20);
+        N_aft_divide_N_Bef->SetMarkerColor(2);
+        N_aft_divide_N_Bef->SetMarkerColor(2);
+        N_aft_divide_N_Bef->GetXaxis()->SetRangeUser(1e-40,1e-26);
+        N_aft_divide_N_Bef->GetYaxis()->SetRangeUser(0,1);
+        N_aft_divide_N_Bef->GetYaxis()->SetTitle("Earth/Vacuum");
+        N_aft_divide_N_Bef->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
+        N_aft_divide_N_Bef->Draw("apl");
+
+        c1->SetLogx();
+        //c1->SetLogy();
+        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Ratio_Earth_Effect/V_%sGeV.pdf",Mass_Point[KKK].c_str()));
+         */
+        
+        TGraphErrors *TGraph_Mean_Energy = new TGraphErrors(N_FILE, &Cross_Section[0], &Mean_Energy[0], &Cross_Section_Error[0], &Mean_Energy_Error[0]);
         TGraph_Mean_Energy->SetMarkerStyle(20);
         TGraph_Mean_Energy->SetMarkerColor(2);
         TGraph_Mean_Energy->SetMarkerColor(2);
         TGraph_Mean_Energy->GetXaxis()->SetRangeUser(1e-40,1e-26);
-        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1e3);
+        TGraph_Mean_Energy->GetYaxis()->SetRangeUser(0,1);
         TGraph_Mean_Energy->GetYaxis()->SetTitle("<T>(eV)");
         TGraph_Mean_Energy->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
         TGraph_Mean_Energy->Draw("apl");
 
         c1->SetLogx();
         //c1->SetLogy();
-
+        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Ratio_Earth_Effect/Mean_T_%sGeV.pdf",Mass_Point[KKK].c_str()));
     }
 }
-*/
+
 /*
 TGraph *N_aft_divide_N_Bef = new TGraph(N_FILE, &Cross_Section[0], &N_aft_divide_N_Bef_element[0]);
 N_aft_divide_N_Bef->SetMarkerStyle(20);
@@ -266,6 +342,8 @@ N_aft_divide_N_Bef->GetYaxis()->SetRangeUser(0,1);
 N_aft_divide_N_Bef->GetYaxis()->SetTitle("Earth/Vacuum");
 N_aft_divide_N_Bef->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
 N_aft_divide_N_Bef->Draw("apl");
+ 
+
  */
 
 /*
