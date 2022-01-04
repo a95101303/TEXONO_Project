@@ -3,26 +3,30 @@
 #include <stdlib.h>
 #include "TCutG.h"
 #include "TCut.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/cdms_si_allow68.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/superCDMS2014_band.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/cogent2013.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/cdms_si_allow68.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/superCDMS2014_band.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/cogent2013.h"
 
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CMB.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/XQC.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/cresstII.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/cresst_surf.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/cresst_surf_Ours.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_surf_Ours.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Ours.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Ours.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/CMB.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/XQC.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/cresstII.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/cresst_surf.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/cresst_surf_Ours.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_surf_Ours.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Ours.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/CDEX_real_Ours.h"
 
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Migdal_Lower.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDEX_real_Migdal_Upper.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Lower.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Upper.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Lower.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Brem_Upper.h"
-#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO_real_Migdal_Lower_All_Bins.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/CDEX_real_Migdal_Lower.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/CDEX_real_Migdal_Upper.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Migdal_Lower.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Migdal_Upper.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Brem_Lower.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Brem_Upper.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_real_Migdal_Lower_All_Bins.h"
+
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_NaI_1keV.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_NaI_0P1keV.h"
+#include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_NaI_depleted.h"
 
 void SetLimits_TEXONO_CDEX_Earth()
 {
@@ -255,7 +259,7 @@ void SetLimits_TEXONO_CDEX_Earth()
     //tex10->Draw();
     
 
-
+     
      
     TGraph *cdex_real_Migdal = new TGraph(); cdex_real_Migdal->SetName("cdex_real_MD");
 
@@ -473,7 +477,7 @@ void SetLimits_TEXONO_CDEX_Earth()
        //tex->Draw();
      //
        //DAMA2009 allowed region
-       TGraph *g_dama2009 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama2009.txt", "%lg  %lg");
+       TGraph *g_dama2009 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/dama2009.txt", "%lg  %lg");
        g_dama2009->SetName("g_dama2009");
        g_dama2009->SetFillColor(kBlue);
        g_dama2009->SetFillStyle(1001);
@@ -481,26 +485,26 @@ void SetLimits_TEXONO_CDEX_Earth()
 
          
        //DAMA2009 allowed region
-       TGraph *g_dama1 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_up_band.txt", "%lg  %lg");
+       TGraph *g_dama1 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/dama_up_band.txt", "%lg  %lg");
        g_dama1->SetName("g_dama1");
        g_dama1->SetFillColor(kBlue);
        g_dama1->SetFillStyle(1001);
        g_dama1->Draw("f");
 
-       TGraph *g_damal_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_UP90_RL.txt", "%lg  %lg");
+       TGraph *g_damal_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/DAMA_UP90_RL.txt", "%lg  %lg");
        g_damal_90->SetName("g_damal_90");
        g_damal_90->SetFillColor(kBlue);
        g_damal_90->SetFillStyle(1001);
        g_damal_90->Draw("f");
 
        //DAMA2009 allowed region
-       TGraph *g_dama2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/dama_down_band.txt", "%lg  %lg");
+       TGraph *g_dama2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/dama_down_band.txt", "%lg  %lg");
        g_dama2->SetName("g_dama2");
        g_dama2->SetFillColor(kBlue);
        g_dama2->SetFillStyle(1001);
        g_dama2->Draw("f");
 
-       TGraph *g_damah_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMA_Down90_RL.txt", "%lg  %lg");
+       TGraph *g_damah_90 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/DAMA_Down90_RL.txt", "%lg  %lg");
        g_damah_90->SetName("g_damah_90");
        g_damah_90->SetFillColor(kBlue);
        g_damah_90->SetFillStyle(1001);
@@ -568,13 +572,13 @@ void SetLimits_TEXONO_CDEX_Earth()
       //===============================================================
 
       //texono2013 result
-      TGraph *g_texono2013 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/texono2013.txt","%lg  %lg");
+      TGraph *g_texono2013 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/texono2013.txt","%lg  %lg");
       g_texono2013->SetName("g_texono2013");
       g_texono2013->SetLineWidth(5);
       g_texono2013->SetLineColor(1);
       //g_texono2013->Draw("c");
       
-      tex = new TLatex(10.0,4.7e-41,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/TEXONO (2013)");
+      tex = new TLatex(10.0,4.7e-41,"/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO (2013)");
       tex->SetTextFont(42);
       tex->SetTextSize(0.03422619);
       tex->SetTextAngle(3.2);
@@ -583,7 +587,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
       
       //DAMIC2014
-      TGraph *g_DAMIC = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/DAMIC.txt","%lg  %lg");
+      TGraph *g_DAMIC = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/DAMIC.txt","%lg  %lg");
       g_DAMIC->SetName("g_DAMIC");
       g_DAMIC->SetLineColor(kRed-2);
       g_DAMIC->SetLineWidth(5);
@@ -598,7 +602,7 @@ void SetLimits_TEXONO_CDEX_Earth()
       //tex->Draw();
 
       //superCDMS2014
-      TGraph *g_superCDMS2014 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/superCDMS2014.txt","%lg  %lg");
+      TGraph *g_superCDMS2014 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/superCDMS2014.txt","%lg  %lg");
       g_superCDMS2014->SetName("g_superCDMS2014");
       g_superCDMS2014->SetLineColor(kCyan-2);
       g_superCDMS2014->SetLineWidth(3);
@@ -614,7 +618,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
 
       //CDMS2015
-      TGraph *g_CDMS2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/CDMS_2015.txt","%lg  %lg");
+      TGraph *g_CDMS2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/CDMS_2015.txt","%lg  %lg");
       g_CDMS2015->SetName("g_CDMS2015");
       g_CDMS2015->SetLineColor(kYellow+4);
       g_CDMS2015->SetLineWidth(3);
@@ -630,7 +634,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
 
       //Cresst2015
-      TGraph *g_Cresst2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Cresst_SI_2015.txt","%lg  %lg");
+      TGraph *g_Cresst2015 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/Cresst_SI_2015.txt","%lg  %lg");
       g_Cresst2015->SetName("g_Cresst2015");
       g_Cresst2015->SetLineColor(kMagenta);
       g_Cresst2015->SetLineWidth(5);
@@ -647,7 +651,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
       
       //PandaX2016
-      TGraph *g_PandaX2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/PandaX_20170217_v2.txt","%lg  %lg");
+      TGraph *g_PandaX2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/PandaX_20170217_v2.txt","%lg  %lg");
       g_PandaX2016->SetName("g_PandaX2016");
       g_PandaX2016->SetLineColor(kGreen+3);
       g_PandaX2016->SetLineWidth(5);
@@ -664,7 +668,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
 
       //Lux2016
-      TGraph *g_Lux2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Lux_20170217_cm.txt","%lg  %lg");
+      TGraph *g_Lux2016 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/Lux_20170217_cm.txt","%lg  %lg");
       g_Lux2016->SetName("g_Lux2016");
       g_Lux2016->SetLineColor(kOrange+7);
       g_Lux2016->SetLineWidth(5);
@@ -696,7 +700,7 @@ void SetLimits_TEXONO_CDEX_Earth()
       tex->Draw();
           */
       //cdex2016 new BS
-      TGraph *g_cdex2016new = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1_lihb_20170217.dat","%lg  %lg");
+      TGraph *g_cdex2016new = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/c1_lihb_20170217.dat","%lg  %lg");
       g_cdex2016new->SetName("g_cdex2016new");
       g_cdex2016new->SetLineColor(kRed+1);
       g_cdex2016new->SetLineWidth(8);
@@ -711,7 +715,7 @@ void SetLimits_TEXONO_CDEX_Earth()
       //tex->Draw();
 
 
-      TGraph *g_npc = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/Bounds_mass_cx_fit_npc_50eV.txt", "%lg %lg %*lg");
+      TGraph *g_npc = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/Bounds_mass_cx_fit_npc_50eV.txt", "%lg %lg %*lg");
       g_npc->SetName("g_npc");
       g_npc->SetLineWidth(5);
       g_npc->SetLineColor(kRed);
@@ -727,7 +731,7 @@ void SetLimits_TEXONO_CDEX_Earth()
      /////////////////////////
      // XMASS 2018
      /////////////////////////
-      TGraph *xmass = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass2018.txt", "%lg %lg");
+      TGraph *xmass = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/xmass2018.txt", "%lg %lg");
       xmass->SetName("xmass");
       xmass->SetLineWidth(5);
       xmass->SetLineColor(kGray);
@@ -744,7 +748,7 @@ void SetLimits_TEXONO_CDEX_Earth()
      /////////////////////////
      // XMASS 2018 v2
      /////////////////////////
-      TGraph *xmass2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/xmass_2018_v2.txt", "%lg %lg");
+      TGraph *xmass2 = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/xmass_2018_v2.txt", "%lg %lg");
       xmass2->SetName("xmass2");
       xmass2->SetLineWidth(5);
       xmass2->SetLineColor(kGray+2);
@@ -964,7 +968,7 @@ void SetLimits_TEXONO_CDEX_Earth()
       c1b_migdal_raw->Draw("c");
          */
          
-      TGraph *c1b_migdal_adjust = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison/c1b_migdal_adjust.txt","%lg  %lg");
+      TGraph *c1b_migdal_adjust = new TGraph("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/c1b_migdal_adjust.txt","%lg  %lg");
       c1b_migdal_adjust->SetName("c1b_migdal_adjust");
      c1b_migdal_adjust->SetLineWidth(5);
          c1b_migdal_adjust->SetLineColor(2);
@@ -997,5 +1001,50 @@ void SetLimits_TEXONO_CDEX_Earth()
         leg->AddEntry(g_cogent2013,"CoGeNT(2013)","f");
         leg->Draw();
         leg1->Draw();
+    
+    TGraph *NaI_real = new TGraph(); NaI_real->SetName("NaI_real");
+
+    for(int i=0;i<15;i++)
+    {
+        cout << "TEXONO_NaI_1keV[i][0]: " << TEXONO_NaI_1keV[i][0] << endl;
+        cout << "TEXONO_NaI_1keV[i][1]: " << TEXONO_NaI_1keV[i][1] << endl;
+
+        NaI_real->SetPoint((i), TEXONO_NaI_1keV[i][0],TEXONO_NaI_1keV[i][1]);
+    }
+
+    NaI_real->SetLineColor(2);
+    NaI_real->SetLineWidth(10);
+    NaI_real->SetLineStyle(1);
+    NaI_real->Draw("lpsame");
+
+    
+    TGraph *NaI_real_0P1 = new TGraph(); NaI_real_0P1->SetName("NaI_real_0P1");
+    for(int i=0;i<15;i++)
+    {
+        cout << "TEXONO_NaI_0P1keV[i][0]: " << TEXONO_NaI_0P1keV[i][0] << endl;
+        cout << "TEXONO_NaI_0P1keV[i][1]: " << TEXONO_NaI_0P1keV[i][1] << endl;
+
+        NaI_real_0P1->SetPoint((i), TEXONO_NaI_0P1keV[i][0],TEXONO_NaI_0P1keV[i][1]);
+    }
+
+    NaI_real_0P1->SetLineColor(2);
+    NaI_real_0P1->SetLineStyle(9);
+    NaI_real_0P1->SetLineWidth(10);
+    NaI_real_0P1->Draw("lpsame");
+
+    TGraph *NaI_real_depleted = new TGraph(); NaI_real_depleted->SetName("NaI_real_depleted");
+    for(int i=0;i<15;i++)
+    {
+        cout << "TEXONO_NaI_depleted[i][0]: " << TEXONO_NaI_depleted[i][0] << endl;
+        cout << "TEXONO_NaI_depleted[i][1]: " << TEXONO_NaI_depleted[i][1] << endl;
+
+        NaI_real_depleted->SetPoint((i), TEXONO_NaI_depleted[i][0],TEXONO_NaI_depleted[i][1]);
+    }
+
+    NaI_real_depleted->SetLineColor(3);
+    NaI_real_depleted->SetLineStyle(9);
+    NaI_real_depleted->SetLineWidth(10);
+    NaI_real_depleted->Draw("lpsame");
+
       plot->Print("Both_Earth.pdf");
 }
