@@ -167,11 +167,39 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         Collision_Air_Part   = Collision_Air_Part + Length_Passed*Density*1./(unified_atomic_mass_g*(15.)) ;
     }
     
+     //Energy Max
+    TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+    gStyle->SetOptStat(0);
+    gStyle->SetTitleSize(0.04,"XY");
+    gStyle->SetTitleFont(62,"XY");
+    gStyle->SetLegendFont(62);
+
+    vector<double> Mass_Array_1      = {20.,10,5.,1.,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05};
+    vector<double> Energy_Array;
+    for(int Mass_Index=0; Mass_Index<Mass_Array_1.size();Mass_Index++){Energy_Array.push_back(Energy_DM(Mass_Array_1[Mass_Index],Max_V*1e3/3e8));}
+    
+    TGraph * Energy_Max = new TGraph(Mass_Array_1.size(), &Mass_Array_1[0], &Energy_Array[0]);
+    Energy_Max->SetMarkerStyle(20);
+    Energy_Max->SetMarkerColor(2);
+    Energy_Max->SetMarkerColor(2);
+    Energy_Max->GetXaxis()->SetRangeUser(0.05,0.5);
+    Energy_Max->GetYaxis()->SetRangeUser(0,2);
+    Energy_Max->GetYaxis()->SetTitle("Max Energy(keV)");
+    Energy_Max->GetXaxis()->SetTitle("M_{#chi}(GeV)");
+    Energy_Max->Draw("apl");
+
+    c1->SetLogy();
+    c1->SetLogx();
+    c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/Max_Energy.pdf");
+
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27,1e-26};
-    vector<double> Mass_Array      = {10,1,0.1,0.05};
-    //vector<double> Sigma_Array     = {1e-31,2e-31,3e-31,4e-31,5e-31,6e-31,7e-31,8e-31,9e-31};
-    vector<double> Sigma_Array     = {1e-30,2e-30,3e-30,4e-30};
+    vector<double> Mass_Array      = {20,10,5,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2};
+    //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
+    //vector<double> Sigma_Array     = {1e-32,2e-32,3e-32,4e-32,5e-32,6e-32,7e-32,8e-32,9e-32};
+    vector<double> Sigma_Array     = {1e-31,2e-31,3e-31,4e-31,5e-31,6e-31,7e-31,8e-31,9e-31};
+    //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27};
+    //vector<double> Sigma_Array     = {1e-30,2e-30,3e-30,4e-30};
 
     const int      Material_Number = 3;
     
@@ -180,7 +208,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     double Energy_Loss_per_collision_Array_NaI[Mass_Array.size()][Sigma_Array.size()];
 
     vector<double> Cross_Section_Set;
-    for(int Mass=0; Mass<4; Mass++)//Every Mass I got three values for one Cross-section
+    for(int Mass=0; Mass<Mass_Array.size(); Mass++)//Every Mass I got three values for one Cross-section
     {
     
         double ELoss_Air_for_every_cross_section[Sigma_Array.size()];
@@ -192,7 +220,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "============================Mass==============================: "      << Mass_Array[Mass] << endl;
         double  Energy_Max      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
         double  Final_cross_section =0;
-        for(int Scaling=0; Scaling<5; Scaling++)
+        for(int Scaling=0; Scaling<10; Scaling++)
         {
             int Scaling_Stop=0;
             if(Scaling_Stop>0)break;
@@ -203,32 +231,63 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                 if(Final_cross_section!=0)break;
                 double CS = Sigma_Array[Cross_Section_index]*TMath::Power(10,Scaling);
                 int    Event_Pass=0;
-                for(int Event=0; Event<5; Event++)
+                for(int Event=0; Event<10; Event++)
                 {
-            cout << "CS: " << CS << endl;
-            double Collision_Time_Air       = Collision_Air_Part*MFP_from_DCS_Part(2,Max_V,CS,Mass_Array[Mass], 15.);
-            double *V_Aft_Collision_Air     = Velocity_Aft_collision_Bent(Collision_Time_Air,Mass_Array[Mass],CS,Max_V,15.);
-            //cout << "Collision_Time_Air: " << Collision_Time_Air << endl;
-            cout << "Max_V: " << Max_V << endl;
-            double Collision_Time_Water  = 1.0e3*Number_Density_Array[0]*MFP_from_DCS_Part(2,V_Aft_Collision_Air[0],CS,Mass_Array[Mass], Atomic_Mass_Array[0]);
-            double *V_Aft_Collision_Water = Velocity_Aft_collision_Bent(Collision_Time_Water,Mass_Array[Mass],CS,V_Aft_Collision_Air[0],Atomic_Mass_Array[0]);
-            //cout << "Collision_Time_Water: " << Collision_Time_Water << endl;
-            cout << "V_Aft_Collision_Water: " << V_Aft_Collision_Water[0] << endl;
-
-            double Collision_Time_Lead   = 25*Number_Density_Array[1]*MFP_from_DCS_Part(2,V_Aft_Collision_Water[0],CS,Mass_Array[Mass], Atomic_Mass_Array[1]);
-            double *V_Aft_Collision_Lead  = Velocity_Aft_collision_Bent(Collision_Time_Lead,Mass_Array[Mass],CS,V_Aft_Collision_Water[0],Atomic_Mass_Array[1]);
-            cout << "Collision_Time_Lead: " << Collision_Time_Lead << endl;
-            cout << "V_Aft_Collision_Lead: " << V_Aft_Collision_Lead[0] << endl;
-            double Collision_Time_NaI      = 3.*Number_Density_Array[2]*MFP_from_DCS_Part(2,V_Aft_Collision_Lead[0],CS,Mass_Array[Mass], Atomic_Mass_Array[2]);
-                    cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
-            double *V_Aft_Collision_NaI   = Velocity_Aft_collision_Bent(Collision_Time_NaI,Mass_Array[Mass],CS,V_Aft_Collision_Lead[0],Atomic_Mass_Array[2]);
-            cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
-            cout << "V_Aft_Collision_NaI: " << V_Aft_Collision_NaI[0] << endl;
-
-                double Final_E = Energy_DM(Mass_Array[Mass],V_Aft_Collision_NaI[0]*1e3/3e8);
                     cout << "CS: " << CS << endl;
+                    
+                    double Collision_Time_Air       = Collision_Air_Part*MFP_from_DCS_Part(2,Max_V,CS,Mass_Array[Mass], 15.);
+                    double *V_Aft_Collision_Air     = Velocity_Aft_collision_Bent(Collision_Time_Air,Mass_Array[Mass],CS,Max_V,15.);
+                    //cout << "Collision_Time_Air: " << Collision_Time_Air << endl;
+                    cout << "Max_V: " << Max_V << endl;
+                    double Collision_Time_Water  = 1.0e3*Number_Density_Array[0]*MFP_from_DCS_Part(2,V_Aft_Collision_Air[0],CS,Mass_Array[Mass], Atomic_Mass_Array[0]);
+                    double *V_Aft_Collision_Water = Velocity_Aft_collision_Bent(Collision_Time_Water,Mass_Array[Mass],CS,V_Aft_Collision_Air[0],Atomic_Mass_Array[0]);
+                    //cout << "Collision_Time_Water: " << Collision_Time_Water << endl;
+                    cout << "V_Aft_Collision_Water: " << V_Aft_Collision_Water[0] << endl;
+
+                    double Collision_Time_Lead   = 25*Number_Density_Array[1]*MFP_from_DCS_Part(2,V_Aft_Collision_Water[0],CS,Mass_Array[Mass], Atomic_Mass_Array[1]);
+                    double *V_Aft_Collision_Lead  = Velocity_Aft_collision_Bent(Collision_Time_Lead,Mass_Array[Mass],CS,V_Aft_Collision_Water[0],Atomic_Mass_Array[1]);
+                    cout << "Collision_Time_Lead: " << Collision_Time_Lead << endl;
+                    cout << "V_Aft_Collision_Lead: " << V_Aft_Collision_Lead[0] << endl;
+                     
+                    double Collision_Time_NaI      = 3.*Number_Density_Array[2]*MFP_from_DCS_Part(2,V_Aft_Collision_Lead[0],CS,Mass_Array[Mass], Atomic_Mass_Array[2]);
+                            cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
+                    double *V_Aft_Collision_NaI   = Velocity_Aft_collision_Bent(Collision_Time_NaI,Mass_Array[Mass],CS,V_Aft_Collision_Lead[0],Atomic_Mass_Array[2]);
+                    cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
+                    cout << "V_Aft_Collision_NaI: " << V_Aft_Collision_NaI[0] << endl;
+                     
+                    double Final_E     = Energy_DM(Mass_Array[Mass],V_Aft_Collision_Lead[0]*1e3/3e8);
                     cout << "Final_E: " << Final_E << endl;
-                    if(Final_E>0.16) continue;
+                     if(Final_E>0.16) continue;
+                     else
+                     {
+                         Event_Pass = Event_Pass + 1;
+                         cout << "Event_Pass: " << Event_Pass << endl;
+                         //cout << "Mass_Array[Mass]: " << Mass_Array[Mass] << endl;
+                         //cout << "Sigma_Array[Cross_Section_index]: " << Sigma_Array[Cross_Section_index] << endl;
+                     }//else
+             }
+             if(Event_Pass==10)
+             {
+                 cout << "SKRRRRRR!!!!!! " << endl;
+                 Final_cross_section = CS;
+                 Cross_Section_Set.push_back(CS);
+                 Scaling_Stop = 1;
+                 break;
+             }
+
+             
+                    /*
+                double Collision_Time_NaI      = 3.*Number_Density_Array[2]*MFP_from_DCS_Part(2,Max_V,CS,Mass_Array[Mass],Atomic_Mass_Array[2]);
+                        cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
+                double *V_Aft_Collision_NaI   = Velocity_Aft_collision_Bent(Collision_Time_NaI,Mass_Array[Mass],CS,Max_V,Atomic_Mass_Array[2]);
+                cout << "Collision_Time_NaI: " << Collision_Time_NaI << endl;
+                cout << "V_Aft_Collision_NaI: " << V_Aft_Collision_NaI[0] << endl;
+                double Final_E     = Energy_DM(Mass_Array[Mass],V_Aft_Collision_NaI[0]*1e3/3e8);
+                double Energy_Diff = Energy_Max-Final_E;
+                    
+                    cout << "Energy_Diff: " << Energy_Diff << endl;
+                    //if(Energy_Diff<5.) continue;
+                    if(Energy_Diff<0.5) continue;
                     else
                     {
                         Event_Pass = Event_Pass + 1;
@@ -237,7 +296,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                         //cout << "Sigma_Array[Cross_Section_index]: " << Sigma_Array[Cross_Section_index] << endl;
                     }//else
                 }
-                if(Event_Pass==5)
+                if(Event_Pass==10)
                 {
                     cout << "SKRRRRRR!!!!!! " << endl;
                     Final_cross_section = CS;
@@ -245,6 +304,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                     Scaling_Stop = 1;
                     break;
                 }
+                     */
                 /*
                 double CS = Sigma_Array[Cross_Section_index]*TMath::Power(10,Scaling);
                 double  Energy_Int      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
@@ -387,6 +447,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     {
         cout << "Mass_Array: " << Mass_Array[Cross_Section_Index] << endl;
         cout << "Cross_Section: " << Cross_Section_Set[Cross_Section_Index] << endl;
+    }
+
+    for(int Cross_Section_Index=0; Cross_Section_Index<Cross_Section_Set.size(); Cross_Section_Index++)
+    {
+        cout << Mass_Array[Cross_Section_Index] << "," << Cross_Section_Set[Cross_Section_Index] << "," << endl;
     }
 
     /*

@@ -28,7 +28,7 @@
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_NaI_0P1keV.h"
 #include "/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Comparison_NU/TEXONO_NaI_depleted.h"
 
-void SetLimits_TEXONO_CDEX_Earth()
+void SetLimits_TEXONO_CDEX_Earth_NaI()
 {
     TLegend *leg = new TLegend(0.15,0.14,0.4,0.35);
     leg->SetFillColor(0);
@@ -81,7 +81,7 @@ void SetLimits_TEXONO_CDEX_Earth()
   pad1->SetTicky(1);
 
 //  TH2F *frame = new TH2F("frame","",100,3.0,200,100,5e-43,1e-39);
-  TH2F *frame = new TH2F("frame","",100,0.05,15,100,4e-47,1e-22);
+  TH2F *frame = new TH2F("frame","",100,0.05,15,100,1e-34,1e-22);
   //frame->GetXaxis()->SetTitle("WIMP Mass (GeV/c^{2})");
   //frame->GetYaxis()->SetTitle("SI Corss section (cm^{2})");
   //frame->GetXaxis()->SetTitle("m_{#chi} (GeV/c^{2})");
@@ -1019,7 +1019,7 @@ void SetLimits_TEXONO_CDEX_Earth()
 
     
     TGraph *NaI_real_0P1 = new TGraph(); NaI_real_0P1->SetName("NaI_real_0P1");
-    for(int i=0;i<19;i++)
+    for(int i=0;i<12;i++)
     {
         cout << "TEXONO_NaI_0P1keV[i][0]: " << TEXONO_NaI_0P1keV[i][0] << endl;
         cout << "TEXONO_NaI_0P1keV[i][1]: " << TEXONO_NaI_0P1keV[i][1] << endl;
@@ -1033,7 +1033,7 @@ void SetLimits_TEXONO_CDEX_Earth()
     NaI_real_0P1->Draw("lpsame");
 
     TGraph *NaI_real_depleted = new TGraph(); NaI_real_depleted->SetName("NaI_real_depleted");
-    for(int i=0;i<15;i++)
+    for(int i=0;i<18;i++)
     {
         cout << "TEXONO_NaI_depleted[i][0]: " << TEXONO_NaI_depleted[i][0] << endl;
         cout << "TEXONO_NaI_depleted[i][1]: " << TEXONO_NaI_depleted[i][1] << endl;
@@ -1046,5 +1046,5 @@ void SetLimits_TEXONO_CDEX_Earth()
     NaI_real_depleted->SetLineWidth(10);
     NaI_real_depleted->Draw("lpsame");
 
-      plot->Print("Both_Earth.pdf");
+      plot->Print("Both_Earth_NaI.pdf");
 }

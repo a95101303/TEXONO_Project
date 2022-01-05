@@ -466,6 +466,17 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         {
+            //Find the mean value of the energy loss
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2))
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2))
+            double Ge_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Ge_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double Ge_Slope = (Xe_Y2-Xe_Y1)/(Ge_X2-Ge_X1);
+            
+            
+            /*
             vector<double> TGraph_Recoil_Energy_Xe;vector<double> TGraph_Recoil_Energy_Ge;
             vector<double> TGraph_dsigma_dT_Xe          ;vector<double> TGraph_dsigma_dT_Ge;
             vector<double> TGraph_dsigma_dT_Xe_Check    ;vector<double> TGraph_dsigma_dT_Ge_Check;
@@ -549,6 +560,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             cout << "Total_dsigma_dT_Xe: " << Total_dsigma_dT_Xe << endl;
             cout << "Total_dsigma_dT_Ge "  << Total_dsigma_dT_Ge << endl;
+            */
             
             /*
             TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
@@ -565,7 +577,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             g_Xe_H->SetMarkerColor(3);
             g_Xe_H->Draw("plsame");
              */
-            
+            /*
             TGraph * g_Xe = new TGraph((int)TGraph_Recoil_Energy_Xe.size(), &TGraph_Recoil_Energy_Xe[0], &TGraph_dsigma_dT_Xe[0]);
             g_Xe->SetMarkerStyle(20);
             g_Xe->SetMarkerColor(2);
@@ -597,12 +609,207 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             leg->AddEntry(g_Ge,"Ge","lP");
             leg->AddEntry(g_H,"H","lP");
             leg->Draw();
-             
-
+             */
             
-        }
+            //Predict the total cross sections of Silicon and oxygen
+            /*
+            TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+            gStyle->SetOptStat(0);
+            gStyle->SetTitleSize(0.04,"XY");
+            gStyle->SetTitleFont(62,"XY");
+            gStyle->SetLegendFont(62);
+
+            double Total_Cross_Section_Xe_Check=0;
+            double Total_Cross_Section_Ge_Check=0;
+            double Total_Cross_Section_HH_Check=0;
+
+            double Atomic_Mass_Array[3]={1.00784,72.64,131.293};
+            double TCS_over_EN_Element[3];double TCS_over_EN_square_Element[3];double TCS_over_EN_third_Element[3];double TCS_over_EN_fourth_Element[3];
+            double TCS_over_AM_Element[3];double TCS_over_AM_square_Element[3];double TCS_over_AM_third_Element[3];double TCS_over_AM_fourth_Element[3];//Atomic_Mass(AM)
+            for(int Energy_Index=0; Energy_Index<7; Energy_Index++)
+            {
+                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]    ->GetXaxis()->FindBin(Energy_H_Check[Energy_Index]);//Min_Recoil_Bin_Xe
+                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]  ->GetXaxis()->FindBin(Energy_H_Check[Energy_Index]);//Min_Recoil_Bin_Xe
+                
+                Total_Cross_Section_Xe_Check = Total_Cross_Section_Xe_Check + velocity_TH1F[Applied_Hist]  ->GetBinContent(Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2);
+                Total_Cross_Section_Ge_Check = Total_Cross_Section_Ge_Check + velocity_TH1F_2[Applied_Hist]->GetBinContent(Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2);
+                Total_Cross_Section_HH_Check = Total_Cross_Section_HH_Check + DCS_H_Check[Energy_Index];
+            }
+             
+            cout << "Total_Cross_Section_Xe_Check: " << Total_Cross_Section_Xe_Check << endl;
+            cout << "Total_Cross_Section_Ge_Check: " << Total_Cross_Section_Ge_Check << endl;
+            cout << "Total_Cross_Section_HH_Check: " << Total_Cross_Section_HH_Check << endl;
+
+            TCS_over_EN_Element[0]=Total_Cross_Section_HH_Check/1.;
+            TCS_over_EN_Element[1]=Total_Cross_Section_Ge_Check/28.;
+            TCS_over_EN_Element[2]=Total_Cross_Section_Xe_Check/54.;
+
+            TCS_over_EN_square_Element[0]=Total_Cross_Section_HH_Check/(1.*1.);
+            TCS_over_EN_square_Element[1]=Total_Cross_Section_Ge_Check/(28.*28.);
+            TCS_over_EN_square_Element[2]=Total_Cross_Section_Xe_Check/(54.*54.);
+
+            TCS_over_EN_third_Element[0]=Total_Cross_Section_HH_Check/(1.*1.*1.);
+            TCS_over_EN_third_Element[1]=Total_Cross_Section_Ge_Check/(28.*28.*28.);
+            TCS_over_EN_third_Element[2]=Total_Cross_Section_Xe_Check/(54.*54.*54.);
+
+            TCS_over_EN_fourth_Element[0]=Total_Cross_Section_HH_Check/(1.*1.*1.*1.);
+            TCS_over_EN_fourth_Element[1]=Total_Cross_Section_Ge_Check/(28.*28.*28.*28.);
+            TCS_over_EN_fourth_Element[2]=Total_Cross_Section_Xe_Check/(54.*54.*54.*54.);
+
+            TCS_over_AM_Element[0]=Total_Cross_Section_HH_Check/(1.00784);
+            TCS_over_AM_Element[1]=Total_Cross_Section_Ge_Check/(72.64);
+            TCS_over_AM_Element[2]=Total_Cross_Section_Xe_Check/(131.293);
+
+            TCS_over_AM_square_Element[0]=Total_Cross_Section_HH_Check/(1.00784*1.00784);
+            TCS_over_AM_square_Element[1]=Total_Cross_Section_Ge_Check/(72.64*72.64);
+            TCS_over_AM_square_Element[2]=Total_Cross_Section_Xe_Check/(131.293*131.293);
+
+            TCS_over_AM_third_Element[0]=Total_Cross_Section_HH_Check/(1.00784*1.00784*1.00784);
+            TCS_over_AM_third_Element[1]=Total_Cross_Section_Ge_Check/(72.64*72.64*72.64);
+            TCS_over_AM_third_Element[2]=Total_Cross_Section_Xe_Check/(131.293*131.293*131.293);
+             */
+            /*
+            TGraph *TCS_over_AM_third = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_third_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM_third->SetMarkerStyle(20);
+            TCS_over_AM_third->SetMarkerColor(4);
+            TCS_over_AM_third->SetLineWidth(5);
+            TCS_over_AM_third->GetXaxis()->SetTitle("Atomic Mass");
+            TCS_over_AM_third->GetYaxis()->SetTitle("Total Cross Section/Atomic Mass");
+            TCS_over_AM_third->Draw("apl");
+            
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/TCS_over_AM_third.pdf");
+             */
+            /*
+            TGraph *TCS_over_AM_square = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_square_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM_square->SetMarkerStyle(20);
+            TCS_over_AM_square->SetMarkerColor(4);
+            TCS_over_AM_square->SetLineWidth(5);
+            TCS_over_AM_square->GetXaxis()->SetTitle("Atomic Mass");
+            TCS_over_AM_square->GetYaxis()->SetTitle("Total Cross Section/Atomic Mass");
+            TCS_over_AM_square->Draw("apl");
+            
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/TCS_over_AM_square.pdf");
+             */
+            
+            /*
+            TGraph *TCS_over_AM = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM->SetMarkerStyle(20);
+            TCS_over_AM->SetMarkerColor(4);
+            TCS_over_AM->SetLineWidth(5);
+            TCS_over_AM->GetXaxis()->SetTitle("Atomic Mass");
+            TCS_over_AM->GetYaxis()->SetTitle("Total Cross Section/Atomic Mass");
+            TCS_over_AM->Draw("apl");
+            
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/TCS_over_AM.pdf");
+             */
+            /*
+            TGraph *TCS_over_EN_fourth = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_fourth_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_EN_fourth->SetMarkerStyle(20);
+            TCS_over_EN_fourth->SetMarkerColor(4);
+            TCS_over_EN_fourth->SetLineWidth(5);
+            TCS_over_EN_fourth->GetXaxis()->SetTitle("Atomic Mass");
+            TCS_over_EN_fourth->GetYaxis()->SetTitle("Total Cross Section/electron number^4");
+            TCS_over_EN_fourth->Draw("apl");
+            
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/TCS_over_EN_fourth.pdf");
+             */
+            
+            /*
+            TGraph *TCS_over_AM = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM->SetMarkerStyle(20);
+            TCS_over_AM->SetMarkerColor(2);
+            TCS_over_AM->SetLineColor(2);
+            TCS_over_AM->SetLineWidth(5);
+            TCS_over_AM->GetXaxis()->SetTitle("Atomic Mass(AM)");
+            TCS_over_AM->GetXaxis()->SetRangeUser(0,500);
+            TCS_over_AM->GetYaxis()->SetRangeUser(1E-40,1E-33);
+            TCS_over_AM->Draw("apl");
+
+            TGraph *TCS_over_AM_square = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_square_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM_square->SetMarkerStyle(20);
+            TCS_over_AM_square->SetMarkerColor(3);
+            TCS_over_AM_square->SetLineColor(3);
+            TCS_over_AM_square->SetLineWidth(5);
+            TCS_over_AM_square->Draw("plsame");
         
-    }
+            TGraph *TCS_over_AM_third = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_third_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_AM_third->SetMarkerStyle(20);
+            TCS_over_AM_third->SetMarkerColor(4);
+            TCS_over_AM_third->SetLineColor(4);
+            TCS_over_AM_third->SetLineWidth(5);
+            TCS_over_AM_third->Draw("plsame");
+
+
+            TLegend *leg = new TLegend(0.1,0.7,0.4,0.9);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(TCS_over_AM,"#sigma_{total}/AM","lP");
+            leg->AddEntry(TCS_over_AM_square,"#sigma_{total}/(AM^2)","lP");
+            leg->AddEntry(TCS_over_AM_third,"#sigma_{total}/(AM^3)","lP");
+            leg->Draw();
+
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/All_TCS_over_AM.pdf");
+             */
+            /*
+            TGraph *TCS_over_EN = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_EN->SetMarkerStyle(20);
+            TCS_over_EN->SetMarkerColor(2);
+            TCS_over_EN->SetLineWidth(5);
+            TCS_over_EN->SetLineColor(2);
+            TCS_over_EN->GetXaxis()->SetTitle("Atomic Mass");
+            TCS_over_EN->GetXaxis()->SetRangeUser(0,500);
+            TCS_over_EN->GetYaxis()->SetRangeUser(1E-40,1E-33);
+            TCS_over_EN->Draw("alp");
+            
+            TGraph *TCS_over_EN_square = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_square_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_EN_square->SetMarkerStyle(20);
+            TCS_over_EN_square->SetMarkerColor(3);
+            TCS_over_EN_square->SetLineColor(3);
+            TCS_over_EN_square->SetLineWidth(5);
+            TCS_over_EN_square->Draw("lpsame");
+
+            TGraph *TCS_over_EN_third = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_third_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_EN_third->SetMarkerStyle(20);
+            TCS_over_EN_third->SetMarkerColor(4);
+            TCS_over_EN_third->SetLineColor(4);
+            TCS_over_EN_third->SetLineWidth(5);
+            TCS_over_EN_third->Draw("lpsame");
+
+            TGraph *TCS_over_EN_fourth = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_fourth_Element);//Total Cross Section(TCS), Electron Number(EN)
+            TCS_over_EN_fourth->SetMarkerStyle(20);
+            TCS_over_EN_fourth->SetMarkerColor(6);
+            TCS_over_EN_fourth->SetLineColor(6);
+            TCS_over_EN_fourth->SetLineWidth(5);
+            TCS_over_EN_fourth->Draw("lpsame");
+
+            TLegend *leg = new TLegend(0.1,0.7,0.4,0.9);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(TCS_over_EN,"#sigma_{total}/EN","lP");
+            leg->AddEntry(TCS_over_EN_square,"#sigma_{total}/(EN^2)","lP");
+            leg->AddEntry(TCS_over_EN_third,"#sigma_{total}/(EN^3)","lP");
+            leg->AddEntry(TCS_over_EN_fourth,"#sigma_{total}/(EN^4)","lP");
+            leg->Draw();
+
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/All_TCS_over_EN.pdf");
+             */
+            
+            
+        }//for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
+        
+    }//for(int kkk=1; kkk<2; kkk++)
     
     //==================================================//
 
