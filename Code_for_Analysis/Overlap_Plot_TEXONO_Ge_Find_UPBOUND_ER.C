@@ -546,6 +546,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 cout << "TGraph_dsigma_dT_Xe_Ge_Check: " << TGraph_dsigma_dT_Xe_Ge_Check[MMM] << endl;
                 cout << "TGraph_dsigma_dT_Xe_H_Check: " << TGraph_dsigma_dT_Xe_H_Check[MMM] << endl;
             }
+            
+            cout << "Total_dsigma_dT_Xe: " << Total_dsigma_dT_Xe << endl;
+            cout << "Total_dsigma_dT_Ge "  << Total_dsigma_dT_Ge << endl;
+            
             /*
             TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
             g_Xe_Ge->SetMarkerStyle(20);
