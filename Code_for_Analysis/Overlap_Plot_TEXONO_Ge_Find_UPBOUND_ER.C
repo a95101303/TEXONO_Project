@@ -362,6 +362,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 */
 
 
+double Linear_Line(double x, double a, double b)
+{
+    return a*x+b;
+}
 
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
@@ -467,15 +471,60 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         {
             //Find the mean value of the energy loss
+            
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
-            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2))
-            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2))
-            double Ge_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
-            double Ge_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
-            double Ge_Slope = (Xe_Y2-Xe_Y1)/(Ge_X2-Ge_X1);
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Xe_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double A_Slope_Xe = (Xe_Y2-Xe_Y1)/(Xe_X2-Xe_X1);
+            cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
+            double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
             
-            
+            Int_t Minimum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Ge_Y1 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Minimum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_X1 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Ge);
+            double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
+            double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
+            cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
+            double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
+
+            double HH_Y1 = TMath::Log10(DCS_H_Check[0]);
+            double HH_Y2 = TMath::Log10(DCS_H_Check[6]);
+            double HH_X1 = Energy_H_Check[0];
+            double HH_X2 = Energy_H_Check[6];
+            double A_Slope_HH = (HH_Y2-HH_Y1)/(HH_X2-HH_X1);
+            cout << "A_Slope_HH: " << A_Slope_HH << endl;
+            double B_HH       =  HH_Y1 - HH_X1*A_Slope_HH;
+
+            double Total_Xe_DCS;double Total_Ge_DCS;double Total_HH_DCS;
+            double Bin = (480.-0.)/10000;
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                double DCS_HH     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_HH,B_HH));
+                Total_Xe_DCS = Total_Xe_DCS + DCS_Xe;
+                Total_Ge_DCS = Total_Ge_DCS + DCS_Ge;
+                Total_HH_DCS = Total_HH_DCS + DCS_HH;
+            }
+            double Energy_Loss_Xe_DCS;double Energy_Loss_Ge_DCS;double Energy_Loss_HH_DCS;
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                double DCS_HH     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_HH,B_HH));
+                Energy_Loss_Xe_DCS = Energy_Loss_Xe_DCS + (0.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
+                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (0.+Bin*(KKK+1.))*DCS_Ge/Total_Ge_DCS;
+                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (0.+Bin*(KKK+1.))*DCS_HH/Total_HH_DCS;
+            }
+            cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
+            cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
+            cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
+
             /*
             vector<double> TGraph_Recoil_Energy_Xe;vector<double> TGraph_Recoil_Energy_Ge;
             vector<double> TGraph_dsigma_dT_Xe          ;vector<double> TGraph_dsigma_dT_Ge;
