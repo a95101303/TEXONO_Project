@@ -441,7 +441,29 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         };//1e-24cm^2/keV,1/MeV^2
 
     //===============electron recoil===================//
-    //for(int kkk=0; kkk<File.size(); kkk++)
+    
+    double Collision_Air_Part=0;
+    for(int ATM_Number=0; ATM_Number<19; ATM_Number++)
+    {
+        double Length_Passed = (atm_table[ATM_Number+1][0]-atm_table[ATM_Number][0])*1e2;//cm
+        double Density       = 1e-3*((atm_table[ATM_Number+1][4]+atm_table[ATM_Number][4])*0.5);//g/cm^3
+        Collision_Air_Part   = Collision_Air_Part + Length_Passed*Density*1./(unified_atomic_mass_g*(15.)) ;
+    }
+    const double       NaI_Density            = 3.67;//3.67(g/cm^3)
+    const double       NaI_Atomic_Mass        = 22.98*0.5+126*0.5;//
+    const double       Pb_Density             = 11.29;//3.67(g/cm^3)
+    const double       Pb_Atomic_Mass         = 207.2;//
+    const double       Fixed_Length           = 20.;//cm
+    
+    const double Density_Array[3]           ={2.8 ,Pb_Density    ,NaI_Density};
+    const double Atomic_Mass_Array[3]={Weighted_Atomic_Number_Cement,Pb_Atomic_Mass,NaI_Atomic_Mass};
+    const double Number_Density_Array[3]    ={
+                                              Density_Array[0]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[0])) ,
+                                              Density_Array[1]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])) ,
+                                              Density_Array[1]*1./(unified_atomic_mass_g*(Atomic_Mass_Array[2])) ,
+                                            };
+     
+  //for(int kkk=0; kkk<File.size(); kkk++)
     for(int kkk=1; kkk<2; kkk++)
     {
         
@@ -470,9 +492,24 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         {
-            //Find the mean value of the energy loss
+            //Calculating the collision Time and mean value of energy loss
+            vector<double> A_array               = {28.0855,15.99};
+            vector<double> Z_Array               = {14.,8.};
+            double Total_Cross_Section_const     = 8e-38;
+            //vector<double> Total_Cross_Section;
+            //First case is for CDEX
+            double CDEX_Threshold            = 160;//eV
+            double Collision_Time            = 1e3*1e2*( 2.33*1./(unified_atomic_mass_g*(A_array[0])) )*Total_Cross_Section_const*TMath::Power(A_array[0],3);
+            double Energy_Loss_per_collision = 10*sqrt(Z_Array[0]);
+            double Total_Energy              = Collision_Time*Energy_Loss_per_collision;
+            cout << "Total_Energy: " << Total_Energy << endl;
+            double Scaling                   = CDEX_Threshold/(Total_Energy);
             
-            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
+            cout << "CS_Try: " << CS_Try((Scaling),1) << endl;
+ 
+            /*
+             //Find the mean value of energy loss and its relationship with Z
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
             double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
@@ -482,11 +519,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
             double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
             
-            Int_t Minimum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
-            double Ge_Y1 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Minimum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_Y1 = Xe_Y1;
             double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
-            double Ge_X1 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Ge);
+            double Ge_X1 = Xe_X1;
             double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
             double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
             cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
@@ -500,31 +536,110 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "A_Slope_HH: " << A_Slope_HH << endl;
             double B_HH       =  HH_Y1 - HH_X1*A_Slope_HH;
 
+            //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
             double Total_Xe_DCS;double Total_Ge_DCS;double Total_HH_DCS;
-            double Bin = (480.-0.)/10000;
+            double Bin = (480.-12.)/10000;
             for(int KKK=0; KKK<10000; KKK++)
             {
-                double DCS_Xe     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
-                double DCS_Ge     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
-                double DCS_HH     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_HH,B_HH));
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
                 Total_Xe_DCS = Total_Xe_DCS + DCS_Xe;
                 Total_Ge_DCS = Total_Ge_DCS + DCS_Ge;
+            }
+            for(int KKK=0; KKK<12; KKK++)
+            {
+                double DCS_HH     =  TMath::Power(10,DCS_H[KKK]);
                 Total_HH_DCS = Total_HH_DCS + DCS_HH;
             }
             double Energy_Loss_Xe_DCS;double Energy_Loss_Ge_DCS;double Energy_Loss_HH_DCS;
             for(int KKK=0; KKK<10000; KKK++)
             {
-                double DCS_Xe     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
-                double DCS_Ge     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
-                double DCS_HH     =  TMath::Power(10, Linear_Line(0.+Bin*(KKK+1.),A_Slope_HH,B_HH));
-                Energy_Loss_Xe_DCS = Energy_Loss_Xe_DCS + (0.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
-                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (0.+Bin*(KKK+1.))*DCS_Ge/Total_Ge_DCS;
-                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (0.+Bin*(KKK+1.))*DCS_HH/Total_HH_DCS;
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                Energy_Loss_Xe_DCS = Energy_Loss_Xe_DCS + (12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
+                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*DCS_Ge/Total_Ge_DCS;
+            }
+            for(int KKK=0; KKK<12; KKK++)
+            {
+                double DCS_HH     =  TMath::Power(10,DCS_H[KKK]);
+                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + Energy_H[KKK]*DCS_HH/Total_HH_DCS;
             }
             cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
             cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
             cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
 
+            
+            //double Test_variable_Xe=131.;
+            //double Test_variable_Ge=72.;
+            //double Test_variable_HH=1.;
+             
+            double Test_variable_Xe=54.;
+            double Test_variable_Ge=28.;
+            double Test_variable_HH=1.;
+
+            double Atomic_Mass_Array[3]={1.00784,28.,54.};
+            //double Atomic_Mass_Array[3]={1.00784,72.64,131.293};
+            double Energy_Loss_DCS_0P5Power[3];double Energy_Loss_DCS_1Power[3];double Energy_Loss_DCS_2Power[3];
+            
+            Energy_Loss_DCS_0P5Power[0]=Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,0.5);
+            Energy_Loss_DCS_0P5Power[1]=Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,0.5);
+            Energy_Loss_DCS_0P5Power[2]=Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,0.5);
+
+            Energy_Loss_DCS_1Power[0]  =Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,1);
+            Energy_Loss_DCS_1Power[1]  =Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,1);
+            Energy_Loss_DCS_1Power[2]  =Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,1);
+
+            Energy_Loss_DCS_2Power[0]  =Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,2);
+            Energy_Loss_DCS_2Power[1]  =Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,2);
+            Energy_Loss_DCS_2Power[2]  =Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,2);
+
+            TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+            gStyle->SetOptStat(0);
+            gStyle->SetTitleSize(0.04,"XY");
+            gStyle->SetTitleFont(62,"XY");
+            gStyle->SetLegendFont(62);
+            
+            TGraph *ELoss_over_0P5Power_of_Z = new TGraph(3,Atomic_Mass_Array,Energy_Loss_DCS_0P5Power);//Total Cross Section(TCS), Electron Number(EN)
+            ELoss_over_0P5Power_of_Z->SetMarkerStyle(20);
+            ELoss_over_0P5Power_of_Z->SetMarkerColor(2);
+            ELoss_over_0P5Power_of_Z->SetLineColor(2);
+            ELoss_over_0P5Power_of_Z->SetLineWidth(5);
+            ELoss_over_0P5Power_of_Z->GetXaxis()->SetTitle("Atomic Number(Z)");
+            ELoss_over_0P5Power_of_Z->GetXaxis()->SetRangeUser(0,500);
+            ELoss_over_0P5Power_of_Z->GetYaxis()->SetRangeUser(1e-2,15);
+            ELoss_over_0P5Power_of_Z->Draw("apl");
+
+            TGraph *ELoss_over_1Power_of_Z = new TGraph(3,Atomic_Mass_Array,Energy_Loss_DCS_1Power);//Total Cross Section(TCS), Electron Number(EN)
+            ELoss_over_1Power_of_Z->SetMarkerStyle(20);
+            ELoss_over_1Power_of_Z->SetMarkerColor(3);
+            ELoss_over_1Power_of_Z->SetLineColor(3);
+            ELoss_over_1Power_of_Z->SetLineWidth(5);
+            ELoss_over_1Power_of_Z->Draw("plsame");
+        
+            TGraph *ELoss_over_2Power_of_Z = new TGraph(3,Atomic_Mass_Array,Energy_Loss_DCS_2Power);//Total Cross Section(TCS), Electron Number(EN)
+            ELoss_over_2Power_of_Z->SetMarkerStyle(20);
+            ELoss_over_2Power_of_Z->SetMarkerColor(4);
+            ELoss_over_2Power_of_Z->SetLineColor(4);
+            ELoss_over_2Power_of_Z->SetLineWidth(5);
+            ELoss_over_2Power_of_Z->Draw("plsame");
+
+            TLegend *leg = new TLegend(0.7,0.1,0.9,0.3);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(ELoss_over_0P5Power_of_Z,"<E>/Z^{#frac{1}{2}}","lP");
+            leg->AddEntry(ELoss_over_1Power_of_Z,"<E>/Z^{1}","lP");
+            leg->AddEntry(ELoss_over_2Power_of_Z,"<E>/Z^{2}","lP");
+            leg->Draw();
+
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/ELoss_over_Power_of_Z.pdf");
+            */
+            
+            
+             //Get the histogram of DCS and the mean value of energy loss
             /*
             vector<double> TGraph_Recoil_Energy_Xe;vector<double> TGraph_Recoil_Energy_Ge;
             vector<double> TGraph_dsigma_dT_Xe          ;vector<double> TGraph_dsigma_dT_Ge;
@@ -532,7 +647,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             vector<double> TGraph_dsigma_dT_Xe_Ge_Check  ;vector<double> TGraph_dsigma_dT_Xe_H_Check  ;
             double Total_dsigma_dT_Xe=0;double Total_dsigma_dT_Ge=0;
             //Xe
-            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Lowest_Y_Xe    = velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2);
             for(int LLL=Minimum_Bin_Xe; LLL<Maximum_Bin_Xe+1; LLL++)
@@ -557,6 +672,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             }
             
             //Ge
+            
             Int_t Minimum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->GetXaxis()->FindBin(80);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Lowest_Y_Ge    = velocity_TH1F_2[Applied_Hist]->GetBinContent(Minimum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2);
@@ -587,10 +703,6 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 TGraph_dsigma_dT_Xe_Ge_Check.push_back(TMath::Log10(TGraph_dsigma_dT_Xe_Check[MMM]/TGraph_dsigma_dT_Ge_Check[MMM]));
             }
             
-            double Energy_H[7];double DCS_H[7];
-            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){DCS_H[DCS_Filled]=DCS_H_Point[DCS_Filled]*MeVinverse2_to_GeVinverse2_Plus_UT;}
-            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){cout << "DCS_H[DCS_Filled]: " << DCS_H[DCS_Filled] << endl;}
-
             for(int MMM=0; MMM<7; MMM++)
             {
                 cout << "TGraph_dsigma_dT_Xe_Check[MMM]: " << TGraph_dsigma_dT_Xe_Check[MMM] << endl;
@@ -609,24 +721,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             cout << "Total_dsigma_dT_Xe: " << Total_dsigma_dT_Xe << endl;
             cout << "Total_dsigma_dT_Ge "  << Total_dsigma_dT_Ge << endl;
-            */
             
-            /*
-            TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
-            g_Xe_Ge->SetMarkerStyle(20);
-            g_Xe_Ge->SetMarkerColor(2);
-            g_Xe_Ge->SetMarkerColor(2);
-            g_Xe_Ge->GetYaxis()->SetRangeUser(0,20);
-            g_Xe_Ge->GetXaxis()->SetTitle("Recoil Energy(eV)");
-            g_Xe_Ge->GetYaxis()->SetTitle("Log10(Ratio of DCS)");
-            g_Xe_Ge->Draw("apl");
-
-            TGraph * g_Xe_H = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_H_Check[0]);
-            g_Xe_H->SetMarkerStyle(20);
-            g_Xe_H->SetMarkerColor(3);
-            g_Xe_H->Draw("plsame");
-             */
-            /*
             TGraph * g_Xe = new TGraph((int)TGraph_Recoil_Energy_Xe.size(), &TGraph_Recoil_Energy_Xe[0], &TGraph_dsigma_dT_Xe[0]);
             g_Xe->SetMarkerStyle(20);
             g_Xe->SetMarkerColor(2);
@@ -640,9 +735,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             g_Ge->SetMarkerColor(3);
             g_Ge->Draw("plsame");
 
-            for(int DCS_Filled=0; DCS_Filled<7; DCS_Filled++){DCS_H[DCS_Filled]=TMath::Log10(DCS_H[DCS_Filled]);}
-
-            TGraph * g_H = new TGraph(7, Energy_H_Point, DCS_H);
+            TGraph * g_H = new TGraph(12, Energy_H, DCS_H);
             g_H->SetMarkerStyle(20);
             g_H->SetMarkerColor(4);
             g_H->SetLineWidth(5);
@@ -659,6 +752,22 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             leg->AddEntry(g_H,"H","lP");
             leg->Draw();
              */
+            /*
+            TGraph * g_Xe_Ge = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_Ge_Check[0]);
+            g_Xe_Ge->SetMarkerStyle(20);
+            g_Xe_Ge->SetMarkerColor(2);
+            g_Xe_Ge->SetMarkerColor(2);
+            g_Xe_Ge->GetYaxis()->SetRangeUser(0,20);
+            g_Xe_Ge->GetXaxis()->SetTitle("Recoil Energy(eV)");
+            g_Xe_Ge->GetYaxis()->SetTitle("Log10(Ratio of DCS)");
+            g_Xe_Ge->Draw("apl");
+
+            TGraph * g_Xe_H = new TGraph(7, Energy_H_Point, &TGraph_dsigma_dT_Xe_H_Check[0]);
+            g_Xe_H->SetMarkerStyle(20);
+            g_Xe_H->SetMarkerColor(3);
+            g_Xe_H->Draw("plsame");
+             */
+                    
             
             //Predict the total cross sections of Silicon and oxygen
             /*
@@ -688,7 +797,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Total_Cross_Section_Xe_Check: " << Total_Cross_Section_Xe_Check << endl;
             cout << "Total_Cross_Section_Ge_Check: " << Total_Cross_Section_Ge_Check << endl;
             cout << "Total_Cross_Section_HH_Check: " << Total_Cross_Section_HH_Check << endl;
-
+            
+            
             TCS_over_EN_Element[0]=Total_Cross_Section_HH_Check/1.;
             TCS_over_EN_Element[1]=Total_Cross_Section_Ge_Check/28.;
             TCS_over_EN_Element[2]=Total_Cross_Section_Xe_Check/54.;
