@@ -194,10 +194,14 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27,1e-26};
-    vector<double> Mass_Array      = {20,10,5,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2};
+    //vector<double> Mass_Array      = {20,10,5,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2};
+    vector<double> Mass_Array      = {10,0.07};
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
     //vector<double> Sigma_Array     = {1e-32,2e-32,3e-32,4e-32,5e-32,6e-32,7e-32,8e-32,9e-32};
     vector<double> Sigma_Array     = {1e-31,2e-31,3e-31,4e-31,5e-31,6e-31,7e-31,8e-31,9e-31};
+    //vector<double> Sigma_Array     = {1e-28,2e-28,3e-28,4e-28,5e-28,6e-28,7e-28,8e-28,9e-28};
+    //vector<double> Sigma_Array     = {1e-29,2e-29,3e-29,4e-29,5e-29,6e-29,7e-29,8e-29,9e-29};
+
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27};
     //vector<double> Sigma_Array     = {1e-30,2e-30,3e-30,4e-30};
 
@@ -208,7 +212,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     double Energy_Loss_per_collision_Array_NaI[Mass_Array.size()][Sigma_Array.size()];
 
     vector<double> Cross_Section_Set;
-    for(int Mass=0; Mass<Mass_Array.size(); Mass++)//Every Mass I got three values for one Cross-section
+    for(int Mass=0; Mass<1; Mass++)//Every Mass I got three values for one Cross-section
     {
     
         double ELoss_Air_for_every_cross_section[Sigma_Array.size()];
@@ -220,14 +224,16 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "============================Mass==============================: "      << Mass_Array[Mass] << endl;
         double  Energy_Max      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
         double  Final_cross_section =0;
+        /*
         for(int Scaling=0; Scaling<10; Scaling++)
         {
             int Scaling_Stop=0;
             if(Scaling_Stop>0)break;
             if(Final_cross_section!=0)break;
-
+         */
             for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
             {
+                /*
                 if(Final_cross_section!=0)break;
                 double CS = Sigma_Array[Cross_Section_index]*TMath::Power(10,Scaling);
                 int    Event_Pass=0;
@@ -273,8 +279,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                  Cross_Section_Set.push_back(CS);
                  Scaling_Stop = 1;
                  break;
-             }
-
+                 }
+                 */
              
                     /*
                 double Collision_Time_NaI      = 3.*Number_Density_Array[2]*MFP_from_DCS_Part(2,Max_V,CS,Mass_Array[Mass],Atomic_Mass_Array[2]);
@@ -305,8 +311,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                     break;
                 }
                      */
-                /*
-                double CS = Sigma_Array[Cross_Section_index]*TMath::Power(10,Scaling);
+                
+                double CS = Sigma_Array[Cross_Section_index];
                 double  Energy_Int      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
                 No_ELoss_for_every_cross_section[Cross_Section_index] = Energy_Int;
                 cout << "Energy_Int: " << Energy_Int << endl;
@@ -368,54 +374,40 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                 else{ELoss_NaI_for_every_cross_section[Cross_Section_index] = 0.;}
                 cout << "=======================================" << endl;
 
-                if(Energy_Int>0.01) continue;
-                else
-                {
-                    cout << "Mass_Array[Mass]: " << Mass_Array[Mass] << endl;
-                    cout << "Sigma_Array[Cross_Section_index]: " << Sigma_Array[Cross_Section_index] << endl;
-                    break;
-                }//else
-                */
+                
             }//for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
-        }//for(int Scaling=0; Scaling<6; Scaling++)
+        //}//for(int Scaling=0; Scaling<6; Scaling++)
         
-        /*
+        
         TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
         gStyle->SetOptStat(0);
         gStyle->SetTitleSize(0.04,"XY");
         gStyle->SetTitleFont(62,"XY");
         gStyle->SetLegendFont(62);
         
-        TGraph * Energy_Aft_Air = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_Air_for_every_cross_section);
-        Energy_Aft_Air->SetMarkerStyle(20);
-        Energy_Aft_Air->SetMarkerColor(2);
-        Energy_Aft_Air->SetMarkerColor(2);
-        Energy_Aft_Air->GetXaxis()->SetRangeUser(1e-27,1e-26);
-        Energy_Aft_Air->GetYaxis()->SetRangeUser(0,Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8)+0.01);
-        Energy_Aft_Air->GetYaxis()->SetTitle("Energy of DM(keV)");
-        Energy_Aft_Air->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
-        Energy_Aft_Air->Draw("apl");
-        
-        TGraph * Energy_Aft_NaI = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_NaI_for_every_cross_section);
-        Energy_Aft_NaI->SetMarkerStyle(20);
-        Energy_Aft_NaI->SetMarkerColor(3);
-        Energy_Aft_NaI->SetMarkerColor(3);
-        Energy_Aft_NaI->GetYaxis()->SetRangeUser(0,20);
-        Energy_Aft_NaI->Draw("plsame");
-
         TGraph * Energy_Aft_No = new TGraph(Sigma_Array.size(), &Sigma_Array[0], No_ELoss_for_every_cross_section);
         Energy_Aft_No->SetMarkerStyle(20);
         Energy_Aft_No->SetMarkerColor(4);
         Energy_Aft_No->SetMarkerColor(4);
-        Energy_Aft_No->GetYaxis()->SetRangeUser(0,20);
-        Energy_Aft_No->Draw("plsame");
+        Energy_Aft_No->GetXaxis()->SetRangeUser(1e-31,1e-30);
+        Energy_Aft_No->GetYaxis()->SetRangeUser(0,Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8)+0.01);
+        Energy_Aft_No->GetYaxis()->SetTitle("Energy of DM(keV)");
+        Energy_Aft_No->GetXaxis()->SetTitle("#sigma_{SI}(cm^2)");
+        Energy_Aft_No->GetYaxis()->SetRangeUser(1e-3,40);
+        Energy_Aft_No->Draw("apl");
 
+        TGraph * Energy_Aft_Air = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_Air_for_every_cross_section);
+        Energy_Aft_Air->SetMarkerStyle(20);
+        Energy_Aft_Air->SetMarkerColor(2);
+        Energy_Aft_Air->SetMarkerColor(2);
+        //Energy_Aft_Air->Draw("plsame");
+        
         TGraph * Energy_Aft_Water = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_Water_for_every_cross_section);
         Energy_Aft_Water->SetMarkerStyle(20);
         Energy_Aft_Water->SetMarkerColor(5);
         Energy_Aft_Water->SetMarkerColor(5);
         Energy_Aft_Water->GetYaxis()->SetRangeUser(0,20);
-        Energy_Aft_Water->Draw("plsame");
+        //Energy_Aft_Water->Draw("plsame");
 
         TGraph * Energy_Aft_Lead = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_Lead_for_every_cross_section);
         Energy_Aft_Lead->SetMarkerStyle(20);
@@ -424,6 +416,13 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         Energy_Aft_Lead->GetYaxis()->SetRangeUser(0,20);
         Energy_Aft_Lead->Draw("plsame");
 
+        TGraph * Energy_Aft_NaI = new TGraph(Sigma_Array.size(), &Sigma_Array[0], ELoss_NaI_for_every_cross_section);
+        Energy_Aft_NaI->SetMarkerStyle(20);
+        Energy_Aft_NaI->SetMarkerColor(3);
+        Energy_Aft_NaI->SetMarkerColor(3);
+        Energy_Aft_NaI->GetYaxis()->SetRangeUser(0,20);
+        Energy_Aft_NaI->Draw("plsame");
+
         TLegend *leg = new TLegend(0.1,0.1,0.4,0.4);
         leg->SetFillColor(0);
         leg->SetFillStyle(0);
@@ -431,16 +430,16 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         leg->SetBorderSize(0);
         leg->SetTextFont(22);
         leg->AddEntry(Energy_Aft_No,"Max_E","lp");
-        leg->AddEntry(Energy_Aft_Air,"Air","lp");
-        leg->AddEntry(Energy_Aft_Water,"Air+30(M.W.E)","lp");
+        //leg->AddEntry(Energy_Aft_Air,"Air","lp");
+        //leg->AddEntry(Energy_Aft_Water,"Air+30(M.W.E)","lp");
         leg->AddEntry(Energy_Aft_Lead,"Air+30(M.W.E)+Lead","lp");
         leg->AddEntry(Energy_Aft_NaI,"Air+30(M.W.E)+Lead+NaI","lp");
 
-        //c1->SetLogy();
+        c1->SetLogy();
         c1->SetLogx();
         leg->Draw();
-        c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/0P1GeV.pdf");
-        */
+        c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/10GeV.pdf");
+        
     }
     
     for(int Cross_Section_Index=0; Cross_Section_Index<Cross_Section_Set.size(); Cross_Section_Index++)
