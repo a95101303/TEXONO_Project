@@ -108,15 +108,94 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 {
-    const double       Same_Sigma             = 4e-28;
+    const double       Same_Sigma             = 1e-31;
     const double       Sigma_SI_NaI           = Same_Sigma;
     const double       Sigma_SI_Pb            = Same_Sigma;
-
+    const double       Mx                     = 0.1;//GeV
+    const double       Atomic_Mass            = 15;//GeV
     vector<double> Cross_Section_Array={8e-28,2e-27};
-
     //vector<double> Mass_Array={2,0.2};
-    
     int NaI_Event=0;int Pb_Event=0;
+    
+    gRandom = new TRandom3(0);
+    gRandom->SetSeed(0);
+
+    TF1 *f3 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(0.1,779*1e3/3e8,Atomic_Mass));
+    f3->SetParameter(0,Mx);f3->SetParameter(1,Same_Sigma);f3->SetParameter(2,(779*1e3/3e8));f3->SetParameter(3,Atomic_Mass);
+
+    TH1F *Try = new TH1F("Try","Try",1000,0,max_recoil_A_keV(0.1,779*1e3/3e8,Atomic_Mass));
+    double Energy_Loss_dEdX = MFP_from_DCS_Part(0,779,Same_Sigma,Mx,Atomic_Mass)*1e-3;
+    vector<int>    Collision_Time;
+    vector<double> Energy_Loss_averaged;
+    vector<double> vector_Diff_between_dEdX_and_every;
+    const int Event_Number_try=100;
+    
+    for(int MMM=1; MMM<25; MMM++)
+    {
+        int Collision_Time_Now = 1*MMM;
+        Collision_Time.push_back(Collision_Time_Now);
+        
+        double Averaged_Energy_Loss=0;
+        double Diff_between_dEdX_and_every=0;
+        for(int Event=0; Event<Event_Number_try; Event++)
+        {
+            double Energy_total=0;
+            cout << "====================================" << endl;
+            cout << "-----------------------------" << endl;
+            int Count_Collision=0;
+            for(int Collision_Time_Index=0; Collision_Time_Index<(int)Collision_Time_Now; Collision_Time_Index++)
+            {
+                double Random_Energy= f3->GetRandom();
+                //cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
+                //cout << "Random_Energy: " << Random_Energy << endl;
+                Energy_total = Energy_total + Random_Energy;
+                //cout << "Energy_total: " << Energy_total << endl;
+                Count_Collision = Count_Collision + 1;
+                //cout << "Energy_total/Count_Collision: " << Energy_total/(double)Count_Collision << endl;
+                //cout << "(Energy_total-Energy_Loss_dEdX)/Energy_Loss_dEdX: " << abs((Energy_total/(double)Count_Collision-Energy_Loss_dEdX)/Energy_Loss_dEdX) << endl;
+
+            }
+            cout << "-----------------------------" << endl;
+            Energy_total = Energy_total/Collision_Time_Now;
+            Diff_between_dEdX_and_every = Diff_between_dEdX_and_every + abs(Energy_total/Energy_Loss_dEdX);
+            cout << "<Energy_total>: " << Energy_total << endl;
+            cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
+            cout << "(Energy_total/Energy_Loss_dEdX): " << (Energy_total/Energy_Loss_dEdX) << endl;
+            cout << "abs(Energy_total/Energy_Loss_dEdX): " << abs(Energy_total/Energy_Loss_dEdX) << endl;
+            Averaged_Energy_Loss = Averaged_Energy_Loss + (Energy_total);
+            cout << "====================================" << endl;
+        }
+        Averaged_Energy_Loss = Averaged_Energy_Loss/(double)Event_Number_try;
+        cout << "Averaged_Energy_Loss: " << Averaged_Energy_Loss << endl;
+        Energy_Loss_averaged.push_back(Averaged_Energy_Loss/Energy_Loss_dEdX);
+        vector_Diff_between_dEdX_and_every.push_back((Diff_between_dEdX_and_every)/(double)Event_Number_try);
+    }
+    
+    
+    for(int KKK=0; KKK<25-1; KKK++)
+    {
+        cout << "Collision_Time: " << Collision_Time[KKK] << endl;
+        cout << "Energy_Loss_averaged: " << Energy_Loss_averaged[KKK] << endl;
+        cout << "vector_Diff_between_dEdX_and_every: " << vector_Diff_between_dEdX_and_every[KKK] << endl;
+    }
+     
+    
+    /*
+    for(int KKK=0; KKK<5000; KKK++)
+    {
+        double Random_Energy= f3->GetRandom();
+        cout << "Random_Energy: " << Random_Energy << endl;
+        Try->Fill(Random_Energy);
+    }
+     
+    Try->SetMarkerStyle(20);
+    Try->SetMarkerColor(2);
+    Try->SetMarkerColor(2);
+    Try->GetXaxis()->SetRangeUser(0,max_recoil_A_keV(0.1,779*1e3/3e8,34.));
+    Try->GetYaxis()->SetRangeUser(0,200);
+    Try->Draw("Hist");
+     */
+
     
     /*
     for(int Mass_Index=0; Mass_Index<Mass_Array.size(); Mass_Index++)
@@ -159,6 +238,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         }
     }
      */
+    
+    /*
     double Collision_Air_Part=0;
     for(int ATM_Number=0; ATM_Number<19; ATM_Number++)
     {
@@ -191,7 +272,8 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     c1->SetLogy();
     c1->SetLogx();
     c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/Max_Energy.pdf");
-
+     */
+    
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27,1e-26};
     //vector<double> Mass_Array      = {20,10,5,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2};
@@ -311,7 +393,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                     break;
                 }
                      */
-                
+                /*
                 double CS = Sigma_Array[Cross_Section_index];
                 double  Energy_Int      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
                 No_ELoss_for_every_cross_section[Cross_Section_index] = Energy_Int;
@@ -373,12 +455,12 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                 if(Energy_Int>0)ELoss_NaI_for_every_cross_section[Cross_Section_index] = Energy_Int ;
                 else{ELoss_NaI_for_every_cross_section[Cross_Section_index] = 0.;}
                 cout << "=======================================" << endl;
-
+                 */
                 
             }//for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
         //}//for(int Scaling=0; Scaling<6; Scaling++)
         
-        
+        /*
         TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
         gStyle->SetOptStat(0);
         gStyle->SetTitleSize(0.04,"XY");
@@ -439,9 +521,10 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         c1->SetLogx();
         leg->Draw();
         c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/10GeV.pdf");
-        
+        */
     }
     
+    /*
     for(int Cross_Section_Index=0; Cross_Section_Index<Cross_Section_Set.size(); Cross_Section_Index++)
     {
         cout << "Mass_Array: " << Mass_Array[Cross_Section_Index] << endl;
@@ -452,7 +535,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     {
         cout << Mass_Array[Cross_Section_Index] << "," << Cross_Section_Set[Cross_Section_Index] << "," << endl;
     }
-
+     */
     /*
     cout << "================Low-Mass NaI Issue========================: "  << endl;
 

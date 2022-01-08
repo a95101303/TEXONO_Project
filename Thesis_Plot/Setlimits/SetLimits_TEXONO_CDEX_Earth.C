@@ -1002,49 +1002,5 @@ void SetLimits_TEXONO_CDEX_Earth()
         leg->Draw();
         leg1->Draw();
     
-    TGraph *NaI_real = new TGraph(); NaI_real->SetName("NaI_real");
-
-    for(int i=0;i<10;i++)
-    {
-        cout << "TEXONO_NaI_1keV[i][0]: " << TEXONO_NaI_1keV[i][0] << endl;
-        cout << "TEXONO_NaI_1keV[i][1]: " << TEXONO_NaI_1keV[i][1] << endl;
-
-        NaI_real->SetPoint((i), TEXONO_NaI_1keV[i][0],TEXONO_NaI_1keV[i][1]);
-    }
-
-    NaI_real->SetLineColor(2);
-    NaI_real->SetLineWidth(10);
-    NaI_real->SetLineStyle(1);
-    NaI_real->Draw("lpsame");
-
-    
-    TGraph *NaI_real_0P1 = new TGraph(); NaI_real_0P1->SetName("NaI_real_0P1");
-    for(int i=0;i<19;i++)
-    {
-        cout << "TEXONO_NaI_0P1keV[i][0]: " << TEXONO_NaI_0P1keV[i][0] << endl;
-        cout << "TEXONO_NaI_0P1keV[i][1]: " << TEXONO_NaI_0P1keV[i][1] << endl;
-
-        NaI_real_0P1->SetPoint((i), TEXONO_NaI_0P1keV[i][0],TEXONO_NaI_0P1keV[i][1]);
-    }
-
-    NaI_real_0P1->SetLineColor(2);
-    NaI_real_0P1->SetLineStyle(9);
-    NaI_real_0P1->SetLineWidth(10);
-    NaI_real_0P1->Draw("lpsame");
-
-    TGraph *NaI_real_depleted = new TGraph(); NaI_real_depleted->SetName("NaI_real_depleted");
-    for(int i=0;i<15;i++)
-    {
-        cout << "TEXONO_NaI_depleted[i][0]: " << TEXONO_NaI_depleted[i][0] << endl;
-        cout << "TEXONO_NaI_depleted[i][1]: " << TEXONO_NaI_depleted[i][1] << endl;
-
-        NaI_real_depleted->SetPoint((i), TEXONO_NaI_depleted[i][0],TEXONO_NaI_depleted[i][1]);
-    }
-
-    NaI_real_depleted->SetLineColor(3);
-    NaI_real_depleted->SetLineStyle(9);
-    NaI_real_depleted->SetLineWidth(10);
-    NaI_real_depleted->Draw("lpsame");
-
       plot->Print("Both_Earth.pdf");
 }

@@ -493,19 +493,19 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         {
             //Calculating the collision Time and mean value of energy loss
-            /*
+            
             vector<double> A_array               = {28.0855,15.99};
             vector<double> Z_Array               = {14.,8.};
             double Total_Cross_Section_const     = 8e-39;
             //First case is for CDEX
             double CDEX_Threshold            = 160;//eV
-            double Collision_Time            = 1e3*1e2*( 2.33*1./(unified_atomic_mass_g*(A_array[0])) )*Total_Cross_Section_const*TMath::Power(A_array[0],3);
+            double Collision_Time            = 1.4e3*1e2*( 2.33*1./(unified_atomic_mass_g*(A_array[0])) )*Total_Cross_Section_const*TMath::Power(A_array[0],3);
             double Energy_Loss_per_collision = 10*sqrt(Z_Array[0]);
             double Total_Energy              = Collision_Time*Energy_Loss_per_collision;
             cout << "Total_Energy: " << Total_Energy << endl;
             double Scaling                   = CDEX_Threshold/(Total_Energy);
             cout << "CS_Try: " << CS_Try((Scaling),1) << endl;
-            */
+            
             /*
              //Find the mean value of energy loss and its relationship with Z
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
