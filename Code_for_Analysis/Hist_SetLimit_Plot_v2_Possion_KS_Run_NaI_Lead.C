@@ -111,8 +111,82 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     const double       Same_Sigma             = 1e-31;
     const double       Sigma_SI_NaI           = Same_Sigma;
     const double       Sigma_SI_Pb            = Same_Sigma;
-    const double       Mx                     = 0.1;//GeV
-    const double       Atomic_Mass            = 15;//GeV
+    const double       Mx                     = 0.5;//GeV
+    const double       Atomic_Mass            = 34.;//GeV
+    const double       Velocity               = 700.;//GeV
+
+    const double       Mx_A                   = 0.06;//GeV
+    const double       Mx_B                   = 0.1;//GeV
+    
+    
+    TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+    gStyle->SetOptStat(0);
+    gStyle->SetTitleSize(0.04,"XY");
+    gStyle->SetTitleFont(62,"XY");
+    gStyle->SetLegendFont(62);
+    
+    const int Bin_Number=1000;
+    double T_A_array[Bin_Number];double dsigma_dT_A_array[Bin_Number];
+    double Max_A = max_recoil_A_keV(Mx_A,Velocity*1e3/3e8,Atomic_Mass);
+    double A_Bin_size = Max_A/(double)Bin_Number;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double T_A = (double)(KKK + 1)*A_Bin_size;
+        double dsigma_dT_A = fdsigma_dT_keV(Mx_A,Same_Sigma,Velocity*1e3/3e8,Atomic_Mass,T_A);
+        T_A_array[KKK] = T_A;dsigma_dT_A_array[KKK] = dsigma_dT_A;
+        cout << "KKK: " << KKK << endl;
+        cout << "T_A: " << T_A << endl;
+        cout << "dsigma_dT_A: " << (dsigma_dT_A) << endl;
+    }
+    double Diff_T         = T_A_array[998]-T_A_array[1];
+    double Diff_dsigma_dT = TMath::Log10(dsigma_dT_A_array[998]) - TMath::Log10(dsigma_dT_A_array[1]);
+    double Ratio          = dsigma_dT_A_array[1]/dsigma_dT_A_array[998];
+    cout << "Diff_dsigma_dT: " << Diff_dsigma_dT/Diff_T << endl;
+    //cout << "Ratio/Diff_dsigma_dT: " <<  Ratio/Diff_T << endl;
+    TGraph * TGraph_dsigma_dT_A = new TGraph(Bin_Number, T_A_array, dsigma_dT_A_array);
+    TGraph_dsigma_dT_A->SetMarkerStyle(20);
+    TGraph_dsigma_dT_A->SetLineColor(3);
+    TGraph_dsigma_dT_A->SetMarkerColor(3);
+    TGraph_dsigma_dT_A->GetXaxis()->SetRangeUser(0.,Max_A);
+    TGraph_dsigma_dT_A->GetYaxis()->SetRangeUser(1e-28,1e-27);
+    TGraph_dsigma_dT_A->GetYaxis()->SetTitle("T[keV]");
+    TGraph_dsigma_dT_A->GetXaxis()->SetTitle("dsigma_dT");
+    TGraph_dsigma_dT_A->Draw("al");
+
+    /*
+    double Max_B = max_recoil_A_keV(Mx_B,Velocity*1e3/3e8,Atomic_Mass);
+
+    TF1 *f_1 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(Mx_A,Velocity*1e3/3e8,Atomic_Mass));
+    f_1->SetParameter(0,Mx_A);f_1->SetParameter(1,Same_Sigma);f_1->SetParameter(2,(Velocity*1e3/3e8));f_1->SetParameter(3,Atomic_Mass);
+    f_1->SetLineColor(2);
+    
+    f_1->GetXaxis()->SetRangeUser(0,max_recoil_A_keV(Mx_A,779*1e3/3e8,Atomic_Mass));
+    f_1->GetYaxis()->SetRangeUser(0,1e-20);
+    f_1->Draw();
+
+    
+    TF1 *f_2 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(0.1,Velocity*1e3/3e8,Atomic_Mass));
+    f_2->SetParameter(0,Mx_B);f_2->SetParameter(1,Same_Sigma);f_2->SetParameter(2,(Velocity*1e3/3e8));f_2->SetParameter(3,Atomic_Mass);
+    f_2->SetLineColor(3);
+    f_2->Draw("same");
+     */
+    /*
+    TGraph * Energy_Max = new TGraph(Mass_Array_1.size(), &Mass_Array_1[0], &Energy_Array[0]);
+    Energy_Max->SetMarkerStyle(20);
+    Energy_Max->SetMarkerColor(2);
+    Energy_Max->SetMarkerColor(2);
+    Energy_Max->GetXaxis()->SetRangeUser(0.05,0.5);
+    Energy_Max->GetYaxis()->SetRangeUser(0,2);
+    Energy_Max->GetYaxis()->SetTitle("Max Energy(keV)");
+    Energy_Max->GetXaxis()->SetTitle("M_{#chi}(GeV)");
+    Energy_Max->Draw("apl");
+     */
+    
+    c1->SetLogy();
+    //c1->SetLogx();
+    c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/dsigma_dT_comparison.pdf");
+
+    /*
     vector<double> Cross_Section_Array={8e-28,2e-27};
     //vector<double> Mass_Array={2,0.2};
     int NaI_Event=0;int Pb_Event=0;
@@ -128,11 +202,11 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     vector<int>    Collision_Time;
     vector<double> Energy_Loss_averaged;
     vector<double> vector_Diff_between_dEdX_and_every;
-    const int Event_Number_try=100;
+    const int Event_Number_try=2;
     
-    for(int MMM=1; MMM<25; MMM++)
+    for(int MMM=1; MMM<2; MMM++)
     {
-        int Collision_Time_Now = 1*MMM;
+        int Collision_Time_Now = 50000;
         Collision_Time.push_back(Collision_Time_Now);
         
         double Averaged_Energy_Loss=0;
@@ -178,7 +252,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "Energy_Loss_averaged: " << Energy_Loss_averaged[KKK] << endl;
         cout << "vector_Diff_between_dEdX_and_every: " << vector_Diff_between_dEdX_and_every[KKK] << endl;
     }
-     
+     */
     
     /*
     for(int KKK=0; KKK<5000; KKK++)

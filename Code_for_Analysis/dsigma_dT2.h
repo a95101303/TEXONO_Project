@@ -821,7 +821,7 @@ double fdsigma_dT(double mx, double sigma_SI, double velocity, double atomic_mas
     double sigma_chiN0 = sigma_SI*pow(reduce_mass_A,2.0)*pow(atomic_mass,2.0)/pow(reduce_mass_n,2.0);
     double dsigma_dq2 = sigma_chiN0*F2(atomic_mass, T)/(4.0*pow(reduce_mass_A,2.0)*pow(velocity,2.0));
     double dsigma_dT_0;
-    //cout << "dsigma_dT_0: " << dsigma_dT_0 << endl;
+    cout << "dsigma_dT_0: " << dsigma_dT_0 << endl;
 
     if(max_recoil_A(mx, velocity, atomic_mass)>T)
     {
