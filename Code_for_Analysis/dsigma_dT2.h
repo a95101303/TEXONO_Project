@@ -821,7 +821,6 @@ double fdsigma_dT(double mx, double sigma_SI, double velocity, double atomic_mas
     double sigma_chiN0 = sigma_SI*pow(reduce_mass_A,2.0)*pow(atomic_mass,2.0)/pow(reduce_mass_n,2.0);
     double dsigma_dq2 = sigma_chiN0*F2(atomic_mass, T)/(4.0*pow(reduce_mass_A,2.0)*pow(velocity,2.0));
     double dsigma_dT_0;
-    cout << "dsigma_dT_0: " << dsigma_dT_0 << endl;
 
     if(max_recoil_A(mx, velocity, atomic_mass)>T)
     {
@@ -1592,22 +1591,27 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
     for(int i=0;i<reso_T;i++)
     {
         if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
-        if(Option==0 or (Option==1 and Velocity!=0) or Option==2)
+        if(Option==0 or (Option==1 and Velocity!=0) or Option==2 or Option==3)
             {
                 MFP = MFP + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx*T[i]);
                 total_Cross_Section = total_Cross_Section + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
-                /*
-                cout << "Sigma_SI: " << Sigma_SI << endl;
-                double A_1 = (fdsigma_dT_keV(WIMP_mx, 1e-26, (Velocity*1e3/3e8), A, T[i]));
-                double B_1 = (fdsigma_dT_keV(WIMP_mx, 7e-27, (Velocity*1e3/3e8), A, T[i]));
-                cout << "A_1/B_1: " << A_1/B_1 << endl;
-                 */
             }
         pEx = T[i];
     }
+     
      if(Option==0)return 1e3*(MFP/total_Cross_Section);//(eV) averaged energy loss per collision
      if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm) [Part of it! You should time with n)
      if(Option==2)return total_Cross_Section;//
+
+     double Expectation_Value = (MFP/total_Cross_Section);//keV
+     double Uncertainty       = 0;
+     for(int i=0;i<reso_T;i++)
+     {
+         double Diff_T_MeanT  = T[i]-Expectation_Value;
+         double Possibility = (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx)/(total_Cross_Section);
+         Uncertainty = Uncertainty + Possibility*(Diff_T_MeanT)*(Diff_T_MeanT);
+     }
+     if(Option==3)return sqrt(Uncertainty);//
 }
 
 double total_C_AAAA(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)

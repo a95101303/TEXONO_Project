@@ -108,23 +108,26 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 {
-    const double       Same_Sigma             = 1e-31;
-    const double       Sigma_SI_NaI           = Same_Sigma;
-    const double       Sigma_SI_Pb            = Same_Sigma;
-    const double       Mx                     = 0.5;//GeV
-    const double       Atomic_Mass            = 34.;//GeV
-    const double       Velocity               = 700.;//GeV
+    
+    
+     /*
+     const double       Same_Sigma             = 1e-31;
+     const double       Sigma_SI_NaI           = Same_Sigma;
+     const double       Sigma_SI_Pb            = Same_Sigma;
+     const double       Mx                     = 0.5;//GeV
+     const double       Atomic_Mass            = 34.;//GeV
+     const double       Velocity               = 700.;//GeV
 
-    const double       Mx_A                   = 0.06;//GeV
-    const double       Mx_B                   = 0.1;//GeV
-    
-    
+     const double       Mx_A                   = 10;//GeV
+     const double       Mx_B                   = 0.06;//GeV
+
     TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
     gStyle->SetOptStat(0);
     gStyle->SetTitleSize(0.04,"XY");
     gStyle->SetTitleFont(62,"XY");
     gStyle->SetLegendFont(62);
     
+    //=========================A Case=========================//
     const int Bin_Number=1000;
     double T_A_array[Bin_Number];double dsigma_dT_A_array[Bin_Number];
     double Max_A = max_recoil_A_keV(Mx_A,Velocity*1e3/3e8,Atomic_Mass);
@@ -134,15 +137,121 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         double T_A = (double)(KKK + 1)*A_Bin_size;
         double dsigma_dT_A = fdsigma_dT_keV(Mx_A,Same_Sigma,Velocity*1e3/3e8,Atomic_Mass,T_A);
         T_A_array[KKK] = T_A;dsigma_dT_A_array[KKK] = dsigma_dT_A;
-        cout << "KKK: " << KKK << endl;
-        cout << "T_A: " << T_A << endl;
-        cout << "dsigma_dT_A: " << (dsigma_dT_A) << endl;
     }
+    double Total_Cross_Section_A=0;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        dsigma_dT_A_array[KKK] = 1e5*dsigma_dT_A_array[KKK]*(1./dsigma_dT_A_array[998]);
+        cout << "dsigma_dT_A_array[KKK]: " << dsigma_dT_A_array[KKK] << endl;
+        Total_Cross_Section_A = Total_Cross_Section_A + dsigma_dT_A_array[KKK];
+    }
+    
+    cout << "Total_Cross_Section_A: " << Total_Cross_Section_A << endl;
+    int Collision_Time_A_array[Bin_Number];int Total_Collision_A=0;
+    int Collision_Time_B_array[Bin_Number];int Total_Collision_B=0;
+    int Collision_Time_C_array[Bin_Number];int Total_Collision_C=0;
+    int Collision_Time_D_array[Bin_Number];int Total_Collision_D=0;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        int A_number = Total_Cross_Section_A*0.8*(dsigma_dT_A_array[KKK])/(Total_Cross_Section_A);
+        Collision_Time_A_array[KKK] = A_number;
+        Total_Collision_A = Total_Collision_A + A_number;
+        int B_number = Total_Cross_Section_A*0.85*(dsigma_dT_A_array[KKK])/(Total_Cross_Section_A);
+        Collision_Time_B_array[KKK] = B_number;
+        Total_Collision_B = Total_Collision_B + B_number;
+        int C_number = Total_Cross_Section_A*0.9*(dsigma_dT_A_array[KKK])/(Total_Cross_Section_A);
+        Collision_Time_C_array[KKK] = C_number;
+        Total_Collision_C = Total_Collision_C + C_number;
+        int D_number = Total_Cross_Section_A*(dsigma_dT_A_array[KKK])/(Total_Cross_Section_A);
+        Collision_Time_D_array[KKK] = D_number;
+        Total_Collision_D = Total_Collision_D + D_number;
+    }
+    double Averaged_Energy_Loss_A;double Averaged_Energy_Loss_B;double Averaged_Energy_Loss_C;double Averaged_Energy_Loss_D;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        Averaged_Energy_Loss_A = Averaged_Energy_Loss_A + T_A_array[KKK] * ( (double)Collision_Time_A_array[KKK]/(double)(Total_Collision_A) );
+        Averaged_Energy_Loss_B = Averaged_Energy_Loss_B + T_A_array[KKK] * ( (double)Collision_Time_B_array[KKK]/(double)(Total_Collision_B) );
+        Averaged_Energy_Loss_C = Averaged_Energy_Loss_C + T_A_array[KKK] * ( (double)Collision_Time_C_array[KKK]/(double)(Total_Collision_C) );
+        Averaged_Energy_Loss_D = Averaged_Energy_Loss_D + T_A_array[KKK] * ( (double)Collision_Time_D_array[KKK]/(double)(Total_Collision_D) );
+    }
+    cout << "Averaged_Energy_Loss_A: " << Averaged_Energy_Loss_A << endl;
+    cout << "Averaged_Energy_Loss_B: " << Averaged_Energy_Loss_B << endl;
+    cout << "Averaged_Energy_Loss_C: " << Averaged_Energy_Loss_C << endl;
+    cout << "Averaged_Energy_Loss_D: " << Averaged_Energy_Loss_D << endl;
+
+    double Energy_Per_Collision = 1e-3*MFP_from_DCS_Part(0,Velocity,Same_Sigma,Mx_A,Atomic_Mass);
+    cout << "Energy_Per_Collision: " << Energy_Per_Collision << endl;
+        
+        
+    //=========================B Case=========================//
+    double T_B_array[Bin_Number];double dsigma_dT_B_array[Bin_Number];
+    double Max_B = max_recoil_A_keV(Mx_B,Velocity*1e3/3e8,Atomic_Mass);
+    double B_Bin_size = Max_B/(double)Bin_Number;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double T_B = (double)(KKK + 1)*B_Bin_size;
+        double dsigma_dT_B = fdsigma_dT_keV(Mx_B,Same_Sigma,Velocity*1e3/3e8,Atomic_Mass,T_B);
+        T_B_array[KKK] = T_B;dsigma_dT_B_array[KKK] = dsigma_dT_B;
+    }
+    double Total_Cross_Section_B=0;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        dsigma_dT_B_array[KKK] = dsigma_dT_B_array[KKK]*(1./dsigma_dT_B_array[998]);
+        Total_Cross_Section_B = Total_Cross_Section_B + dsigma_dT_B_array[KKK];
+    }
+    cout << "Total_Cross_Section_B: " << Total_Cross_Section_B << endl;
+    */
+    
+    /*
+    int Collision_Time_A_array_2[Bin_Number];int Total_Collision_A_2=0;
+    int Collision_Time_B_array_2[Bin_Number];int Total_Collision_B_2=0;
+    int Collision_Time_C_array_2[Bin_Number];int Total_Collision_C_2=0;
+    int Collision_Time_D_array_2[Bin_Number];int Total_Collision_D_2=0;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        int A_number = Total_Cross_Section_B*0.8*(dsigma_dT_B_array[KKK])/(Total_Cross_Section_B);
+        Collision_Time_A_array_2[KKK] = A_number;
+        Total_Collision_A_2 = Total_Collision_A_2 + A_number;
+        int B_number = Total_Cross_Section_B*0.85*(dsigma_dT_B_array[KKK])/(Total_Cross_Section_B);
+        Collision_Time_B_array_2[KKK] = B_number;
+        Total_Collision_B_2 = Total_Collision_B_2 + B_number;
+        int C_number = Total_Cross_Section_B*0.99*(dsigma_dT_B_array[KKK])/(Total_Cross_Section_B);
+        Collision_Time_C_array_2[KKK] = C_number;
+        Total_Collision_C_2 = Total_Collision_C_2 + C_number;
+        int D_number = Total_Cross_Section_B*(dsigma_dT_B_array[KKK])/(Total_Cross_Section_B);
+        Collision_Time_D_array_2[KKK] = D_number;
+        Total_Collision_D_2 = Total_Collision_D_2 + D_number;
+    }
+    double Averaged_Energy_Loss_A_2;double Averaged_Energy_Loss_B_2;double Averaged_Energy_Loss_C_2;double Averaged_Energy_Loss_D_2;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        Averaged_Energy_Loss_A_2 = Averaged_Energy_Loss_A_2 + T_B_array[KKK] * ( (double)Collision_Time_A_array_2[KKK]/(double)(Total_Collision_A_2) );
+        Averaged_Energy_Loss_B_2 = Averaged_Energy_Loss_B_2 + T_B_array[KKK] * ( (double)Collision_Time_B_array_2[KKK]/(double)(Total_Collision_B_2) );
+        Averaged_Energy_Loss_C_2 = Averaged_Energy_Loss_C_2 + T_B_array[KKK] * ( (double)Collision_Time_C_array_2[KKK]/(double)(Total_Collision_C_2) );
+        Averaged_Energy_Loss_D_2 = Averaged_Energy_Loss_D_2 + T_B_array[KKK] * ( (double)Collision_Time_D_array_2[KKK]/(double)(Total_Collision_D_2) );
+    }
+    cout << "Averaged_Energy_Loss_A_2: " << Averaged_Energy_Loss_A_2 << endl;
+    cout << "Averaged_Energy_Loss_B_2: " << Averaged_Energy_Loss_B_2 << endl;
+    cout << "Averaged_Energy_Loss_C_2: " << Averaged_Energy_Loss_C_2 << endl;
+    cout << "Averaged_Energy_Loss_D_2: " << Averaged_Energy_Loss_D_2 << endl;
+
+    double Energy_Per_Collision_2 = 1e-3*MFP_from_DCS_Part(0,Velocity,Same_Sigma,Mx_B,Atomic_Mass);
+    cout << "Energy_Per_Collision_2: " << Energy_Per_Collision_2 << endl;
+     */
+    
+    /*
     double Diff_T         = T_A_array[998]-T_A_array[1];
     double Diff_dsigma_dT = TMath::Log10(dsigma_dT_A_array[998]) - TMath::Log10(dsigma_dT_A_array[1]);
     double Ratio          = dsigma_dT_A_array[1]/dsigma_dT_A_array[998];
-    cout << "Diff_dsigma_dT: " << Diff_dsigma_dT/Diff_T << endl;
+    cout << "Diff_T: " << Diff_T << endl;
+    cout << "dsigma_dT_A_array[1]: " << dsigma_dT_A_array[1] << endl;
+    cout << "dsigma_dT_A_array[998]: " << dsigma_dT_A_array[998] << endl;
+    cout << "Ratio: "  << Ratio << endl;
+    cout << "Diff_dsigma_dT: " << Diff_dsigma_dT << endl;
+    cout << "Diff_dsigma_dT/Diff_T: " << Diff_dsigma_dT/Diff_T << endl;
+     */
     //cout << "Ratio/Diff_dsigma_dT: " <<  Ratio/Diff_T << endl;
+    /*
     TGraph * TGraph_dsigma_dT_A = new TGraph(Bin_Number, T_A_array, dsigma_dT_A_array);
     TGraph_dsigma_dT_A->SetMarkerStyle(20);
     TGraph_dsigma_dT_A->SetLineColor(3);
@@ -152,7 +261,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     TGraph_dsigma_dT_A->GetYaxis()->SetTitle("T[keV]");
     TGraph_dsigma_dT_A->GetXaxis()->SetTitle("dsigma_dT");
     TGraph_dsigma_dT_A->Draw("al");
-
+     */
     /*
     double Max_B = max_recoil_A_keV(Mx_B,Velocity*1e3/3e8,Atomic_Mass);
 
@@ -182,78 +291,95 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     Energy_Max->Draw("apl");
      */
     
-    c1->SetLogy();
+    //c1->SetLogy();
     //c1->SetLogx();
-    c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/dsigma_dT_comparison.pdf");
+    //c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/dsigma_dT_comparison.pdf");
 
-    /*
-    vector<double> Cross_Section_Array={8e-28,2e-27};
-    //vector<double> Mass_Array={2,0.2};
-    int NaI_Event=0;int Pb_Event=0;
     
+    const double       Same_Sigma             = 1e-31;
+    const double       Sigma_SI_NaI           = Same_Sigma;
+    const double       Sigma_SI_Pb            = Same_Sigma;
+    const double       Mx                     = 1;//GeV
+    const double       Atomic_Mass            = 14.;//GeV
+    const double       Velocity               = 300.;//km/s
+        
     gRandom = new TRandom3(0);
     gRandom->SetSeed(0);
 
-    TF1 *f3 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(0.1,779*1e3/3e8,Atomic_Mass));
-    f3->SetParameter(0,Mx);f3->SetParameter(1,Same_Sigma);f3->SetParameter(2,(779*1e3/3e8));f3->SetParameter(3,Atomic_Mass);
+    TF1 *f3 = new TF1("f3","fdsigma_dT_keV([0],[1],[2],[3],x)",0,max_recoil_A_keV(Mx,Velocity*1e3/3e8,Atomic_Mass));
+    f3->SetParameter(0,Mx);f3->SetParameter(1,Same_Sigma);f3->SetParameter(2,(Velocity*1e3/3e8));f3->SetParameter(3,Atomic_Mass);
 
-    TH1F *Try = new TH1F("Try","Try",1000,0,max_recoil_A_keV(0.1,779*1e3/3e8,Atomic_Mass));
-    double Energy_Loss_dEdX = MFP_from_DCS_Part(0,779,Same_Sigma,Mx,Atomic_Mass)*1e-3;
+    double Max_Energy       = max_recoil_A_keV(Mx,Velocity*1e3/3e8,Atomic_Mass);
+    double Energy_Loss_dEdX = MFP_from_DCS_Part(0,Velocity,Same_Sigma,Mx,Atomic_Mass)*1e-3;
+    
     vector<int>    Collision_Time;
     vector<double> Energy_Loss_averaged;
     vector<double> vector_Diff_between_dEdX_and_every;
-    const int Event_Number_try=2;
+    const int Event_Number_try=10;
     
-    for(int MMM=1; MMM<2; MMM++)
+    for(int MMM=1; MMM<50; MMM++)
     {
-        int Collision_Time_Now = 50000;
+        int Collision_Time_Now = 2*MMM;
         Collision_Time.push_back(Collision_Time_Now);
         
         double Averaged_Energy_Loss=0;
         double Diff_between_dEdX_and_every=0;
         for(int Event=0; Event<Event_Number_try; Event++)
         {
+            //cout << "Collision_Time_Now: " << Collision_Time_Now << endl;
             double Energy_total=0;
-            cout << "====================================" << endl;
-            cout << "-----------------------------" << endl;
+            //cout << "====================================" << endl;
+            //cout << "-----------------------------" << endl;
             int Count_Collision=0;
             for(int Collision_Time_Index=0; Collision_Time_Index<(int)Collision_Time_Now; Collision_Time_Index++)
             {
                 double Random_Energy= f3->GetRandom();
                 //cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
-                //cout << "Random_Energy: " << Random_Energy << endl;
                 Energy_total = Energy_total + Random_Energy;
                 //cout << "Energy_total: " << Energy_total << endl;
                 Count_Collision = Count_Collision + 1;
                 //cout << "Energy_total/Count_Collision: " << Energy_total/(double)Count_Collision << endl;
+                //cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
                 //cout << "(Energy_total-Energy_Loss_dEdX)/Energy_Loss_dEdX: " << abs((Energy_total/(double)Count_Collision-Energy_Loss_dEdX)/Energy_Loss_dEdX) << endl;
-
             }
-            cout << "-----------------------------" << endl;
+            //cout << "-----------------------------" << endl;
             Energy_total = Energy_total/Collision_Time_Now;
-            Diff_between_dEdX_and_every = Diff_between_dEdX_and_every + abs(Energy_total/Energy_Loss_dEdX);
-            cout << "<Energy_total>: " << Energy_total << endl;
-            cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
-            cout << "(Energy_total/Energy_Loss_dEdX): " << (Energy_total/Energy_Loss_dEdX) << endl;
-            cout << "abs(Energy_total/Energy_Loss_dEdX): " << abs(Energy_total/Energy_Loss_dEdX) << endl;
+            //Diff_between_dEdX_and_every = Diff_between_dEdX_and_every +  ( abs(Energy_total-Energy_Loss_dEdX)/Energy_Loss_dEdX );
+            Diff_between_dEdX_and_every = Diff_between_dEdX_and_every +  ( abs(Energy_total-Energy_Loss_dEdX) );
+            //cout << "<Energy_total>: " << Energy_total << endl;
+            //cout << "Energy_Loss_dEdX: " << Energy_Loss_dEdX << endl;
+            //cout << "(Energy_total/Energy_Loss_dEdX): " << (Energy_total/Energy_Loss_dEdX) << endl;
+            //cout << "abs(Energy_total/Energy_Loss_dEdX): " << abs(Energy_total/Energy_Loss_dEdX) << endl;
+            //cout << "( (Energy_total-Energy_Loss_dEdX) /Energy_Loss_dEdX): " << ( (Energy_total-Energy_Loss_dEdX) /Energy_Loss_dEdX)  << endl;
             Averaged_Energy_Loss = Averaged_Energy_Loss + (Energy_total);
-            cout << "====================================" << endl;
+            //cout << "====================================" << endl;
         }
         Averaged_Energy_Loss = Averaged_Energy_Loss/(double)Event_Number_try;
-        cout << "Averaged_Energy_Loss: " << Averaged_Energy_Loss << endl;
-        Energy_Loss_averaged.push_back(Averaged_Energy_Loss/Energy_Loss_dEdX);
+        //cout << "Averaged_Energy_Loss: " << Averaged_Energy_Loss << endl;
+        Energy_Loss_averaged.push_back(Averaged_Energy_Loss);
+        //cout << "Diff_between_dEdX_and_every/Event_Number_try: " << Diff_between_dEdX_and_every/(double)Event_Number_try << endl;
         vector_Diff_between_dEdX_and_every.push_back((Diff_between_dEdX_and_every)/(double)Event_Number_try);
     }
     
     
-    for(int KKK=0; KKK<25-1; KKK++)
+    double Energy_Loss = MFP_from_DCS_Part(0,Velocity,Same_Sigma,Mx,Atomic_Mass)*1e-3;//keV
+    double Uncertainty = MFP_from_DCS_Part(3,Velocity,Same_Sigma,Mx,Atomic_Mass);//keV
+    
+    for(int KKK=0; KKK<49; KKK++)
     {
+        cout << "=============================================" << endl;
+        cout << "Energy_Loss: " << Energy_Loss << endl;
+        cout << "Uncertainty: " << Uncertainty << endl;
+        cout << "Uncertainty/Energy_Loss: " << Uncertainty/Energy_Loss << endl;
+        cout << "---------------------------------------------" << endl;
         cout << "Collision_Time: " << Collision_Time[KKK] << endl;
         cout << "Energy_Loss_averaged: " << Energy_Loss_averaged[KKK] << endl;
         cout << "vector_Diff_between_dEdX_and_every: " << vector_Diff_between_dEdX_and_every[KKK] << endl;
+        cout << "=============================================" << endl;
     }
-     */
+
     
+
     /*
     for(int KKK=0; KKK<5000; KKK++)
     {
