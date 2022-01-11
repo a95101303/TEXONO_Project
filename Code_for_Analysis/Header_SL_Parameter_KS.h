@@ -596,7 +596,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
          */
     
         //Give out the root file to check the content of the DCS
-        /*
+        
         char fout_name[100];
         sprintf(fout_name,Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%sGeV/DCS.root",mx.c_str()));
         TFile *fout=new TFile(fout_name,"recreate");
@@ -604,7 +604,7 @@ double fdsigma_dT_ER(string mx, double v_int, double T)//mx(GeV/c^2),v(c), dsigm
         //for(int N=0; N<DM_Beta_N; N++){TG_Hist_DCS_array[N]->Write(DM_Beta[N].c_str());}
 
         fout->Close();
-        */
+        
         cout << "v: " << v << endl;
         cout << "DCS: " << DCS << endl;
          return DCS;

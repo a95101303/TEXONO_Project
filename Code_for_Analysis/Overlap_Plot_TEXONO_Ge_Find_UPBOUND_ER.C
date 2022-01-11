@@ -466,33 +466,107 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
      
   //for(int kkk=0; kkk<File.size(); kkk++)
     for(int kkk=1; kkk<2; kkk++)
+    //for(int kkk=5; kkk<6; kkk++)
+    //for(int kkk=1; kkk<2; kkk++)
+    //for(int kkk=10; kkk<11; kkk++)//0.12GeV
     {
         
-        TFile *fin   = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str(),File[kkk].c_str()));
+        TFile *fin   = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[kkk].c_str()));
         TFile *fin_2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index+2].c_str(),File[kkk].c_str()));
-
         TH1F*    velocity_TH1F[velocity_N];//Mass-based
         TH1F*    velocity_TH1F_2[velocity_N];//Mass-based
+        int      Check_Coherent[velocity_N];
+        
         for(int LLL=0; LLL<velocity_N; LLL++)
         {
+            cout << "velocity_s[LLL].c_str(): " << velocity_s[LLL].c_str() << endl;
             TH1F *Velocity_TH1F_temp  =(TH1F*)fin  ->Get(velocity_s[LLL].c_str());
             TH1F *Velocity_TH1F_temp_2=(TH1F*)fin_2->Get(velocity_s[LLL].c_str());
             if(Velocity_TH1F_temp!=NULL)
             {
-                cout << "File: " << velocity_s[LLL].c_str() << endl;
+                cout << "File_1: " << velocity_s[LLL].c_str() << endl;
                 velocity_TH1F[LLL]=(Velocity_TH1F_temp);
             }
             if(Velocity_TH1F_temp_2!=NULL)
             {
-                cout << "File: " << velocity_s[LLL].c_str() << endl;
+                cout << "File_2: " << velocity_s[LLL].c_str() << endl;
                 velocity_TH1F_2[LLL]=(Velocity_TH1F_temp_2);
             }
+            cout << "=================" << endl;
+            if(Velocity_TH1F_temp!=NULL and Velocity_TH1F_temp_2!=NULL)
+            {
+                cout << "LLL_1: " << LLL << endl;
+                Check_Coherent[LLL]=1;
+            }
+            else
+            {
+                cout << "LLL_0: " << LLL << endl;
+                Check_Coherent[LLL]=0;
+            }
+            cout << "=================" << endl;
         }
-        
         //cout << "Applied_Hist: " << Applied_Hist << endl;
         //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
+        double Power_Final_array[velocity_N];
+        double Ratio1_array[velocity_N];
+        double Ratio2_array[velocity_N];
+        
+        double Total_Cross_Section_Xe_array[velocity_N];
+        double Total_Cross_Section_Ge_array[velocity_N];
+        //Total_Cross_Section_Xe_array[0]=0;Total_Cross_Section_Xe_array[1]=0;
+       // for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
+        //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
+        //for(int Applied_Hist=3; Applied_Hist<velocity_N; Applied_Hist++)
         {
+            
+            cout << "================================================" << endl;
+            if(Check_Coherent[Applied_Hist]!=1)
+                continue;
+            cout << "Applied_Hist: " << Applied_Hist << endl;
+            cout << "Check_Coherent[Applied_Hist]: " << Check_Coherent[Applied_Hist] << endl;
+            
+            //Find the relation between the total cross sections and the velocity
+            cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
+            cout << "velocity_d[Applied_Hist]" << velocity_d[Applied_Hist] << endl;
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Xe_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double A_Slope_Xe = (Xe_Y2-Xe_Y1)/(Xe_X2-Xe_X1);
+            cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
+            double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
+            
+            Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Ge_Y1 = Xe_Y1;
+            double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_X1 = Xe_X1;
+            double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
+            double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
+            cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
+            double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
+
+            //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
+            double Total_Xe_DCS=0;double Total_Ge_DCS=0;double Total_HH_DCS=0;
+            double Bin = (480.-12.)/10000.;
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                Total_Xe_DCS = Total_Xe_DCS + DCS_Xe;
+                Total_Ge_DCS = Total_Ge_DCS + DCS_Ge;
+            }
+            //cout << "Total_Xe_DCS: " << Total_Xe_DCS << endl;
+            //cout << "Total_Ge_DCS: " << Total_Ge_DCS << endl;
+
+            Total_Cross_Section_Xe_array[Applied_Hist]=Total_Xe_DCS;
+            Total_Cross_Section_Ge_array[Applied_Hist]=Total_Ge_DCS;
+            cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
+            cout << "Total_Cross_Section_Xe_array[Applied_Hist]: " << Total_Cross_Section_Xe_array[Applied_Hist] << endl;
+            cout << "Total_Cross_Section_Ge_array[Applied_Hist]: " << Total_Cross_Section_Ge_array[Applied_Hist] << endl;
+            
             //Calculating the collision Time and mean value of energy loss
             /*
             vector<double> A_array               = {28.0855,15.99};
@@ -509,7 +583,9 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             */
             
              //Find the mean value of energy loss and its relationship with Z
+            /*
             cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
+            cout << "velocity_d[Applied_Hist]" << velocity_d[Applied_Hist] << endl;
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
@@ -553,23 +629,60 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 Total_HH_DCS = Total_HH_DCS + DCS_HH;
             }
             double Energy_Loss_Xe_DCS;double Energy_Loss_Ge_DCS;double Energy_Loss_HH_DCS;
+            double CCC;
             for(int KKK=0; KKK<10000; KKK++)
             {
                 double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
                 double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
-                Energy_Loss_Xe_DCS = Energy_Loss_Xe_DCS + (12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
+                
+                CCC = CCC + (12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
+                cout << "(12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS: " << (12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS << endl;
+                cout << "Energy_Loss_Xe_DCS: " << CCC << endl;
+                
                 Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*DCS_Ge/Total_Ge_DCS;
             }
+            cout << "BBB: " << CCC << endl;
             for(int KKK=0; KKK<12; KKK++)
             {
                 double DCS_HH     =  TMath::Power(10,DCS_H[KKK]);
                 Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + Energy_H[KKK]*DCS_HH/Total_HH_DCS;
             }
-            cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
+            cout << "Energy_Loss_Xe_DCS: " << CCC << endl;
             cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
             cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
 
-            
+            double Test_variable_Xe=54.;
+            double Test_variable_Ge=28.;
+            double Test_variable_HH=1.;
+
+            double Power_Final=0;
+            double Diff_1;double Diff_2;double Ratio_1;double Ratio_2;
+            double Start_Point_Diff=100.;
+            for(int KKK = 0; KKK< 1000; KKK++)
+            {
+                double Power_Constant = 0.001*(double)KKK;
+                double Xe_Energy_Loss_const =CCC/TMath::Power(Test_variable_Xe,Power_Constant);
+                double Ge_Energy_Loss_const =Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,Power_Constant);
+                double HH_Energy_Loss_const =Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,Power_Constant);
+                cout << "Power_Constant: " << Power_Constant << endl;
+                cout << "Xe_Energy_Loss_const: " << Xe_Energy_Loss_const << endl;
+                cout << "Ge_Energy_Loss_const: " << Ge_Energy_Loss_const << endl;
+                cout << "HH_Energy_Loss_const: " << HH_Energy_Loss_const << endl;
+                Diff_1 = abs(Xe_Energy_Loss_const-HH_Energy_Loss_const);
+                Diff_2 = abs(Ge_Energy_Loss_const-HH_Energy_Loss_const);
+                if( Diff_1+Diff_2<Start_Point_Diff )
+                {
+                    Power_Final = Power_Constant;
+                    Ratio_1 = Xe_Energy_Loss_const/HH_Energy_Loss_const;
+                    Ratio_2 = Ge_Energy_Loss_const/HH_Energy_Loss_const;
+                    Start_Point_Diff = Diff_1+Diff_2;
+                }
+            }
+            Power_Final_array[Applied_Hist] = Power_Final;
+            Ratio1_array[Applied_Hist]      = Ratio_1;
+            Ratio2_array[Applied_Hist]      = Ratio_2;
+            */
+            /*
             //double Test_variable_Xe=131.;
             //double Test_variable_Ge=72.;
             //double Test_variable_HH=1.;
@@ -637,7 +750,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
             c1->SetLogy();
             c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/ELoss_over_Power_of_Z_%s.pdf",velocitykm_s[Applied_Hist].c_str()));
-            
+            */
             
             
              //Get the histogram of DCS and the mean value of energy loss
@@ -827,7 +940,11 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             TCS_over_AM_third_Element[0]=Total_Cross_Section_HH_Check/(1.00784*1.00784*1.00784);
             TCS_over_AM_third_Element[1]=Total_Cross_Section_Ge_Check/(72.64*72.64*72.64);
             TCS_over_AM_third_Element[2]=Total_Cross_Section_Xe_Check/(131.293*131.293*131.293);
-             */
+             
+            cout << "TCS_over_AM_third_Element[0]: " << TCS_over_AM_third_Element[0] << endl;
+            cout << "TCS_over_AM_third_Element[1]: " << TCS_over_AM_third_Element[1] << endl;
+            cout << "TCS_over_AM_third_Element[2]: " << TCS_over_AM_third_Element[2] << endl;
+            */
             /*
             TGraph *TCS_over_AM_third = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_third_Element);//Total Cross Section(TCS), Electron Number(EN)
             TCS_over_AM_third->SetMarkerStyle(20);
@@ -969,6 +1086,25 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
         }//for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         
+        double VReverse[velocity_N];
+        for(int VN=0; VN<velocity_N; VN++)
+        {
+            cout << "velocitykm: " << velocitykm[VN] << endl;
+            cout << "1./(velocitykm[VN]*velocitykm[VN]): " << 1./(velocitykm[VN]*velocitykm[VN]) << endl;
+            VReverse[VN] = 1./(velocitykm[VN]*velocitykm[VN]);
+            cout << "VReverse[VN]: " << VReverse[VN]  << endl;
+            cout << "Total_Cross_Section_Xe_array: " << Total_Cross_Section_Xe_array[VN] << endl;
+            cout << "Total_Cross_Section_Ge_array: " << Total_Cross_Section_Ge_array[VN] << endl;
+            cout << "Total_Cross_Section_Xe_array[VN]/A^3: " << Total_Cross_Section_Xe_array[VN]/(131.293*131.293*131.293) << endl;
+            cout << "Total_Cross_Section_Ge_array[VN]/A^3: " << Total_Cross_Section_Ge_array[VN]/(72.64*72.64*72.64) << endl;
+            cout << "Total_Cross_Section_Xe_scaled: " << Total_Cross_Section_Xe_array[VN]*(velocitykm[VN]*velocitykm[VN]) << endl;
+            cout << "Total_Cross_Section_Ge_scaled: " << Total_Cross_Section_Ge_array[VN]*(velocitykm[VN]*velocitykm[VN]) << endl;
+
+        }
+        for(int VN=0; VN<velocity_N; VN++)
+        {
+            cout << Total_Cross_Section_Xe_array[VN] << ",";
+        }
     }//for(int kkk=1; kkk<2; kkk++)
     
     //==================================================//

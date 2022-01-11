@@ -4,6 +4,18 @@
 
 void A_Test_Test_Compile()
 {
+    
+    double Try_array[3];
+    for(int KKK=1; KKK<3; KKK++)
+    {
+        Try_array[KKK]=2;
+    }
+    
+    for(int KKK=0; KKK<3; KKK++)
+    {
+        cout << "Try_array[KKK]: " << Try_array[KKK] << endl;
+    }
+
     TH1F   *Test_Integral = new TH1F("Test_Integral","Test_Integral",40,0,10);
     Test_Integral->Fill(5);Test_Integral->Fill(9.1);
     Test_Integral->Fill(9.5);Test_Integral->Fill(7.8);
