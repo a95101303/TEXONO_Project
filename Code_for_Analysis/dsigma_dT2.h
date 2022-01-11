@@ -1575,9 +1575,8 @@ double total_Sigma_Modified(int Option=0, double Velocity=0, double Sigma_SI=0, 
 
 double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
  {
-    //cout << "Option: " << Option << endl;
-    //cout << "Velocity: " << Velocity << endl;
     
+
      int reso_T=1000;double T[reso_T];double MFP=0;double total_Cross_Section=0;
      double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, Velocity*1000.0/2.99792458e8, A); //keV
     //======
@@ -1598,20 +1597,84 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
             }
         pEx = T[i];
     }
+     double Expectation_Value = (MFP/total_Cross_Section);//keV
+     double Uncertainty       = 0;
+
+     cout << "Velocity: " << Velocity << "Sigma_SI: " << Sigma_SI << "WIMP_mx: " << WIMP_mx << "ATOM_KIND: " << A << endl;
+     cout << "Expectation_Value: " << Expectation_Value << endl;
      
-     if(Option==0)return 1e3*(MFP/total_Cross_Section);//(eV) averaged energy loss per collision
+     if(Option==0)return 1e3*(Expectation_Value);//(eV) averaged energy loss per collision
      if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm) [Part of it! You should time with n)
      if(Option==2)return total_Cross_Section;//
 
-     double Expectation_Value = (MFP/total_Cross_Section);//keV
-     double Uncertainty       = 0;
+     /*
+     pEx = T[0];double Prob_Total=0;
      for(int i=0;i<reso_T;i++)
      {
+         if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
          double Diff_T_MeanT  = T[i]-Expectation_Value;
          double Possibility = (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx)/(total_Cross_Section);
+         Prob_Total = Prob_Total + Possibility;
          Uncertainty = Uncertainty + Possibility*(Diff_T_MeanT)*(Diff_T_MeanT);
+         pEx = T[i];
      }
+     //cout << "Prob_Total: " << Prob_Total << endl;
      if(Option==3)return sqrt(Uncertainty);//
+      */
+}
+
+double *Velocity_Aft_collision_dEdX(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0, double ATOM_KIND=0)
+{
+    static double RETURN_VALUE[4];//(1)Final_Velocity(2)Energy_Difference(T1+T2+...)(3)Energy_Difference(E_Final-E_initial)
+    
+    //cout <<"Velocity_Aft_collision_Collision_TIme: " << Collision_Time << endl;
+    // Percentage of the material of the earth
+    gRandom = new TRandom3(0);
+    gRandom->SetSeed(0);
+
+    if(Initial_Velocity!=0)
+    {
+        int Collision_Time_Temp=Collision_Time;
+        double DM_Energy_Aft_Colliding=Energy_DM(mx,Initial_Velocity*1e3/3e8);
+        double DM_Velocity_Aft_Colliding=Initial_Velocity;
+        cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding <<  endl;
+        double Energy_Lost_Total=0;
+        int Count=0;
+        if(Collision_Time!=0 and DM_Velocity_Aft_Colliding>1)
+        {
+            for(int kkk=0 ; kkk<Collision_Time_Temp ; kkk++)
+            {
+                cout << "for calculating the energy loss" << endl;
+                double Energy_Loss_A = 1e-3*MFP_from_DCS_Part(0,DM_Velocity_Aft_Colliding,Sigma_SI_Default,mx,ATOM_KIND);//keV
+                cout << "Energy_Loss_A: " << Energy_Loss_A << endl;
+                DM_Energy_Aft_Colliding = (DM_Energy_Aft_Colliding - Energy_Loss_A);
+                DM_Velocity_Aft_Colliding = Velocity_DM(mx,DM_Energy_Aft_Colliding);
+                cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
+                Count = Count + 1;
+                if(DM_Energy_Aft_Colliding<1e-2 or Energy_Loss_A==0)
+                {
+                    //cout << "BREAK: " << endl;
+                    break;
+                }
+                 
+            }
+        }
+        else
+        {
+            //cout << "GHGH: " << endl;
+            DM_Velocity_Aft_Colliding=Initial_Velocity;
+        }
+        //cout << "Count: " << Count << endl;
+        //cout << "Fun_DM_Velocity_Aft_Colliding_Aft: " << DM_Velocity_Aft_Colliding << endl;
+        RETURN_VALUE[0]=DM_Velocity_Aft_Colliding;
+        RETURN_VALUE[1]=Energy_Lost_Total;
+        RETURN_VALUE[2]=Energy_DM(mx,Initial_Velocity*1e3/3e8)-Energy_DM(mx,DM_Velocity_Aft_Colliding*1e3/3e8);
+        RETURN_VALUE[3]=Count;
+        return RETURN_VALUE;
+    }
+    else
+    { RETURN_VALUE[0]=0; RETURN_VALUE[1]=0; RETURN_VALUE[2]=0;RETURN_VALUE[3]=0;
+        return RETURN_VALUE;}
 }
 
 double total_C_AAAA(int Option=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)

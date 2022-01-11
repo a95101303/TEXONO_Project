@@ -376,6 +376,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     double velocity_d[velocity_N]={0.1667,0.3333,0.5000,0.6667,0.8333,1.0000,1.1670,1.3330,1.5000,1.6670,1.8330,2.0000,2.1670};
     double velocitykm[velocity_N];//Filled in the next line
     for(int kkk=0; kkk<velocity_N; kkk++){velocitykm[kkk]=velocity_d[kkk]*dr_mukesh_c_to_kms;}//(km/s)}
+    string velocitykm_s[velocity_N];for(int kkk=0; kkk<velocity_N; kkk++){velocitykm_s[kkk]=std::to_string((int)velocitykm[kkk]);}//(km/s)}
     
     const int Index=0;
     const double Density = 1.8;//g/cm^3
@@ -493,7 +494,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         {
             //Calculating the collision Time and mean value of energy loss
-            
+            /*
             vector<double> A_array               = {28.0855,15.99};
             vector<double> Z_Array               = {14.,8.};
             double Total_Cross_Section_const     = 8e-39;
@@ -505,9 +506,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Total_Energy: " << Total_Energy << endl;
             double Scaling                   = CDEX_Threshold/(Total_Energy);
             cout << "CS_Try: " << CS_Try((Scaling),1) << endl;
+            */
             
-            /*
              //Find the mean value of energy loss and its relationship with Z
+            cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
@@ -634,8 +636,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             leg->Draw();
 
             c1->SetLogy();
-            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/ELoss_over_Power_of_Z.pdf");
-            */
+            c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/ELoss_over_Power_of_Z_%s.pdf",velocitykm_s[Applied_Hist].c_str()));
+            
             
             
              //Get the histogram of DCS and the mean value of energy loss
