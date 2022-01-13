@@ -367,9 +367,61 @@ double Linear_Line(double x, double a, double b)
     return a*x+b;
 }
 
+static double DCS_H_array_slope[11];//TMath::Log10()
+static double DCS_H_array_b[11];//TMath::Log10()
+
+static int AAA=0;
+double DCS_H_c1_1GeV_300kms(double ER)//ER(eV)
+{
+    
+    const double DCS_H_array[12][2]=//TMath::Log10()
+    {
+        12.,-13.5,
+        20.,-14.,
+        25.,-15.,
+        38.,-16.,
+        55.,-17.,
+        75.,-18.,
+        120.,-19.,
+        150.,-20.,
+        210.,-21.,
+        280.,-22.,
+        380.,-23.,
+        450.,-24.
+    };
+    if(AAA==0)
+    {
+        cout << "==========Filled up the array of the slope================" << endl;
+        for(int KKK=0; KKK<11; KKK++)
+        {
+            DCS_H_array_slope[KKK]=(DCS_H_array[KKK+1][1]-DCS_H_array[KKK][1])/(DCS_H_array[KKK+1][0]-DCS_H_array[KKK][0]);
+        }
+        for(int KKK=0; KKK<11; KKK++)
+        {
+            DCS_H_array_b[KKK]=DCS_H_array[KKK][1]-DCS_H_array_slope[KKK]*DCS_H_array[KKK][0];//y-ax=b
+        }
+        AAA=1;
+    }
+    double Slope_Used=0;double b_Used=0;
+    for(int KKK=0; KKK<11; KKK++)
+    {
+        if(ER>DCS_H_array[KKK][0] and ER<DCS_H_array[KKK+1][0])
+        {
+            Slope_Used=DCS_H_array_slope[KKK];
+            b_Used    =DCS_H_array_b[KKK];
+        }
+    }
+    cout << "ER: " << ER << endl;
+    double Fitting_Line=Slope_Used*ER+b_Used;//The fitting straight line
+    cout << "Fitting: " << Fitting_Line << endl;
+    cout << "TMath::Power(10,Fitting_Line*1e+4*1e-24): " << TMath::Power(10,Fitting_Line)*1e+4*1e-24 << endl;
+    return TMath::Power(10,Fitting_Line)*1e+4*1e-24;
+}
+
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
+    DCS_H_c1_1GeV_300kms(1.);
     const int    velocity_N=13;
     const double dr_mukesh_c_to_kms = 1e-3*(3e8/1e3);
     string velocity_s[velocity_N]={"01667","03333","05000","06667","08333","10000","11670","13330","15000","16670","18330","20000","21670"};
@@ -479,9 +531,9 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     
     //double A = Total_Cross_Section_HH_at_1GeV_300kms*Constant_scaling[1][5];
     
-    for(int kkk=0; kkk<File.size()-1; kkk++)
+    //for(int kkk=0; kkk<File.size()-1; kkk++)
     //for(int kkk=10; kkk<11; kkk++)
-    //for(int kkk=7; kkk<8; kkk++)
+    for(int kkk=1; kkk<2; kkk++)
     //for(int kkk=8; kkk<9; kkk++)//0.12GeV
     {
         
@@ -493,31 +545,31 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         
         for(int LLL=0; LLL<velocity_N; LLL++)
         {
-            cout << "velocity_s[LLL].c_str(): " << velocity_s[LLL].c_str() << endl;
+            //cout << "velocity_s[LLL].c_str(): " << velocity_s[LLL].c_str() << endl;
             TH1F *Velocity_TH1F_temp  =(TH1F*)fin  ->Get(velocity_s[LLL].c_str());
             TH1F *Velocity_TH1F_temp_2=(TH1F*)fin_2->Get(velocity_s[LLL].c_str());
             if(Velocity_TH1F_temp!=NULL)
             {
-                cout << "File_1: " << velocity_s[LLL].c_str() << endl;
+                //cout << "File_1: " << velocity_s[LLL].c_str() << endl;
                 velocity_TH1F[LLL]=(Velocity_TH1F_temp);
             }
             if(Velocity_TH1F_temp_2!=NULL)
             {
-                cout << "File_2: " << velocity_s[LLL].c_str() << endl;
+                //cout << "File_2: " << velocity_s[LLL].c_str() << endl;
                 velocity_TH1F_2[LLL]=(Velocity_TH1F_temp_2);
             }
-            cout << "=================" << endl;
+            //cout << "=================" << endl;
             if(Velocity_TH1F_temp!=NULL and Velocity_TH1F_temp_2!=NULL)
             {
-                cout << "LLL_1: " << LLL << endl;
+                //cout << "LLL_1: " << LLL << endl;
                 Check_Coherent[LLL]=1;
             }
             else
             {
-                cout << "LLL_0: " << LLL << endl;
+                //cout << "LLL_0: " << LLL << endl;
                 Check_Coherent[LLL]=0;
             }
-            cout << "=================" << endl;
+            //cout << "=================" << endl;
         }
         //cout << "Applied_Hist: " << Applied_Hist << endl;
         //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
@@ -532,22 +584,22 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         double Energy_Loss_Ge_array[velocity_N];
         //Total_Cross_Section_Xe_array[0]=0;Total_Cross_Section_Xe_array[1]=0;
        // for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
-        for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
-        //for(int Applied_Hist=0; Applied_Hist<6; Applied_Hist++)
+        //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
+        for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         //for(int Applied_Hist=3; Applied_Hist<velocity_N; Applied_Hist++)
         {
             Energy_Loss_Xe_array[Applied_Hist]=0;
             Energy_Loss_Ge_array[Applied_Hist]=0;
-            cout << "================================================" << endl;
+            //cout << "================================================" << endl;
             if(Check_Coherent[Applied_Hist]!=1)
             {
                 Total_Cross_Section_Xe_array[Applied_Hist]=0;
                 Total_Cross_Section_Ge_array[Applied_Hist]=0;
                 continue;
             }
-            cout << "Applied_Hist: " << Applied_Hist << endl;
-            cout << "Check_Coherent[Applied_Hist]: " << Check_Coherent[Applied_Hist] << endl;
-            
+            //cout << "Applied_Hist: " << Applied_Hist << endl;
+            //cout << "Check_Coherent[Applied_Hist]: " << Check_Coherent[Applied_Hist] << endl;
+            /*
             //Find the relation between the total cross sections and the velocity
             cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
             cout << "velocity_d[Applied_Hist]" << velocity_d[Applied_Hist] << endl;
@@ -592,7 +644,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             Total_Cross_Section_Mass_dependent_Xe[kkk]=Total_Xe_DCS;
             Total_Cross_Section_Mass_dependent_Ge[kkk]=Total_Ge_DCS;
-             
+             */
             
             //Calculating the collision Time and mean value of energy loss
             /*
@@ -608,6 +660,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double Scaling                   = CDEX_Threshold/(Total_Energy);
             cout << "CS_Try: " << CS_Try((Scaling),1) << endl;
             */
+            
             /*
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
@@ -967,7 +1020,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             gStyle->SetTitleSize(0.04,"XY");
             gStyle->SetTitleFont(62,"XY");
             gStyle->SetLegendFont(62);
-
+             
             double Total_Cross_Section_Xe_Check=0;
             double Total_Cross_Section_Ge_Check=0;
             double Total_Cross_Section_HH_Check=0;
@@ -975,14 +1028,16 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double Atomic_Mass_Array[3]={1.00784,72.64,131.293};
             double TCS_over_EN_Element[3];double TCS_over_EN_square_Element[3];double TCS_over_EN_third_Element[3];double TCS_over_EN_fourth_Element[3];
             double TCS_over_AM_Element[3];double TCS_over_AM_square_Element[3];double TCS_over_AM_third_Element[3];double TCS_over_AM_fourth_Element[3];//Atomic_Mass(AM)
-            for(int Energy_Index=0; Energy_Index<7; Energy_Index++)
+            double Bin = (480.-12.)/(10000.);//eV
+            for(int Bin_Number=1; Bin_Number<10000; Bin_Number++)
             {
-                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]    ->GetXaxis()->FindBin(Energy_H_Check[Energy_Index]);//Min_Recoil_Bin_Xe
-                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]  ->GetXaxis()->FindBin(Energy_H_Check[Energy_Index]);//Min_Recoil_Bin_Xe
+                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]    ->GetXaxis()->FindBin(Bin*Bin_Number);//Min_Recoil_Bin_Xe
+                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]  ->GetXaxis()->FindBin(Bin*Bin_Number);//Min_Recoil_Bin_Xe
                 
                 Total_Cross_Section_Xe_Check = Total_Cross_Section_Xe_Check + velocity_TH1F[Applied_Hist]  ->GetBinContent(Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2);
                 Total_Cross_Section_Ge_Check = Total_Cross_Section_Ge_Check + velocity_TH1F_2[Applied_Hist]->GetBinContent(Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2);
-                Total_Cross_Section_HH_Check = Total_Cross_Section_HH_Check + DCS_H_Check[Energy_Index];
+                Total_Cross_Section_HH_Check = Total_Cross_Section_HH_Check + DCS_H_c1_1GeV_300kms(Bin*Bin_Number);
+                //cout << "DCS_H_c1_1GeV_300kms(Bin*Bin_Number): " << DCS_H_c1_1GeV_300kms(Bin*Bin_Number) << endl;
             }
              
             cout << "Total_Cross_Section_Xe_Check: " << Total_Cross_Section_Xe_Check << endl;
@@ -1018,6 +1073,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             TCS_over_AM_third_Element[1]=Total_Cross_Section_Ge_Check/(72.64*72.64*72.64);
             TCS_over_AM_third_Element[2]=Total_Cross_Section_Xe_Check/(131.293*131.293*131.293);
              
+            cout << "TCS_over_EN_square_Element[0]: " << TCS_over_EN_Element[0] << endl;
+            cout << "TCS_over_EN_square_Element[1]: " << TCS_over_EN_Element[1] << endl;
+            cout << "TCS_over_EN_square_Element[2]: " << TCS_over_EN_Element[2] << endl;
+
             cout << "TCS_over_AM_third_Element[0]: " << TCS_over_AM_third_Element[0] << endl;
             cout << "TCS_over_AM_third_Element[1]: " << TCS_over_AM_third_Element[1] << endl;
             cout << "TCS_over_AM_third_Element[2]: " << TCS_over_AM_third_Element[2] << endl;
@@ -1120,7 +1179,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             TCS_over_EN->SetLineColor(2);
             TCS_over_EN->GetXaxis()->SetTitle("Atomic Mass");
             TCS_over_EN->GetXaxis()->SetRangeUser(0,500);
-            TCS_over_EN->GetYaxis()->SetRangeUser(1E-40,1E-33);
+            TCS_over_EN->GetYaxis()->SetRangeUser(1E-36,1E-25);
             TCS_over_EN->Draw("alp");
             
             TGraph *TCS_over_EN_square = new TGraph(3,Atomic_Mass_Array,TCS_over_EN_square_Element);//Total Cross Section(TCS), Electron Number(EN)
@@ -1221,8 +1280,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Energy_Loss_Ge_array[Applied_Hist]/velocity: " << Energy_Loss_Ge_array[VN]/velocitykm[VN] << endl;
             cout << "Energy_Loss_Xe_array[Applied_Hist]/velocity^2 " << Energy_Loss_Xe_array[VN]/(velocitykm[VN]*velocitykm[VN]) << endl;
             cout << "Energy_Loss_Ge_array[Applied_Hist]/velocity^2 " << Energy_Loss_Ge_array[VN]/(velocitykm[VN]*velocitykm[VN]) << endl;
-            Energy_Loss_divide_V_square_Xe[VN]=Energy_Loss_Xe_array[VN]/(velocitykm[VN]*velocitykm[VN]);
-            Energy_Loss_divide_V_square_Ge[VN]=Energy_Loss_Ge_array[VN]/(velocitykm[VN]*velocitykm[VN]);
+            Energy_Loss_divide_V_square_Xe[VN]=Energy_Loss_Xe_array[VN]/(velocitykm[VN]);
+            Energy_Loss_divide_V_square_Ge[VN]=Energy_Loss_Ge_array[VN]/(velocitykm[VN]);
         }
         TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
         gStyle->SetOptStat(0);
@@ -1236,7 +1295,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         TG_Energy_Loss_divide_V_square_Xe->SetMarkerColor(2);
         TG_Energy_Loss_divide_V_square_Xe->GetYaxis()->SetRangeUser(1e-6,1e3);
         TG_Energy_Loss_divide_V_square_Xe->GetXaxis()->SetTitle("V(km/s)");
-        TG_Energy_Loss_divide_V_square_Xe->GetYaxis()->SetTitle("<E>/V^2");
+        TG_Energy_Loss_divide_V_square_Xe->GetYaxis()->SetTitle("<E>/V");
         TG_Energy_Loss_divide_V_square_Xe->Draw("apl");
 
         TGraph * TG_Energy_Loss_divide_V_square_Ge = new TGraph(velocity_N,velocitykm,Energy_Loss_divide_V_square_Ge);
@@ -1256,7 +1315,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         leg->Draw();
 
         c1->SetLogy();
-        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/Energy_Loss_divide_V_square_%sGeV.pdf",Mass_s[kkk].c_str()));
+        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/Energy_Loss_divide_V_%sGeV.pdf",Mass_s[kkk].c_str()));
          */
         /*
         double Total_Cross_Section_Xe_Times_V_square[velocity_N];
@@ -1276,12 +1335,12 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             //cout << "Total_Cross_Section_Ge_array: " << Total_Cross_Section_Ge_array[VN] << endl;
             //cout << "Total_Cross_Section_Xe_array[VN]/A^3: " << Total_Cross_Section_Xe_array[VN]/(131.293*131.293*131.293) << endl;
             //cout << "Total_Cross_Section_Ge_array[VN]/A^3: " << Total_Cross_Section_Ge_array[VN]/(72.64*72.64*72.64) << endl;
-            cout << "Total_Cross_Section_Xe_scaled: " << Total_Cross_Section_Xe_array[VN]*(velocitykm[VN]) << endl;
-            cout << "Total_Cross_Section_Ge_scaled: " << Total_Cross_Section_Ge_array[VN]*(velocitykm[VN]) << endl;
+            cout << "Total_Cross_Section_Xe_scaled: " << Total_Cross_Section_Xe_array[VN]/(velocitykm[VN]) << endl;
+            cout << "Total_Cross_Section_Ge_scaled: " << Total_Cross_Section_Ge_array[VN]/(velocitykm[VN]) << endl;
             Total_Cross_Section_Xe_Times_V_square[VN]=Total_Cross_Section_Xe_array[VN]*(velocitykm[VN]*velocitykm[VN]);
             Total_Cross_Section_Ge_Times_V_square[VN]=Total_Cross_Section_Ge_array[VN]*(velocitykm[VN]*velocitykm[VN]);
-            Total_Cross_Section_Xe_Times_V[VN]=Total_Cross_Section_Xe_array[VN]*(velocitykm[VN]);
-            Total_Cross_Section_Ge_Times_V[VN]=Total_Cross_Section_Ge_array[VN]*(velocitykm[VN]);
+            Total_Cross_Section_Xe_Times_V[VN]=Total_Cross_Section_Xe_array[VN]/(velocitykm[VN]);
+            Total_Cross_Section_Ge_Times_V[VN]=Total_Cross_Section_Ge_array[VN]/(velocitykm[VN]);
         }
         for(int VN=0; VN<velocity_N-1; VN++)
         {
@@ -1293,7 +1352,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             Ratio_Ge[kkk][VN] = Total_Cross_Section_Ge_Times_V_square[VN+1]/Total_Cross_Section_Ge_Times_V_square[VN];
         }
          */
-         
+        /*
         TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
         gStyle->SetOptStat(0);
         gStyle->SetTitleSize(0.03,"XY");
@@ -1326,7 +1385,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
         c1->SetLogy();
         c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/Total_Cross_Section_%sGeV.pdf",Mass_s[kkk].c_str()));
-          
+          */
         /*
         TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
         gStyle->SetOptStat(0);
@@ -1337,9 +1396,9 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         TG_Total_Cross_Section_Xe_Times_V_square->SetMarkerStyle(20);
         TG_Total_Cross_Section_Xe_Times_V_square->SetMarkerColor(2);
         TG_Total_Cross_Section_Xe_Times_V_square->SetMarkerColor(2);
-        TG_Total_Cross_Section_Xe_Times_V_square->GetYaxis()->SetRangeUser(1e-30,1e-25);
+        TG_Total_Cross_Section_Xe_Times_V_square->GetYaxis()->SetRangeUser(1e-35,1e-22);
         TG_Total_Cross_Section_Xe_Times_V_square->GetXaxis()->SetTitle("V(km/s)");
-        TG_Total_Cross_Section_Xe_Times_V_square->GetYaxis()->SetTitle("#sigma_{SI} #times V(km/s)");
+        TG_Total_Cross_Section_Xe_Times_V_square->GetYaxis()->SetTitle("#sigma_{SI}/ V(km/s)");
         TG_Total_Cross_Section_Xe_Times_V_square->Draw("apl");
 
         TGraph * TG_Total_Cross_Section_Ge_Times_V_square = new TGraph(velocity_N,velocitykm,Total_Cross_Section_Ge_Times_V);
@@ -1359,7 +1418,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         leg->Draw();
 
         c1->SetLogy();
-        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/Total_Cross_Section_Times_V_%sGeV.pdf",Mass_s[kkk].c_str()));
+        c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/Total_Cross_Section_divide_V_%sGeV.pdf",Mass_s[kkk].c_str()));
          */
         /*
         TGraph * TG_Total_Cross_Section_Xe_Times_V_square = new TGraph(velocity_N,velocitykm,Total_Cross_Section_Xe_Times_V_square);
