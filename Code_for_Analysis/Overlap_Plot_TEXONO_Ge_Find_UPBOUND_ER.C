@@ -360,7 +360,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
 }//End_Main
 */
-
+double Energy_Loss(double constant, double V)
+{
+    return constant*V;
+}
 
 double Linear_Line(double x, double a, double b)
 {
@@ -374,7 +377,7 @@ static int AAA=0;
 double DCS_H_c1_1GeV_300kms(double ER)//ER(eV)
 {
     
-    const double DCS_H_array[12][2]=//TMath::Log10()
+    const double DCS_H_array[12][2]=//ER(eV),TMath::Log10(DCS)
     {
         12.,-13.5,
         20.,-14.,
@@ -387,21 +390,25 @@ double DCS_H_c1_1GeV_300kms(double ER)//ER(eV)
         210.,-21.,
         280.,-22.,
         380.,-23.,
-        450.,-24.
+        490.,-24.
     };
+    
     if(AAA==0)
     {
-        cout << "==========Filled up the array of the slope================" << endl;
+        //cout << "==========Filled up the array of the slope================" << endl;
         for(int KKK=0; KKK<11; KKK++)
         {
             DCS_H_array_slope[KKK]=(DCS_H_array[KKK+1][1]-DCS_H_array[KKK][1])/(DCS_H_array[KKK+1][0]-DCS_H_array[KKK][0]);
+            //cout << "DCS_H_array_slope[KKK]: " << DCS_H_array_slope[KKK] << endl;
         }
         for(int KKK=0; KKK<11; KKK++)
         {
             DCS_H_array_b[KKK]=DCS_H_array[KKK][1]-DCS_H_array_slope[KKK]*DCS_H_array[KKK][0];//y-ax=b
+            //cout << "DCS_H_array_b[KKK]: " << DCS_H_array_b[KKK] << endl;
         }
         AAA=1;
     }
+    
     double Slope_Used=0;double b_Used=0;
     for(int KKK=0; KKK<11; KKK++)
     {
@@ -411,10 +418,10 @@ double DCS_H_c1_1GeV_300kms(double ER)//ER(eV)
             b_Used    =DCS_H_array_b[KKK];
         }
     }
-    cout << "ER: " << ER << endl;
+    // cout << "ER: " << ER << endl;
     double Fitting_Line=Slope_Used*ER+b_Used;//The fitting straight line
-    cout << "Fitting: " << Fitting_Line << endl;
-    cout << "TMath::Power(10,Fitting_Line*1e+4*1e-24): " << TMath::Power(10,Fitting_Line)*1e+4*1e-24 << endl;
+    //cout << "Fitting: " << Fitting_Line << endl;
+    //cout << "TMath::Power(10,Fitting_Line*1e+4*1e-24): " << TMath::Power(10,Fitting_Line)*1e+4*1e-24 << endl;
     return TMath::Power(10,Fitting_Line)*1e+4*1e-24;
 }
 
@@ -579,9 +586,11 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         
         double Total_Cross_Section_Xe_array[velocity_N];
         double Total_Cross_Section_Ge_array[velocity_N];
-        
+        double Total_Cross_Section_HH_array[velocity_N];
+
         double Energy_Loss_Xe_array[velocity_N];
         double Energy_Loss_Ge_array[velocity_N];
+        double Energy_Loss_HH_array[velocity_N];
         //Total_Cross_Section_Xe_array[0]=0;Total_Cross_Section_Xe_array[1]=0;
        // for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
         //for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
@@ -590,16 +599,110 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         {
             Energy_Loss_Xe_array[Applied_Hist]=0;
             Energy_Loss_Ge_array[Applied_Hist]=0;
+            Energy_Loss_HH_array[Applied_Hist]=0;
             //cout << "================================================" << endl;
             if(Check_Coherent[Applied_Hist]!=1)
             {
                 Total_Cross_Section_Xe_array[Applied_Hist]=0;
                 Total_Cross_Section_Ge_array[Applied_Hist]=0;
+                Total_Cross_Section_HH_array[Applied_Hist]=0;
                 continue;
             }
             //cout << "Applied_Hist: " << Applied_Hist << endl;
             //cout << "Check_Coherent[Applied_Hist]: " << Check_Coherent[Applied_Hist] << endl;
-            /*
+            
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Xe_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double A_Slope_Xe = (Xe_Y2-Xe_Y1)/(Xe_X2-Xe_X1);
+            cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
+            double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
+            cout << "B_Xe: " << B_Xe << endl;
+
+            Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Ge_Y1 = Xe_Y1;
+            double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_X1 = Xe_X1;
+            double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
+            double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
+            cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
+            double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
+            cout << "B_Ge: " << B_Ge << endl;
+            //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
+            double Total_Xe_DCS=0;double Total_Ge_DCS=0;double Total_HH_DCS=0;
+            double Bin = (480.-12.)/10000;
+            
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                double DCS_HH     =  DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.));
+                //cout << "DCS_HH: " << DCS_HH << endl;
+                Total_Xe_DCS = Total_Xe_DCS + DCS_Xe*Bin*1e-3;
+                Total_Ge_DCS = Total_Ge_DCS + DCS_Ge*Bin*1e-3;
+                Total_HH_DCS = Total_HH_DCS + DCS_HH*Bin*1e-3;
+            }
+            double CCC=0; double Energy_Loss_Ge_DCS=0;double Energy_Loss_HH_DCS=0;
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                CCC = CCC + (12.+Bin*(KKK+1.))*(DCS_Xe*Bin*1e-3/Total_Xe_DCS);
+                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*(DCS_Ge*Bin*1e-3/Total_Ge_DCS);
+                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (12.+Bin*(KKK+1.))*(DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.))*Bin*1e-3/Total_HH_DCS);
+            }
+            double Energy_Loss_Xe_DCS=CCC;
+
+            Energy_Loss_Xe_array[Applied_Hist]=Energy_Loss_Xe_DCS;
+            Energy_Loss_Ge_array[Applied_Hist]=Energy_Loss_Ge_DCS;
+            Energy_Loss_HH_array[Applied_Hist]=Energy_Loss_HH_DCS;
+
+            cout << "Total_Xe_DCS: " << Total_Xe_DCS << endl;
+            cout << "Total_Ge_DCS: " << Total_Ge_DCS << endl;
+            cout << "Total_HH_DCS: " << Total_HH_DCS << endl;
+
+            cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
+            cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
+            cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
+
+            double Atomic_Number_Array[2]={8.,14.};
+            double Atomic_Mass_Array[2]  ={16.,28.};
+
+            double Total_Cross_Section_O  = Total_HH_DCS*Atomic_Mass_Array[0];
+            double Total_Cross_Section_Si = Total_HH_DCS*Atomic_Mass_Array[1];
+            
+            double Energy_Loss_O          = 10.*sqrt(Atomic_Number_Array[0]);//eV
+            double Energy_Loss_Si         = 10.*sqrt(Atomic_Number_Array[1]);//eV
+
+            double Total_Cross_Si_Final = (Total_Cross_Section_Si/300.)*800.;
+            double Max_Energy           = 1e3*Energy_DM(1,800.*1e3/3e8);//eV
+            //cout << "Max_Energy: " << Max_Energy << endl;
+            double Scaling_A              = TMath::Power(10000.,2);
+            int    Collision_Time_Si    = Scaling_A*1.4*1e3*1e2*(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])))*Total_Cross_Si_Final;//1.4km
+            cout << "Collision_Time_Si: " << Collision_Time_Si << endl;
+            cout << "CS_Try: " << Scaling_A*CS_Try(1.,1.) << endl;
+            //cout << "CS_Try: " << CS_Try(5.28e-4,0.5) << endl;
+
+            double Energy_Loss_Constant = Energy_Loss_Si/300.;
+            double V_max = 800.;//km/s
+            int Count=0;
+            for(int kkk=0; kkk<Collision_Time_Si; kkk++)
+            {
+                //double Energy_Loss_Calculated = Energy_Loss(Energy_Loss_Constant,V_max);
+                double Energy_Loss_Calculated = Energy_Loss_Si;
+                Max_Energy = Max_Energy - Energy_Loss_Calculated;
+                //cout << "Max_Energy: " << Max_Energy << endl;
+                V_max      = Velocity_DM(1.,Max_Energy*1E-3);
+                if(Max_Energy>160.)Count = Count + 1;
+                //cout << "V_max: " << V_max << endl;
+            }
+            cout << "Max_Energy: " << Max_Energy << endl;
+            cout << "Count: " << Count << endl;
+            cout << "(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))): " << (2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))) << endl;
+             /*
             //Find the relation between the total cross sections and the velocity
             cout << "velocitykm: " << velocitykm[Applied_Hist] << endl;
             cout << "velocity_d[Applied_Hist]" << velocity_d[Applied_Hist] << endl;
@@ -648,13 +751,16 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             //Calculating the collision Time and mean value of energy loss
             /*
+            cout << "Estimation: " << endl;
             vector<double> A_array               = {28.0855,15.99};
             vector<double> Z_Array               = {14.,8.};
             double Total_Cross_Section_const     = 8e-39;
             //First case is for CDEX
             double CDEX_Threshold            = 160;//eV
             double Collision_Time            = 1.4e3*1e2*( 2.33*1./(unified_atomic_mass_g*(A_array[0])) )*Total_Cross_Section_const*TMath::Power(A_array[0],3);
+            cout << "Collision_Time: " << Collision_Time << endl;
             double Energy_Loss_per_collision = 10*sqrt(Z_Array[0]);
+            cout << "Energy_Loss_per_collision: " << Energy_Loss_per_collision << endl;
             double Total_Energy              = Collision_Time*Energy_Loss_per_collision;
             cout << "Total_Energy: " << Total_Energy << endl;
             double Scaling                   = CDEX_Threshold/(Total_Energy);
@@ -683,33 +789,36 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
             cout << "B_Ge: " << B_Ge << endl;
             //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
-            double Total_Xe_DCS=0;double Total_Ge_DCS=0;
+            double Total_Xe_DCS=0;double Total_Ge_DCS=0;double Total_HH_DCS=0;
             double Bin = (480.-12.)/10000;
             
             for(int KKK=0; KKK<10000; KKK++)
             {
                 double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
                 double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                double DCS_HH     =  DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.));
                 Total_Xe_DCS = Total_Xe_DCS + DCS_Xe;
                 Total_Ge_DCS = Total_Ge_DCS + DCS_Ge;
+                Total_HH_DCS = Total_HH_DCS + DCS_HH;
             }
             cout << "Total_Xe_DCS: " << Total_Xe_DCS << endl;
             cout << "Total_Ge_DCS: " << Total_Ge_DCS << endl;
-            double Energy_Loss_Xe_DCS=0;double Energy_Loss_Ge_DCS=0;double CCC=0;
+            double CCC=0; double Energy_Loss_Xe_DCS=0;double Energy_Loss_Ge_DCS=0;double Energy_Loss_HH_DCS=0;
             for(int KKK=0; KKK<10000; KKK++)
             {
                 double DCS_Xe     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
                 double DCS_Ge     =  TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
-                
-                CCC = CCC + (12.+Bin*(KKK+1.))*DCS_Xe/Total_Xe_DCS;
-                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*DCS_Ge/Total_Ge_DCS;
+                CCC = CCC + (12.+Bin*(KKK+1.))*(DCS_Xe/Total_Xe_DCS);
+                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*(DCS_Ge/Total_Ge_DCS);
+                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (12.+Bin*(KKK+1.))*(DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.))/Total_HH_DCS);
             }
-            cout << "BBB: " << CCC << endl;
             cout << "Energy_Loss_Xe_DCS: " << CCC << endl;
             cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
+            cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
 
             Energy_Loss_Xe_array[Applied_Hist]=CCC;
             Energy_Loss_Ge_array[Applied_Hist]=Energy_Loss_Ge_DCS;
+            Energy_Loss_HH_array[Applied_Hist]=Energy_Loss_HH_DCS;
              */
              //Find the mean value of energy loss and its relationship with Z
             /*
@@ -824,17 +933,17 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             //double Atomic_Mass_Array[3]={1.00784,72.64,131.293};
             double Energy_Loss_DCS_0P5Power[3];double Energy_Loss_DCS_1Power[3];double Energy_Loss_DCS_2Power[3];
             
-            Energy_Loss_DCS_0P5Power[0]=Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,0.5);
-            Energy_Loss_DCS_0P5Power[1]=Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,0.5);
-            Energy_Loss_DCS_0P5Power[2]=Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,0.5);
+            Energy_Loss_DCS_0P5Power[0]=Energy_Loss_Xe_array[Applied_Hist]/TMath::Power(Test_variable_Xe,0.5);
+            Energy_Loss_DCS_0P5Power[1]=Energy_Loss_Ge_array[Applied_Hist]/TMath::Power(Test_variable_Ge,0.5);
+            Energy_Loss_DCS_0P5Power[2]=Energy_Loss_HH_array[Applied_Hist]/TMath::Power(Test_variable_HH,0.5);
 
-            Energy_Loss_DCS_1Power[0]  =Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,1);
-            Energy_Loss_DCS_1Power[1]  =Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,1);
-            Energy_Loss_DCS_1Power[2]  =Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,1);
+            Energy_Loss_DCS_1Power[0]  =Energy_Loss_Xe_array[Applied_Hist]/TMath::Power(Test_variable_Xe,1);
+            Energy_Loss_DCS_1Power[1]  =Energy_Loss_Ge_array[Applied_Hist]/TMath::Power(Test_variable_Ge,1);
+            Energy_Loss_DCS_1Power[2]  =Energy_Loss_HH_array[Applied_Hist]/TMath::Power(Test_variable_HH,1);
 
-            Energy_Loss_DCS_2Power[0]  =Energy_Loss_Xe_DCS/TMath::Power(Test_variable_Xe,2);
-            Energy_Loss_DCS_2Power[1]  =Energy_Loss_Ge_DCS/TMath::Power(Test_variable_Ge,2);
-            Energy_Loss_DCS_2Power[2]  =Energy_Loss_HH_DCS/TMath::Power(Test_variable_HH,2);
+            Energy_Loss_DCS_2Power[0]  =Energy_Loss_Xe_array[Applied_Hist]/TMath::Power(Test_variable_Xe,2);
+            Energy_Loss_DCS_2Power[1]  =Energy_Loss_Ge_array[Applied_Hist]/TMath::Power(Test_variable_Ge,2);
+            Energy_Loss_DCS_2Power[2]  =Energy_Loss_HH_array[Applied_Hist]/TMath::Power(Test_variable_HH,2);
 
             TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
             gStyle->SetOptStat(0);
@@ -1015,12 +1124,27 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             //Predict the total cross sections of Silicon and oxygen
             /*
-            TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
-            gStyle->SetOptStat(0);
-            gStyle->SetTitleSize(0.04,"XY");
-            gStyle->SetTitleFont(62,"XY");
-            gStyle->SetLegendFont(62);
-             
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Xe_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double A_Slope_Xe = (Xe_Y2-Xe_Y1)/(Xe_X2-Xe_X1);
+            cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
+            double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
+            cout << "B_Xe: " << B_Xe << endl;
+
+            Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Ge_Y1 = Xe_Y1;
+            double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_X1 = Xe_X1;
+            double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
+            double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
+            cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
+            double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
+            cout << "B_Ge: " << B_Ge << endl;
+            //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
             double Total_Cross_Section_Xe_Check=0;
             double Total_Cross_Section_Ge_Check=0;
             double Total_Cross_Section_HH_Check=0;
@@ -1031,18 +1155,17 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double Bin = (480.-12.)/(10000.);//eV
             for(int Bin_Number=1; Bin_Number<10000; Bin_Number++)
             {
-                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]    ->GetXaxis()->FindBin(Bin*Bin_Number);//Min_Recoil_Bin_Xe
-                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]  ->GetXaxis()->FindBin(Bin*Bin_Number);//Min_Recoil_Bin_Xe
+                Int_t Bin_Xe = velocity_TH1F[Applied_Hist]    ->GetXaxis()->FindBin(12+Bin*Bin_Number);//Min_Recoil_Bin_Xe
+                Int_t Bin_Ge = velocity_TH1F_2[Applied_Hist]  ->GetXaxis()->FindBin(12+Bin*Bin_Number);//Min_Recoil_Bin_Xe
                 
-                Total_Cross_Section_Xe_Check = Total_Cross_Section_Xe_Check + velocity_TH1F[Applied_Hist]  ->GetBinContent(Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2);
-                Total_Cross_Section_Ge_Check = Total_Cross_Section_Ge_Check + velocity_TH1F_2[Applied_Hist]->GetBinContent(Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2);
-                Total_Cross_Section_HH_Check = Total_Cross_Section_HH_Check + DCS_H_c1_1GeV_300kms(Bin*Bin_Number);
-                //cout << "DCS_H_c1_1GeV_300kms(Bin*Bin_Number): " << DCS_H_c1_1GeV_300kms(Bin*Bin_Number) << endl;
+                Total_Cross_Section_Xe_Check = Total_Cross_Section_Xe_Check + TMath::Power(10, Linear_Line(12.+Bin*(Bin_Number),A_Slope_Xe,B_Xe));
+                Total_Cross_Section_Ge_Check = Total_Cross_Section_Ge_Check + TMath::Power(10, Linear_Line(12.+Bin*(Bin_Number),A_Slope_Ge,B_Ge));
+                Total_Cross_Section_HH_Check = Total_Cross_Section_HH_Check + DCS_H_c1_1GeV_300kms(12+Bin*Bin_Number);
             }
              
-            cout << "Total_Cross_Section_Xe_Check: " << Total_Cross_Section_Xe_Check << endl;
-            cout << "Total_Cross_Section_Ge_Check: " << Total_Cross_Section_Ge_Check << endl;
-            cout << "Total_Cross_Section_HH_Check: " << Total_Cross_Section_HH_Check << endl;
+            //cout << "Total_Cross_Section_Xe_Check: " << Total_Cross_Section_Xe_Check << endl;
+            //cout << "Total_Cross_Section_Ge_Check: " << Total_Cross_Section_Ge_Check << endl;
+            //cout << "Total_Cross_Section_HH_Check: " << Total_Cross_Section_HH_Check << endl;
             
             
             TCS_over_EN_Element[0]=Total_Cross_Section_HH_Check/1.;
@@ -1073,14 +1196,37 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             TCS_over_AM_third_Element[1]=Total_Cross_Section_Ge_Check/(72.64*72.64*72.64);
             TCS_over_AM_third_Element[2]=Total_Cross_Section_Xe_Check/(131.293*131.293*131.293);
              
-            cout << "TCS_over_EN_square_Element[0]: " << TCS_over_EN_Element[0] << endl;
-            cout << "TCS_over_EN_square_Element[1]: " << TCS_over_EN_Element[1] << endl;
-            cout << "TCS_over_EN_square_Element[2]: " << TCS_over_EN_Element[2] << endl;
+            cout << "TCS_over_EN_Element[0]: " << TCS_over_EN_Element[0] << endl;
+            cout << "TCS_over_EN_Element[1]: " << TCS_over_EN_Element[1] << endl;
+            cout << "TCS_over_EN_Element[2]: " << TCS_over_EN_Element[2] << endl;
+
+            cout << "TCS_over_EN_square_Element[0]: " << TCS_over_EN_square_Element[0] << endl;
+            cout << "TCS_over_EN_square_Element[1]: " << TCS_over_EN_square_Element[1] << endl;
+            cout << "TCS_over_EN_square_Element[2]: " << TCS_over_EN_square_Element[2] << endl;
+
+            cout << "TCS_over_EN_third_Element[0]: " << TCS_over_EN_third_Element[0] << endl;
+            cout << "TCS_over_EN_third_Element[1]: " << TCS_over_EN_third_Element[1] << endl;
+            cout << "TCS_over_EN_third_Element[2]: " << TCS_over_EN_third_Element[2] << endl;
+
+            cout << "TCS_over_EN_fourth_Element[0]: " << TCS_over_EN_fourth_Element[0] << endl;
+            cout << "TCS_over_EN_fourth_Element[1]: " << TCS_over_EN_fourth_Element[1] << endl;
+            cout << "TCS_over_EN_fourth_Element[2]: " << TCS_over_EN_fourth_Element[2] << endl;
+
+
+            cout << "TCS_over_AM_Element[0]: " << TCS_over_AM_Element[0] << endl;
+            cout << "TCS_over_AM_Element[1]: " << TCS_over_AM_Element[1] << endl;
+            cout << "TCS_over_AM_Element[2]: " << TCS_over_AM_Element[2] << endl;
+
+            cout << "TCS_over_AM_square_Element[0]: " << TCS_over_AM_square_Element[0] << endl;
+            cout << "TCS_over_AM_square_Element[1]: " << TCS_over_AM_square_Element[1] << endl;
+            cout << "TCS_over_AM_square_Element[2]: " << TCS_over_AM_square_Element[2] << endl;
 
             cout << "TCS_over_AM_third_Element[0]: " << TCS_over_AM_third_Element[0] << endl;
             cout << "TCS_over_AM_third_Element[1]: " << TCS_over_AM_third_Element[1] << endl;
             cout << "TCS_over_AM_third_Element[2]: " << TCS_over_AM_third_Element[2] << endl;
-            */
+              */
+            
+        
             /*
             TGraph *TCS_over_AM_third = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_third_Element);//Total Cross Section(TCS), Electron Number(EN)
             TCS_over_AM_third->SetMarkerStyle(20);
@@ -1105,12 +1251,19 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             c1->SetLogy();
             c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/TCS_over_AM_square.pdf");
              */
-            
             /*
+            TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+            gStyle->SetOptStat(0);
+            gStyle->SetTitleSize(0.04,"XY");
+            gStyle->SetTitleFont(62,"XY");
+            gStyle->SetLegendFont(62);
+
             TGraph *TCS_over_AM = new TGraph(3,Atomic_Mass_Array,TCS_over_AM_Element);//Total Cross Section(TCS), Electron Number(EN)
             TCS_over_AM->SetMarkerStyle(20);
             TCS_over_AM->SetMarkerColor(4);
             TCS_over_AM->SetLineWidth(5);
+            TCS_over_AM->GetXaxis()->SetRangeUser(0,500);
+            TCS_over_AM->GetYaxis()->SetRangeUser(1E-35,1E-30);
             TCS_over_AM->GetXaxis()->SetTitle("Atomic Mass");
             TCS_over_AM->GetYaxis()->SetTitle("Total Cross Section/Atomic Mass");
             TCS_over_AM->Draw("apl");

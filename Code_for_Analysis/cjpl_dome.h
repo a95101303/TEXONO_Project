@@ -152,11 +152,6 @@ else
   //printf("Nsol ");
 }
 
-//printf("%e %e %e L=%e\n",x_solution,y_solution,z_solution,L_cjpl);
-
-    //cout << "L_cjpl: " << L_cjpl << endl;
-    
-//return 1000.0*L_cjpl;//m
     return L_cjpl;//km
 }
 

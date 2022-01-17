@@ -108,6 +108,64 @@ double *Run_Program(double WIMP_Mass, double Density, double Atomic_Mass, double
 //Run the program for the individual index and the simulated number of events
 void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 {
+    //Check the thinkcness of the wall
+    double Density_of_Atmosphere_Layer[19];
+    double Path_Lengths_for_atmosphere_Long[19];double Path_Lengths_for_atmosphere_Smallest[19];
+    double N_Collision=0;double N_Collision_Air_ER=0;
+    static double RETURN_VALUE[2];
+    double Try_Z_direction_Unit=0;
+    
+    double Max_V = 800;//km/s
+    double WIMP_mx=10;//GeV
+    double CS=3e-30;//The upper boundary
+    
+    double Collision_Air_Part_Long=0;double Collision_Air_Part_Smallest=0;
+    double Previous_Total_Long=0;double Previous_Total_Smallest=0;
+    for(int kkk=0; kkk<19; kkk++)
+    {
+        Density_of_Atmosphere_Layer[kkk] = (atm_table[kkk][4]+atm_table[kkk+1][4])/2;
+        Path_Lengths_for_atmosphere_Long[kkk] = Path_Length_Air(Try_Z_direction_Unit,(atm_table[kkk+1][0]/1000),Path_Length_Earth_Rough(Try_Z_direction_Unit),Previous_Total_Long);
+        Path_Lengths_for_atmosphere_Smallest[kkk] = Path_Length_Air(1.,(atm_table[kkk+1][0]/1000),Path_Length_Earth_Rough(Try_Z_direction_Unit),Previous_Total_Smallest);
+        Previous_Total_Long     = Previous_Total_Long + Path_Lengths_for_atmosphere_Long[kkk];
+        cout << "Previous_Total_Long: " << Previous_Total_Long << endl;
+        Previous_Total_Smallest = Previous_Total_Smallest + Path_Lengths_for_atmosphere_Smallest[kkk];
+        cout << "Previous_Total_Smallest: " << Previous_Total_Smallest << endl;
+        Collision_Air_Part_Long
+        = Collision_Air_Part_Long + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere_Long[kkk]*1e5)/(unified_atomic_mass_g*(0.8*AN+0.2*AO));
+        Collision_Air_Part_Smallest
+        = Collision_Air_Part_Smallest + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere_Smallest[kkk]*1e5)/(unified_atomic_mass_g*(0.8*AN+0.2*AO));
+    }
+    
+    
+       cout << "CS: " << CS << endl;
+    cout << "==============================" << endl;
+       double Collision_Time_Air_Long       = Collision_Air_Part_Long*MFP_from_DCS_Part(2,Max_V,CS,WIMP_mx, 15.);
+       cout << "Collision_Time_Air_Long: " << Collision_Time_Air_Long  << endl;
+       double *V_Aft_Collision_Air_Long     = Velocity_Aft_collision_dEdX(Collision_Time_Air_Long,WIMP_mx,CS,Max_V,15.);
+        cout << "V_Aft_Collision_Air_Long: " << V_Aft_Collision_Air_Long[0] << endl;
+    cout << "==============================" << endl;
+       double Collision_Time_Water_Long  = 1.0e3*Number_Density_Array[0]*MFP_from_DCS_Part(2,V_Aft_Collision_Air_Long[0],CS,WIMP_mx,Atomic_Mass_Array[0]);
+       double *V_Aft_Collision_Water_Long = Velocity_Aft_collision_dEdX(Collision_Time_Water_Long,WIMP_mx,CS,V_Aft_Collision_Air_Long[0],Atomic_Mass_Array[0]);
+        cout << "Collision_Time_Water: " << Collision_Time_Water_Long << endl;
+        cout << "V_Aft_Collision_Water_Long: " << V_Aft_Collision_Water_Long[0] << endl;
+        cout << "Energy_DM: " << Energy_DM(WIMP_mx,V_Aft_Collision_Water_Long[0]*1e3/3e8);
+    cout << "=========================================================================================================" << endl;
+     
+    
+       cout << "CS: " << CS << endl;
+    cout << "==============================" << endl;
+       double Collision_Time_Air_Smallest   = Collision_Air_Part_Smallest*MFP_from_DCS_Part(2,Max_V,CS,WIMP_mx, 15.);
+       cout << "Collision_Time_Air: " << Collision_Time_Air_Smallest  << endl;
+       double *V_Aft_Collision_Air_Smallest  = Velocity_Aft_collision_dEdX(Collision_Time_Air_Smallest,WIMP_mx,CS,Max_V,15.);
+        cout << "V_Aft_Collision_Water_Smallest: " << V_Aft_Collision_Air_Smallest[0] << endl;
+    cout << "==============================" << endl;
+       double Collision_Time_Water_Smallest  = 1.0e3*Number_Density_Array[0]*MFP_from_DCS_Part(2,V_Aft_Collision_Air_Smallest[0],CS,WIMP_mx,Atomic_Mass_Array[0]);
+       double *V_Aft_Collision_Water_Smallest = Velocity_Aft_collision_dEdX(Collision_Time_Water_Smallest,WIMP_mx,CS,V_Aft_Collision_Air_Smallest[0],Atomic_Mass_Array[0]);
+        cout << "Collision_Time_Water: " << Collision_Time_Water_Smallest<< endl;
+        cout << "V_Aft_Collision_Water: " << V_Aft_Collision_Water_Smallest[0] << endl;
+        cout << "Energy_DM: " << Energy_DM(WIMP_mx,V_Aft_Collision_Water_Smallest[0]*1e3/3e8);
+    cout << "==============================" << endl;
+     
     
     
      /*
@@ -524,6 +582,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
 
     vector<double> Cross_Section_Set;
     
+    /*
     double Collision_Air_Part=0;
     for(int ATM_Number=0; ATM_Number<19; ATM_Number++)
     {
@@ -531,7 +590,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         double Density       = 1e-3*((atm_table[ATM_Number+1][4]+atm_table[ATM_Number][4])*0.5);//g/cm^3
         Collision_Air_Part   = Collision_Air_Part + Length_Passed*Density*1./(unified_atomic_mass_g*(15.)) ;
     }
-
+*/
     for(int Mass=0; Mass<1; Mass++)//Every Mass I got three values for one Cross-section
     {
     
@@ -552,6 +611,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
             if(Final_cross_section!=0)break;
          */
         
+            /*
             for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
             {
                 
@@ -603,7 +663,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                      //Scaling_Stop = 1;
                      break;
                  }
-                 
+                 */
                 /*
                 for(int Event=0; Event<10; Event++)
                 {
@@ -742,7 +802,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
                 cout << "=======================================" << endl;
                  */
                 
-            }//for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
+            //}//for(int Cross_Section_index=0; Cross_Section_index<Sigma_Array.size(); Cross_Section_index++)
         //}//for(int Scaling=0; Scaling<6; Scaling++)
         
         /*
@@ -807,7 +867,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         leg->Draw();
         c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/NaI_Proof/10GeV.pdf");
         */
-    }
+    }//for(int Mass=0; Mass<1; Mass++)
     
     /*
     for(int Cross_Section_Index=0; Cross_Section_Index<Cross_Section_Set.size(); Cross_Section_Index++)

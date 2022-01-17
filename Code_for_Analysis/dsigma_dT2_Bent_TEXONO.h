@@ -198,14 +198,6 @@ int *Where_is_it_in_shielding(double *Position)
         {
             if( (abs(Position[0])-The_Material_Layer[Layer-1][0]*0.5>1e-10) or (abs(Position[1])-The_Material_Layer[Layer-1][1]*0.5>1e-10) or (abs(Position[2])-The_Material_Layer[Layer-1][2]*0.5>1e-10) )
             {
-                /*
-                cout << "The_Material_Layer[Layer][0]: " << The_Material_Layer[Layer][0]*0.5 << endl;
-                cout << "The_Material_Layer[Layer-1][0]*0.5: " << The_Material_Layer[Layer-1][0]*0.5 << endl;
-                cout << "The_Material_Layer[Layer][1]: " << The_Material_Layer[Layer][1]*0.5 << endl;
-                cout << "The_Material_Layer[Layer-1][1]*0.5: " << The_Material_Layer[Layer-1][1]*0.5 << endl;
-                cout << "The_Material_Layer[Layer][2]: " << The_Material_Layer[Layer][2]*0.5 << endl;
-                cout << "The_Material_Layer[Layer-1][2]*0.5: " << The_Material_Layer[Layer-1][2]*0.5 << endl;
-                 */
                 layer_Number=Layer;
                 if(  DBT(Position[0],The_Material_Layer[Layer][0]*0.5)==1  )On_Surface=1;  if(  DBT(Position[0],-The_Material_Layer[Layer][0]*0.5)==1  )On_Surface=2;
                 if(  DBT(Position[1],The_Material_Layer[Layer][1]*0.5)==1  )On_Surface=3;  if(  DBT(Position[1],-The_Material_Layer[Layer][1]*0.5)==1  )On_Surface=4;
@@ -216,21 +208,13 @@ int *Where_is_it_in_shielding(double *Position)
     //Out of the fourth layer
     if(  abs(Position[0])-Pb_Layer[0]*0.5>1e-10 or  abs(Position[1])-Pb_Layer[1]*0.5>1e-10  or  abs(Position[2])-Pb_Layer[2]*0.5>1e-10 )
     {
-        /*
-        cout << "Pb_Layer[0]*0.5: " << Pb_Layer[0]*0.5 << endl;
-        cout << "Pb_Layer[1]*0.5: " << Pb_Layer[1]*0.5 << endl;
-        cout << "Pb_Layer[2]*0.5: " << Pb_Layer[2]*0.5 << endl;
-        cout << "abs(Position[0])-Pb_Layer[0]*0.5: " << abs(Position[0])-Pb_Layer[0]*0.5 << endl;
-        cout << "abs(Position[1])-Pb_Layer[1]*0.5: " << abs(Position[1])-Pb_Layer[1]*0.5 << endl;
-        cout << "abs(Position[2])-Pb_Layer[2]*0.5: " << abs(Position[2])-Pb_Layer[2]*0.5 << endl;
-         */
         layer_Number=5;
     }
     //Out of the detector
     
-    if(layer_Number<4 or (layer_Number==4 and On_Surface==0) ) Yes_Or_No=1;
-    else if( (layer_Number==4 and On_Surface>0) ) Yes_Or_No=2;
-    else{Yes_Or_No=0;}
+    if(layer_Number<4 or (layer_Number==4 and On_Surface==0) ) Yes_Or_No=1;//Inside
+    else if( (layer_Number==4 and On_Surface>0) ) Yes_Or_No=2;//On the surface of the shielding
+    else{Yes_Or_No=0;}//Outside of the shielding
     Return_Value[0]=layer_Number;Return_Value[1]=On_Surface;Return_Value[2]=Yes_Or_No;
     return(Return_Value);
 }
@@ -310,7 +294,7 @@ double FSBTLS(int A_Layer, double *POS, double *DR)//Find_Scaling_Between_Two_La
 double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),Direction(DR)
 {
     static double Return_Factor[2];//Return_Scaling_Factor, Layer the WIMP runs in
-    double RSF;
+    double RSF=0;
     int *A_Position       = Where_is_it_in_shielding(POS);
     int  A_Layer          = A_Position[0];
     cout << "A_Layer: " << A_Layer  << endl;
@@ -344,18 +328,6 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
             DR_IN_OR_OUT = DR_In_or_Out_off_surface(POS,DR);
             Layer_run =  A_Layer;
             RSF = FSBTLS(A_Layer,POS,DR);
-            /*
-            if(DR_IN_OR_OUT==1)
-            {
-                cout << "L" << A_Layer << "FS OutDR" << endl;
-                RSF = FSBTLS(A_Layer,POS,DR);
-            }
-            if(DR_IN_OR_OUT==0)
-            {
-                cout << "L" << A_Layer << "FS InDR" << endl;
-                RSF = FSBTLS(A_Layer,POS,DR);
-            }
-             */
         }
     }//if(A_Layer<5)
     
@@ -373,14 +345,7 @@ double *CID(double *POS, double *DR)//Criteria_In_Shielding(CID),Position(POS),D
         if(A_Surface_index==0)//Off the surface
         {
             DR_IN_OR_OUT = DR_In_or_Out_off_surface(POS,DR);
-            if(DR_IN_OR_OUT==1)
-            {
-                RSF = FSBTLS(A_Layer,POS,DR);
-            }
-            if(DR_IN_OR_OUT==0)
-            {
-                RSF = FSBTLS(A_Layer,POS,DR);
-            }
+            RSF = FSBTLS(A_Layer,POS,DR);
         }
 
     }
@@ -415,7 +380,7 @@ double SFLE(double a, double b, double c) // Solution_for_Linear_Equation[a(X^2)
 }
 
 double Scaling_to_others_XY(double *POS, double *DR, double R)//Position(POS),Direction(DR),Radius(R)
-{
+{//abs(X+avector<X>,(Y-30)+avector<Y>)=R)
     return SFLE( (DR[0]*DR[0]+DR[1]*DR[1]),(2*POS[0]*DR[0]+2*(POS[1]-30)*DR[1]),(POS[0]*POS[0]+(POS[1]-30)*(POS[1]-30)-R*R) );
 }
 double Scaling_to_others_Z(double *POS, double *DR, double H)//Position(POS),Direction(DR),Radius(R)
@@ -432,8 +397,8 @@ double RFC(double *POS, double *DR, double S)//Radius_for_Ceiling(RFC),Position(
 }
 double RTC(double *POS)//Radius_To_Center(RTC) on XY plane
 {
-    double X = (POS[0]-0);
-    double Y = (POS[1]-30);
+    double X = (POS[0]-0.);
+    double Y = (POS[1]-30.);
     return sqrt(X*X+Y*Y);
 }
 
@@ -448,15 +413,16 @@ int *Where_is_it_out_of_shielding(double *POS)
 {
     static int Return_Value[2];
     int Component=0;int On_Surface=0;
+    
     cout << "Where_is_it_out_of_shielding_START" << endl;
     cout << "R_IWATER_RE - RTC(POS)" << R_IWATER_RE - RTC(POS) << endl;
     cout << "R_OWALL_RE-RTC(POS)"    << R_OWALL_RE - RTC(POS) << endl;
     cout << "R_OW_KS-RTC(POS)" << R_OW_KS-RTC(POS) << endl;
     cout << "R_IW_KS-RTC(POS)" << R_IW_KS-RTC(POS) << endl;
-    cout << "H_RE-POS[2]" << H_RE-POS[2] << endl;
+    cout << "H_RE-POS[2]"      << H_RE-POS[2] << endl;
     cout << "H_ICT_KS-POS[2]" << H_ICT_KS-POS[2] << endl;
     cout << "H_OCT_KS-POS[2]" << H_OCT_KS-POS[2] << endl;
-    Yes_123(H_RE,POS[2]);
+
     if( Yes_123(RTC(POS),R_IWATER_RE)==1 and Yes_123(R_OWALL_RE,RTC(POS))==1 and Yes_123(H_RE,POS[2])==1 )//Outer Wall of Reactor
     {
         cout << "Outer_Wall_of_Reactor" << endl;
@@ -740,7 +706,7 @@ double *COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(
                 Layer_run = 1;
         }
     }
-    if(Compoent==3)//
+    if(Compoent==3)//Side wall of KS
     {
         cout << "Compoent==3" << endl;
         if( (B_Surface_index==1 and DIOOTC(POS,DR)==0) )
@@ -777,7 +743,7 @@ double *COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(
                 Layer_run = 0;
         }
     }
-    if(Compoent==4)//
+    if(Compoent==4)//Upper ceiling of KS
     {
         cout << "Compoent==4" << endl;
         if( (B_Surface_index==1 and DR[2]<0) )
@@ -838,7 +804,7 @@ double *COFD(double *POS, double *DR)//Criteria_out_of_Shielding(COFD),Position(
     return (RETURN_VALUE);
 }
 
-double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
+double *PAP(double S, double *POS_Int, double *DR)//Pos(Aft_POS), S(Scaling_Length), DR(Direction of the WIMP)
 {
     static double POS_Aft[3];
     POS_Aft[0] = POS_Int[0]+(S*DR[0]);
@@ -847,17 +813,18 @@ double *PAP(double S, double *POS_Int, double *DR)//Pos_Aft_Position
     return POS_Aft;
 }
 
-double *VAC(double Mx, double Sigma_SI, double V, double AN)//Velocity_Aft_Collision(VAC),Mx(Mass of WIMP),Sigma_SI, V(Velocity), Atomic Number(AN)
+double *VAC(double Mx, double Sigma_SI, double V, double AN)//Velocity_Aft_Collision(VAC),Mx(Mass of WIMP),Sigma_SI(cm^2), V(Velocity), Atomic Number(AN)
 {
     static double Return_Value[2];
-    cout << "V: " << V << endl;
+    //cout << "V: " << V << endl;
     double *V_Aft = Velocity_Aft_collision_Bent(1,Mx,Sigma_SI,V,AN);
+    //The Ratio is for the angle of the scattering
+    //https:farside.ph.utexas.edu/teaching/336k/Newtonhtml/node52.html(Should add // to this)
     double Energy_Loss_to_Atom   = Energy_DM(Mx,V*1e3/3e8) - Energy_DM(Mx,V_Aft[0]*1e3/3e8);
     double Ratio_of_Energy_Loss_to_Atom = (Energy_Loss_to_Atom)/(Energy_DM(Mx,V*1e3/3e8));
     double DM_Velocity_Aft_Colliding=V_Aft[0];
     cout << "DM_Velocity_Aft_Colliding: " << DM_Velocity_Aft_Colliding << endl;
     Return_Value[0]=DM_Velocity_Aft_Colliding;Return_Value[1]=Ratio_of_Energy_Loss_to_Atom;
-    
     return Return_Value;
 }
 double *DRAC(double AN, double Mx, double V_Aft, double *DR, double ROELTA)//Angle_Aft_Collision,Direction,Ratio_of_Energy_Loss_to_Atom(ROELTA)
@@ -925,16 +892,17 @@ double *KS_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx,
     double Segment; //Ratio_of_Energy_Loss_to_Atom(ROELTA)
     int Step=0;int Collision_Time=0;
     //===========================
+    //(1)If(The Radius is smaller than the radius of the outer wall) (2)High of the outer ceiling (3)The Z axis (4)The threshold of the process
     while( (R_OW_KS-RTC(POS_Int))>1e-10 and (H_OCT_KS-POS_Int[2])>1e-10 and POS_Int[2]+(TCZ)>1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
-        cout << "V_aft: " << V_aft << endl;
-        cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
+        //cout << "V_aft: " << V_aft << endl;
+        //cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
         
         int *IOS_Position = Where_is_it_in_shielding(POS_Int);//Inside_Of_Shieing_Position
-        cout << "DR[0]: " << DR[0] << "DR[1]:" << DR[1] << "DR[2]:" << DR[2] << endl;
-        cout << "IOS_Position[0]: " << IOS_Position[0] << endl;//Layer
-        cout << "IOS_Position[1]: " << IOS_Position[1] << endl;//On which surface
-        cout << "IOS_Position[2]: " << IOS_Position[2] << endl;//
+        //cout << "DR[0]: " << DR[0] << "DR[1]:" << DR[1] << "DR[2]:" << DR[2] << endl;
+        //cout << "IOS_Position[0]: " << IOS_Position[0] << endl;//Layer
+        //cout << "IOS_Position[1]: " << IOS_Position[1] << endl;//On which surface
+        //cout << "IOS_Position[2]: " << IOS_Position[2] << endl;//
         if(IOS_Position[0]==0 and Step!=0)
         {
             RETURN_VALUE[2]=0;
@@ -1060,6 +1028,7 @@ void Check_Fun(double *POS_Int, double *DR, double S)
      return 0;
 }
 
+//*V*
 double *DAC_to_LEG(double *POS_Int, double *DR, double PL)//Direction_Aft_Collision_to_Length(PAC),Predicted_Length(PL)
 {
     static double POS_Aft[5];
@@ -1069,102 +1038,100 @@ double *DAC_to_LEG(double *POS_Int, double *DR, double PL)//Direction_Aft_Collis
     POS_Aft[1] = POS_Int[1]+PL*DR[1];
     POS_Aft[2] = POS_Int[2]+PL*DR[2];
 
-    double ML  = Lcjpl_NonNL(POS_Aft[0],POS_Aft[1],POS_Aft[2]);//Mountain_Length(ML)
-    double LML = SqrtN2(POS_Aft);//Later_Moving_Length
+    double ML  = Lcjpl_NonNL(POS_Aft[0],POS_Aft[1],POS_Aft[2]);//(km)Mountain_Length(ML)
+    double LML = SqrtN2(POS_Aft);//(km)Later_Moving_Length
     
     double STU; //Boundary Or Not
     
     if(0-POS_Aft[2]>=1e-10)
     {
-        cout << "Yes1 " << endl;
-        cout << "Below the mountain^>^" << endl;
+       // cout << "Yes1 " << endl;
+       // cout << "Below the mountain^>^" << endl;
         POS_Aft[3]=-1;//Below the mountain, counted as an event from the bottom earth and will be blocked at the boundary
     }
     else if(LML<ML)
     {
-        cout << "Inside the mountain^>^ " << endl;
-        POS_Aft[3]=0;//Inside the mountain and this event has an interaction
+        //cout << "Inside the mountain^>^ " << endl;
+        POS_Aft[3]=0;//Inside the mountain and this event has an interaction with the material now surrounding by it
     }
     else if(LML>ML)
     {
-        cout << "Above the mountain^>^ " << endl;
+        //cout << "Above the mountain^>^ " << endl;
         POS_Aft[3]=1;//Go out of the mountain and counted as an event
     }
-            
     return POS_Aft;
 }
 
+//*V*
 double *NP_CDEX(double *POS_Int, double *DR, double Mx, double V, double Sigma_SI, int SorT)//Next_Point_In_Shielding(NPIS)
-{
-    static double Return_Value[8];
-    
-    double LFA=0.001;
+{//Check which point the WIMP should get to within the next step
+    static double Return_Value[8];//Return some values
+    double LFA=0.001;//The N which can make the self-interction less than twice less than 10^-8
     double V_aft=V;double ROELTA=0;
     int Collision_Time=0;
 
-    int Times = Possion_GetRandom_Full(LFA);
-    //double Segment = 1e3*Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//Atomic Number Of Material(ANOM)
+    int Times = Possion_GetRandom_Full(LFA);//How many times it should roll the dice to get a "Yes" from the dice
     double Segment = Length_for_asking_the_collision(LFA,Mx,V_aft,Sigma_SI,1.81,Weighted_Atomic_Number);//km, Atomic Number Of Material(ANOM)
 
-    double Sprint_GO = Segment*Times;
-    cout << "Sprint_GO: " << Sprint_GO << endl;
-    double *SLU=DAC_to_LEG(POS_Int,DR,Sprint_GO);//Scaling_Length_Used,The layer a WIMP runs in
-    cout << "Below(-1), In(0) or Out(1) of the mountain: " << SLU[3] << endl;//Below(-1), In(0) or Out(1) of the mountain
+    double Sprint_GO = Segment*Times;//The total length the WIMP should pass for next step
+    //cout << "Sprint_GO: " << Sprint_GO << endl;
+    double *SLU=DAC_to_LEG(POS_Int,DR,Sprint_GO);//Scaling_Length_Used(SLU),The layer a WIMP runs in
+    //cout << "Below(-1), Inside(0) or Out(1) of the mountain: " << SLU[3] << endl;//Below(-1), Inside(0) or Out(1) of the mountain
 
-    if( int(SLU[3])==0 )
+    if( int(SLU[3])==0 )//Inside
     {
-        POS_Int = PAP(Sprint_GO,POS_Int,DR);
+        POS_Int = PAP(Sprint_GO,POS_Int,DR);//POS_After_moving
         double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
         V_aft = VAC_end[0]; ROELTA = VAC_end[1];
         if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
         Collision_Time=1;
-        
     }
 
-    if( int(SLU[3])==-1 )
+    if( int(SLU[3])==-1 )//It will be going to be below
     {
-        double Scaling = (0-POS_Int[2])/DR[2];
-        if(Sprint_GO<Scaling)
+        double Scaling = (0-POS_Int[2])/DR[2];//Check when it gets to the bottom, how far it can go
+        if(Sprint_GO<Scaling)//If this time the length of the movement is less than getting to the bottom
         {
-            cout << "Sprint_GO<Scaling " << endl;
-            POS_Int = PAP(Sprint_GO,POS_Int,DR);
-            double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);//
-            V_aft = VAC_end[0]; ROELTA = VAC_end[1];
-            if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);
-            Collision_Time=1;
+            //cout << "Sprint_GO<Scaling " << endl;
+            POS_Int = PAP(Sprint_GO,POS_Int,DR);//See how far it will go
+            double *VAC_end = VAC(Mx,Sigma_SI,V_aft,Weighted_Atomic_Number);
+            V_aft = VAC_end[0];//Check the velocity
+            ROELTA = VAC_end[1];//Check the ratio of energy loss for the angle problem
+            if(SorT==1)DR = DRAC(Weighted_Atomic_Number,Mx,V_aft,DR,ROELTA);//If it goes bent.
+            Collision_Time=1;//Make sure that this collision will be counted as an interaction
         }
         if(Sprint_GO>=Scaling)
         {
-            cout << "Sprint_GO>=Scaling" << endl;
-            POS_Int = PAP(Sprint_GO,POS_Int,DR);
+            //cout << "Sprint_GO>=Scaling" << endl;
+            POS_Int = PAP(Sprint_GO,POS_Int,DR);//This time it will go out of the mountain to the place below the mountain
         }
     }
-    if( int(SLU[3])==1)
+    if( int(SLU[3])==1)//Certainly go outside of the mountain
     {
-        cout << "Out_of_the_boundary" << endl;
         POS_Int = PAP(Sprint_GO,POS_Int,DR);
     }
-
 
     Return_Value[0]=POS_Int[0];Return_Value[1]=POS_Int[1];Return_Value[2]=POS_Int[2];
     Return_Value[3]=DR[0];Return_Value[4]=DR[1];Return_Value[5]=DR[2];
     Return_Value[6]=V_aft;Return_Value[7]=Collision_Time;
-    cout << "V_aft_Func: " << V_aft << endl;
+    //cout << "V_aft_Func: " << V_aft << endl;
      
     return Return_Value;
 }
 
-int Out_or_Not(double *POS)
+//*V*
+int Out_or_Not(double *POS)//See if the WIMP is inside or out
 {
-    int Judge=0;
-    double Length = Lcjpl_NonNL(POS[0],POS[1],POS[2]);//m
+    int Judge=0;//For the bool of inside or outside
+    double Length = Lcjpl_NonNL(POS[0],POS[1],POS[2]);//the length the WIMP passed(km)[From the surface of the mountain to the core of the Exp]
     double NF     = SqrtN2(POS);//m
-    if(NF<Length){Judge=1;}
-    else{Judge=0;}
+    if(NF<Length){Judge=1;}//See if it is still inside the mountain (Yes it is inside)
+    else{Judge=0;}//See if it is still inside the mountain (No it is not inside)
     
     return Judge;
 }
 
+//*V*
 double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double Mx, double *DR, double *POS_Int) //Mx(Mass of WIMP),Velocity(km/s) Density(g/cm^3)
 {//Straight_or_scattered(SorT)
     static double RETURN_VALUE[20];//Return the value back
@@ -1172,13 +1139,10 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
     double V_aft=V_Int;double LFA=0.001;//Lamda_for_Average(LFA)
     int Step=0;int Collision_Time=0;
     //===========================
+    //(1)See if the WIMP is inside the mountain (2)See if the WIMP is already below the mountain (3)See if it is below the threshold
     while( Out_or_Not(POS_Int)==1 and 0-POS_Int[2]<1e-10 and Energy_DM(Mx,V_aft*1e3/3e8)>=0.01)
     {
-        cout << "V_aft: " << V_aft << endl;
-        cout << "Energy_DM: " << Energy_DM(Mx,V_aft*1e3/3e8);
-        cout << "DR[0]: " << DR[0] << "DR[1]: " << DR[1] << "DR[2]: " << DR[2] << endl;
-        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
-        double *NP_1 = NP_CDEX(POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);
+        double *NP_1 = NP_CDEX(POS_Int,DR,Mx,V_aft,Sigma_SI,SorT);//Next point the WIMP will get to
         POS_Int[0]=NP_1[0];POS_Int[1]=NP_1[1];POS_Int[2]=NP_1[2];DR[0]=NP_1[3];DR[1]=NP_1[4];DR[2]=NP_1[5];V_aft=NP_1[6];
         if(NP_1[7]>0)Collision_Time = Collision_Time + 1;
     }
@@ -1189,23 +1153,23 @@ double *CDEX_Real_N_With_Angle(int SorT, double Sigma_SI, double V_Int, double M
     if(Out_or_Not(POS_Int)==0)
     {
         RETURN_VALUE[2]=1;
-        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
-        cout << "Outside" << endl;
+    //    cout << "Outside" << endl;
     }
     if(0-POS_Int[2]>=1e-10)
     {
         RETURN_VALUE[2]=0;
-        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
-        cout << "Underground" << endl;
+     //   cout << "Underground" << endl;
     }
     if(Energy_DM(Mx,V_aft*1e3/3e8)<0.01)
     {
         RETURN_VALUE[2]=0;
-        cout << "POS_Int[0]: " << POS_Int[0] << "POS_Int[1]: " << POS_Int[1] << "POS_Int[2]: " << POS_Int[2] << endl;
-        cout << "Energy<threshold" << endl;
+      //  cout << "Energy<threshold" << endl;
     }
     return RETURN_VALUE;
 }
+
+
+
 double Radius_To_Center_of_Earth(double *POS)
 {
     return sqrt(POS[0]*POS[0]+POS[1]*POS[1]+POS[2]*POS[2]);
@@ -1379,7 +1343,7 @@ double *NP_30MWE(double *POS_Int, double *DR, double Mx, double V, double Sigma_
     
     double LFA=0.001;
     double V_aft=V;double ROELTA=0;
-    int Collision_Time=0;
+    int    Collision_Time=0;
     double Collision_or_not=0;
     int Now_Place  = Where_is_it_30WME_Shielding(POS_Int);
 
