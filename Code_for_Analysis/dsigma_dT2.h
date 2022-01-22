@@ -465,11 +465,12 @@ double KS_Reactor_Path_Length(double Rea_R,double Path_Vector_Unit_X, double Pat
 
     double Normalize=sqrt( (The_Second_Point_on_Cylinder[0]-The_First_Point_on_Cylinder[0])*(The_Second_Point_on_Cylinder[0]-The_First_Point_on_Cylinder[0]) +(The_Second_Point_on_Cylinder[1]-The_First_Point_on_Cylinder[1])*(The_Second_Point_on_Cylinder[1]-The_First_Point_on_Cylinder[1])+(The_Second_Point_on_Cylinder[2]-The_First_Point_on_Cylinder[2])*(The_Second_Point_on_Cylinder[2]-The_First_Point_on_Cylinder[2]) );
         //double Normalize=1;
-        /*
+        
         cout << "The_Second_Point_on_Cylinder[0]-The_First_Point_on_Cylinder[0]: " << (The_Second_Point_on_Cylinder[0]-The_First_Point_on_Cylinder[0])/Normalize << endl;
         cout << "The_Second_Point_on_Cylinder[1]-The_First_Point_on_Cylinder[1]: " << (The_Second_Point_on_Cylinder[1]-The_First_Point_on_Cylinder[1])/Normalize << endl;
         cout << "The_Second_Point_on_Cylinder[2]-The_First_Point_on_Cylinder[2]: " << (The_Second_Point_on_Cylinder[2]-The_First_Point_on_Cylinder[2])/Normalize << endl;
-         */
+         
+        cout << "Two_points_difference(The_First_Point_on_Cylinder,The_Second_Point_on_Cylinder)/1e3: " << Two_points_difference(The_First_Point_on_Cylinder,The_Second_Point_on_Cylinder)/1e3 << endl;
     return Two_points_difference(The_First_Point_on_Cylinder,The_Second_Point_on_Cylinder)/1e3;//km
     }
     else
@@ -1765,7 +1766,7 @@ double *KS_Collision_Time_ATM(double Sigma_SI_Default, double PY, double PZ, dou
         N_Collision = N_Collision + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1e5)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,0.8*AN+0.2*AO));
         //N_Collision_Air_ER = N_Collision_Air_ER + (kg_perm3_to_g_percm3(Density_of_Atmosphere_Layer[kkk])*Path_Lengths_for_atmosphere[kkk]*1000*100)/(unified_atomic_mass_g*(0.8*AN+0.2*AO))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));
     }
-    //cout << "N_Collision_AIR: " << N_Collision << endl;
+    cout << "N_Collision_AIR: " << N_Collision << endl;
     RETURN_VALUE[0]=N_Collision;RETURN_VALUE[1]=N_Collision_Air_ER;
     return RETURN_VALUE;
 }
@@ -1848,11 +1849,11 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
     //cout << "Weighted_Atomic_Number" << Weighted_Atomic_Number << endl;
     double Check_Length_times_Density=0;
     static double RETURN_VALUE[7];
-    /*
+    
     cout << "Length_Components[0]: " << Length_Components[0] << endl;
     cout << "Length_Components[1]: " << Length_Components[1] << endl;
     cout << "Length_Components[2]: " << Length_Components[2] << endl;
-     */
+     
     for(int kkk=0; kkk<13; kkk++)
     {
       //  cout << "Earth: " << kkk << endl;
@@ -1866,7 +1867,7 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
             }
         else if(kkk==12 and Length_Components[0]!=0 and PZ>=0)
             {
-                //cout << "kkk: " << kkk << endl;
+                cout << "kkk: " << kkk << endl;
                 //cout << "Length_Temp: " << Length_Temp << endl;
                 //cout << "Length_Components[0]: " << Length_Components[0] << endl;
                 Path_Lengths_for_earth[kkk] = Length_Temp-Length_Components[0];
@@ -1877,17 +1878,17 @@ double *KS_Collision_Time_EARTH(double Sigma_SI_Default, double PY, double PZ, d
         else{Previous_Total = Previous_Total+ 0;}
        // cout << "Previous_Total: " << Previous_Total  << endl;
     //===============Earth_for_NR===============
-    //N_Collision_Earth_NR = N_Collision_Earth_NR + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));
+    N_Collision_Earth_NR = N_Collision_Earth_NR + ( Density_of_earth_Layer[kkk]*Path_Lengths_for_earth[kkk]*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));
     //===============Earth_for_ER===============
     }
-    N_Collision_Earth_NR = N_Collision_Earth_NR + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
+    
+    //N_Collision_Earth_NR = N_Collision_Earth_NR + (1.35*1*1e5)/(unified_atomic_mass_g*(Weighted_Atomic_Number))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number));//1km
     //N_Collision_Earth_ER = N_Collision_Earth_ER + (1.35*1*1e5)/(unified_atomic_mass_g*(100))*(Total_Sigma_ER(Sigma_SI_Default,Velocity,WIMP_Mass));//1km
 
     cout << "total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number) << endl;
     //cout << "2_total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_mx,0.8*AN+0.2*AO): " << Total_Sigma_ER(1,Sigma_SI_Default,Velocity,WIMP_Mass,Weighted_Atomic_Number) << endl;
 
     cout << "N_Collision_Earth_NR: " << N_Collision_Earth_NR << endl;
-    cout << "N_Collision_Earth_ER: " << N_Collision_Earth_ER << endl;
     //cout << "Earth_Collision: " <<  N_Collision_Earth << endl;
     //Cement
     N_Collision_Cement =  ((Density_of_Cement)*(Length_Components[1]*1e5))/(unified_atomic_mass_g*(Weighted_Atomic_Number_Cement))*(total_Sigma(1,Velocity,Sigma_SI_Default,WIMP_Mass,Weighted_Atomic_Number_Cement));

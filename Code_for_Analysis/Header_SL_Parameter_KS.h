@@ -180,10 +180,11 @@ double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV (Not t
     else Bool_for_truncate=0;
     return Bool_for_truncate;
 }
-//=====================================================//
-
-
-double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity(km/s)
+//
+/*
+static vector<double> aux_list;
+static int aux_list_Filled=0;
+double dE_dX_Crystal_eV(double Cross_Section, double mx, double velocity)//velocity(km/s)
 {
     const int Ei_Number=500;const int qi_Number=900;
     double v_beta  = velocity*1e3/3e8;
@@ -192,7 +193,175 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
     vector<double> Ee_List(500,0);vector<double> q_List(900,0);
     //Get the form factor
-    std::ifstream input("Test.txt");//Input the auxiliary file
+    std::ifstream input("C_Si137.txt");//Input the auxiliary file
+    int Element_Number=-1;double data;
+    while(Element_Number<Ei_Number*qi_Number and aux_list_Filled==0)//
+    {
+        Element_Number = Element_Number + 1;
+        input >> data;
+        aux_list.push_back(data);
+    }
+    aux_list_Filled=1;
+    //All the necessary parameters
+    double prefactor = 2.0 * eV;
+    double wk        = 2.0 / 137.0;
+    double dE        = 0.1 * eV;
+    unsigned int i = 0;
+
+    const double mElectron = 0.5109989461 * 1e6;//eV
+    const double aEM       = 1.0 / 137.035999139;
+    const double dq        = aEM * mElectron;
+
+    TH2F   *HIST_q_E = new TH2F("HIST_q_E","HIST_q_E",500,0,50,900,0,9);
+    HIST_q_E->GetZaxis()->SetRangeUser(1e-3,100);
+    HIST_q_E->GetYaxis()->SetRangeUser(0,8);
+
+    for(int Ei = 0; Ei < 500; Ei++)
+        for(int qi = 0; qi < 900; qi++)
+        {
+            form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
+            double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
+            double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
+            double q  = (Unit_Y+0.5) * dq;// momentum transfer(GeV/c)
+            Ee_List[Ei] = (Ee);//eV
+            q_List[qi]  = q ;
+            HIST_q_E->Fill(Ee,Unit_Y,form_factor_table[qi][Ei]*form_factor_table[qi][Ei]);//
+        }
+    
+    
+    double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (GeV/c^2)
+    double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (GeV/c^2)
+    
+    double v_rel                 = 1.;
+    
+    const int   dv_Bin_Number = 50;
+    double dv_DM         = 784.*(V_to_C)/dv_Bin_Number;
+    double dv_now        = velocity*(V_to_C);
+    const double N_Avo = 6.02e23;            //N_avo
+    double rho =2.7;        //g cm-3
+    double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
+    double n_cell = (rho/m_cell);
+     
+    //double n_cell = 6e21/2;
+    cout << "mx: " << mx << endl;
+    cout << "n_cell:" << n_cell << endl;
+    double sum_array[dv_Bin_Number];
+    
+    double Prefactor   = (Cross_Section*n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
+    double Prefactor_1 = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
+
+    double sum=0;
+
+    
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            {
+                double sum_L = ( (dE*Ee_List[i])* ( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(sum_L!=0 and Prefactor!=0)
+                {
+                    sum = sum + (Prefactor*sum_L);
+                    cout << "form_factor_table[qi][i]: " << form_factor_table[qi][i] << endl;
+                    cout << "sum: " << sum << endl;
+                }
+            }
+        }
+    }
+    cout << "total cross section: " << sum << endl;
+    cout << "dEdX(eV/cm): " << sum*1.4e5 << endl;
+
+    return 0;
+}
+*/
+
+static vector<double> aux_list;
+static int aux_list_Filled=0;
+static vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
+static vector<double> Ee_List(500,0);static vector<double> q_List(900,0);
+double dE_dX_from_others(double Cross_Section, double mx, double velocity)
+{
+    const int Ei_Number=500;
+    const int qi_Number=900;
+    //==============Get the form factor of the crystal===========//
+    std::ifstream input("C_Si137.txt");//Input the auxiliary file
+    int Element_Number=-1;double data;
+    while(Element_Number<Ei_Number*qi_Number and aux_list_Filled==0)//
+    {
+        Element_Number = Element_Number + 1;
+        input >> data;
+        aux_list.push_back(data);
+    }
+    //All the necessary parameters
+    double prefactor = 2.0 * eV;
+    double wk        = 2.0 / 137.0;
+    double dE        = 0.1 * eV;
+    unsigned int i = 0;
+
+    const double mElectron = 0.5109989461 * 1e6;//eV
+    const double aEM       = 1.0 / 137.035999139;
+    const double dq        = aEM * mElectron;
+
+    for(int Ei = 0; Ei < 500; Ei++)
+    {
+        for(int qi = 0; qi < 900; qi++)
+        {
+            form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
+            double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
+            double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
+            double q  = (Unit_Y+0.5) * dq;// momentum transfer(GeV/c)
+            Ee_List[Ei] = (Ee);//eV
+            q_List[qi]  = q ;
+        }
+    }
+    aux_list_Filled=1;
+    //==============End getting the form factor of the crystal===========//
+    double dv_now        = velocity*(V_to_C);
+
+    double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (GeV/c^2)
+    double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (GeV/c^2)
+    double v_rel                 = 1.;
+    const double N_Avo = 6.02e23;            //N_avo
+    double rho =2.7;        //g cm-3
+    double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
+    double n_cell = (rho/m_cell);
+
+    double Prefactor   = (Cross_Section*n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
+    double Prefactor_1 = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
+    
+    double sum           = 0;
+    
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            {
+                double sum_L = ( (dE*Ee_List[i])* ( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(sum_L!=0 and Prefactor!=0)
+                {
+                    sum = sum + (Prefactor*sum_L);
+                    //cout << "form_factor_table[qi][i]: " << form_factor_table[qi][i] << endl;
+                    //cout << "sum: " << sum << endl;
+                }
+            }
+        }
+    }
+    return 0;
+}
+ 
+//=====================================================//
+double dE_dX_Crystal_GeV(double Cross_Section, double mx, double velocity)//velocity(km/s)
+{
+    const int Ei_Number=500;const int qi_Number=900;
+    double v_beta  = velocity*1e3/3e8;
+    //static double form_factor_table[qi_Number][Ei_Number];
+    vector<double> aux_list;
+    vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
+    vector<double> Ee_List(500,0);vector<double> q_List(900,0);
+    //Get the form factor
+    std::ifstream input("C_Si137.txt");//Input the auxiliary file
     int Element_Number=-1;double data;
     while(Element_Number<Ei_Number*qi_Number)//
     {
@@ -295,7 +464,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     
     const int   dv_Bin_Number = 50;
     double dv_DM         = 784.*(V_to_C)/dv_Bin_Number;
-    
+    double dv_now        = velocity*(V_to_C);
     const double N_Avo = 6.02e23;            //N_avo
     double rho =2.7;        //g cm-3
     double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
@@ -306,6 +475,27 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     cout << "n_cell:" << n_cell << endl;
     double sum_array[dv_Bin_Number];
     
+    double Prefactor = 1e9*(n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
+    double sum=0;
+    
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx,0)  )
+            {
+                double sum_L = ( (dE*Ee_List[i])* ( 0.02*dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(sum_L!=0 and Prefactor!=0)
+                {
+                    sum = sum + (Prefactor*sum_L);
+                    cout << "form_factor_table[qi][i]: " << form_factor_table[qi][i] << endl;
+                    cout << "sum: " << sum << endl;
+                }
+            }
+        }
+    }
+    cout << "dEdX(eV/cm): " << Prefactor*sum << endl;
+    /*
     for(int lll=0; lll<dv_Bin_Number; lll++)
     {
         double sum           = 0;
@@ -317,32 +507,26 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
             {
                 if( V_DM_now > v_min_DM(Ee_List[i],q_List[qi],mx,0)*(V_to_C) and V_DM_now>sqrt(2*Ee_List[i]/mx) and V_DM_now>sqrt(2*(1.1*1e-9)/mx) and q_List[qi]<2*reduce_mass_Si_N*(V_DM_now) )
                 {
-                    double Prefactor = (n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel);
                     double sum_L = ( (dE*Ee_List[i])* ( 0.02*dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
                     if(sum_L!=0 and Prefactor!=0)
                     {
                         sum = sum + (Prefactor*sum_L);
+                        //cout << "sum: " << sum << endl;
                     }
                 }
             }
         }
         sum_array[lll] = sum;
     }
-    for(int lll=0; lll<dv_Bin_Number; lll++)
-    {
-        double V_DM_now = dv_DM*(lll+0.5);
-        if(sum_array[lll]>0)dE_dX = dE_dX + mx*pow(V_DM_now,2)*dv_DM*1/sum_array[lll];
-    }
-    
-    cout << "sigma " << (dE_dX)/2e5 << endl;
+     */
 
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*1e5*1e6 << endl;//keV
     //cout << "Energy_Loss(keV): " << (dEdX_M)*(dEdX_M)/(2*mx)*2e5*1e6 << endl;//keV
     //cout << "Energy_Loss(keV): " << (dEdX_M)*2e5*1e6 << endl;//keV
 
-    cout << "Energy_DM(keV): " << 0.5*(mx*1e6)*(v_beta)*(v_beta);//keV
+    //cout << "Energy_DM(keV): " << 0.5*(mx*1e6)*(v_beta)*(v_beta);//keV
     //Check the form facotr
-    
+    /*
     TCanvas *c3 = new TCanvas("c3");
     gStyle->SetOptFit(0);
     gStyle->SetOptStat(0);
@@ -350,7 +534,7 @@ double dE_dX_Crystal(double Cross_Section, double mx, double velocity)//velocity
     HIST_q_E->Draw("colz");
     c3->SetLogz();
     c3->Print("Check_qE.pdf");
-    
+    */
     return 0;
 }
 //y=A*x+B

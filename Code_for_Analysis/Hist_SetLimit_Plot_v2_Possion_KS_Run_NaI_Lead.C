@@ -113,7 +113,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     double Path_Lengths_for_atmosphere_Long[19];double Path_Lengths_for_atmosphere_Smallest[19];
     double N_Collision=0;double N_Collision_Air_ER=0;
     static double RETURN_VALUE[2];
-    double Try_Z_direction_Unit=0;
+    double Try_Z_direction_Unit=0.4;
     
     double Max_V = 800;//km/s
     double WIMP_mx=10;//GeV
@@ -151,7 +151,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "Energy_DM: " << Energy_DM(WIMP_mx,V_Aft_Collision_Water_Long[0]*1e3/3e8);
     cout << "=========================================================================================================" << endl;
      
-    
+    /*
        cout << "CS: " << CS << endl;
     cout << "==============================" << endl;
        double Collision_Time_Air_Smallest   = Collision_Air_Part_Smallest*MFP_from_DCS_Part(2,Max_V,CS,WIMP_mx, 15.);
@@ -165,7 +165,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "V_Aft_Collision_Water: " << V_Aft_Collision_Water_Smallest[0] << endl;
         cout << "Energy_DM: " << Energy_DM(WIMP_mx,V_Aft_Collision_Water_Smallest[0]*1e3/3e8);
     cout << "==============================" << endl;
-     
+     */
     
     
      /*

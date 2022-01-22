@@ -28,17 +28,18 @@
 
 //200eV threshold ==> 1.009keV
 //1.009keV        ==> 201.183(km/s)
-double DM_mx=10;//GeV
+double DM_mx=0.05;//GeV
 void Hist_SetLimit_Plot_v2_Possion_KS()
 {
-for(int ppp=2; ppp<10; ppp++ )
+//for(int ppp=2; ppp<10; ppp++ )
+for(int ppp=0; ppp<1; ppp++ )
 {
     for(int zzz=0; zzz<1; zzz++)//Z<10
     {
-        for(int lll=3; lll<4; lll++){
-            double Sigma_SI_Default= (ppp+0.1*zzz) * (1e-27) * TMath::Power(10,-lll);
+        for(int lll=0; lll<1; lll++){
+            //double Sigma_SI_Default= (ppp+0.1*zzz) * (1e-27) * TMath::Power(10,-lll);
             //double Sigma_SI_Default= (zzz) * (1e-30) * TMath::Power(10,-lll);
-            //double Sigma_SI_Default=(1e-29);
+            double Sigma_SI_Default=(1e-27);
             cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
             /*
             TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
@@ -97,7 +98,7 @@ for(int ppp=2; ppp<10; ppp++ )
 
             for(int kkk=0;kkk<2000;kkk++){Flux_HIST->SetBinContent(kkk+1,Possiblity[kkk]);}
 
-            int Simulated_Event_Number=10000;
+            int Simulated_Event_Number=2;
             double Velocity[Simulated_Event_Number];double Velocity_Z[Simulated_Event_Number];
             double Velocity_X[Simulated_Event_Number];double Velocity_Y[Simulated_Event_Number];
             double Collision_Expectation_ATM[Simulated_Event_Number];double Collision_Expectation_EARTH[Simulated_Event_Number];
@@ -119,22 +120,28 @@ for(int ppp=2; ppp<10; ppp++ )
                 gRandom->SetSeed(0);
                 double Random_Velocity = 0;
                 Random_Velocity = Flux_HIST->GetRandom();
-                Velocity[kkk] = Random_Velocity;
+                //Velocity[kkk] = Random_Velocity;
+                Velocity[kkk] = 800;
+
                 Flux_HIST_Random->Fill(Random_Velocity);
                 Double_t par[3];
                 TRandom *eventGenerator = new TRandom(0);//You can use TRandom(0) or TRandom3(0) to initialize your random function
                 eventGenerator->GetSeed();
                 eventGenerator->Sphere(par[0],par[1],par[2],Velocity[kkk]);
-                
+                /*
                 Velocity_X[kkk] = (par[0]/Velocity[kkk]);
                 Velocity_Y[kkk] = (par[1]/Velocity[kkk]);
                 Velocity_Z[kkk] = (par[2]/Velocity[kkk]);
-                 
+                 */
                 /*
-                Velocity_Y[kkk] = 1;
-                Velocity_Z[kkk] = 0;
+                Velocity_Y[kkk] = 0;
+                Velocity_Z[kkk] = 0.9;
                 Velocity_X[kkk] = sqrt(1-Velocity_Z[kkk]*Velocity_Z[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
                  */
+                Velocity_Y[kkk] = 0. ;
+                Velocity_Z[kkk] = 0.7;
+                Velocity_X[kkk] = sqrt(1-Velocity_Z[kkk]*Velocity_Z[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
+
                 double Dark_Matter_Energy = Energy_DM(DM_mx,Velocity[kkk]*1e3/3e8);//KeV
                 double Dark_Matter_Velocity = Velocity_DM(DM_mx,Dark_Matter_Energy);//KeV
                 
@@ -148,15 +155,18 @@ for(int ppp=2; ppp<10; ppp++ )
                 //cout << "Dark_Matter_Velocity: " << Dark_Matter_Velocity << endl;
                 double Bool_If_Earth_Check= Bool_If_Earth( Velocity_X[kkk], Velocity_Y[kkk],  Velocity_Z[kkk]);
                 double Cement_Length = KS_Cement_Path_Length( Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
+                cout << "Cement_Length: " << Cement_Length << endl;
                 double Reactor_Length_Total = KS_Reactor_Path_Length(27.5, Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
                 double Reactor_Length_Water = KS_Reactor_Path_Length(26.5, Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
                 //cout << "=============Reactor_Length_Water=============: " << Reactor_Length_Water << endl;
         double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Reactor_Length_Total,Reactor_Length_Water};//1 for Air check, 2 for the Cement, 3 for the Reactor
                 double *A=KS_Collision_Time_EARTH(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components);
+                cout << "A[1]: " << A[1] << endl;
                 Collision_Expectation_EARTH[kkk]=A[1];Collision_Expectation_Cement[kkk]=A[2];
                 Collision_Expectation_Reactor_Wall[kkk]=A[3];Collision_Expectation_Reactor_Water[kkk]=A[4];Collision_Expectation_Shielding[kkk]=A[5];
-                Collision_Expectation_ATM[kkk] = KS_Collision_Time_ATM(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components,A[0]);
-                
+                //Collision_Expectation_ATM[kkk] = KS_Collision_Time_ATM(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components,A[0]);
+            double *Collision_Expectation_ATM_D= KS_Collision_Time_ATM(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],DM_mx,Path_Length_For_Three_Components,A[0]);
+                Collision_Expectation_ATM[kkk] = Collision_Expectation_ATM_D[0];
             }
             for(int kkk=0 ; kkk<2000 ; kkk++){Flux_HIST_Random_Normalized->SetBinContent(kkk+1,(Flux_HIST_Random->GetBinContent(kkk))/(Simulated_Event_Number));};
             cout << "4: " << endl;
@@ -209,8 +219,11 @@ for(int ppp=2; ppp<10; ppp++ )
                 cout << "Collision_Expectation_ATM[kkk]: " << Collision_Expectation_ATM[kkk] << endl;
                 cout << "***==================================***" << endl;
                  */
+                cout << "Collision_Expectation_EARTH[kkk]: " << EC << endl;
+                cout << "Collision_Expectation_ATM[kkk]: " << AC << endl;
+
                 if(EC>200 or CC>200 or RCL>200 or RCR>200 or AC>200 or CS>200){
-                   // cout << "OK GREAT!" << endl;
+                  cout << "OK GREAT!" << endl;
                     Flux_HIST_Aft_Collision_EARTH->Fill(1e-5);}
 
                         //====================Test_Function====================
@@ -219,19 +232,19 @@ for(int ppp=2; ppp<10; ppp++ )
                 {
                     
                     double *V_Aft_Collision_AIR = Velocity_Aft_collision(AC,DM_mx,Sigma_SI_Default,Velocity[kkk],2);
-                    //cout << "V_Aft_AIR: " << V_Aft_Collision_AIR[0] << endl;
+                    cout << "V_Aft_AIR: " << V_Aft_Collision_AIR[0] << endl;
 
                     double *V_Aft_Collision_EARTH = Velocity_Aft_collision(EC,DM_mx,Sigma_SI_Default,V_Aft_Collision_AIR[0],1);
-                    //cout << "V_Aft_EARTH: " << V_Aft_Collision_EARTH[0] << endl;
+                    cout << "V_Aft_EARTH: " << V_Aft_Collision_EARTH[0] << endl;
                    
                     double *V_Aft_Collision_CEMENT = Velocity_Aft_collision(CC,DM_mx,Sigma_SI_Default,V_Aft_Collision_EARTH[0],3);
-                    //cout << "V_Aft_CEMENT: " << V_Aft_Collision_CEMENT[0] << endl;
+                    cout << "V_Aft_CEMENT: " << V_Aft_Collision_CEMENT[0] << endl;
 
                     double *V_Aft_Collision_REACTOR_WALL = Velocity_Aft_collision(RCL,DM_mx,Sigma_SI_Default,V_Aft_Collision_CEMENT[0],3);
-                    //cout << "V_Aft_REACTOR_WALL : " << V_Aft_Collision_REACTOR_WALL[0] << endl;
+                    cout << "V_Aft_REACTOR_WALL : " << V_Aft_Collision_REACTOR_WALL[0] << endl;
 
                     double *V_Aft_Collision_REACTOR_WATER = Velocity_Aft_collision(RCR,DM_mx,Sigma_SI_Default,V_Aft_Collision_REACTOR_WALL[0],5);
-                    //cout << "V_Aft_Collision_REACTOR_WATER : " << V_Aft_Collision_REACTOR_WATER[0] << endl;
+                    cout << "V_Aft_Collision_REACTOR_WATER : " << V_Aft_Collision_REACTOR_WATER[0] << endl;
                     
                     double *V_Aft_Collision_SHIELDING = Velocity_Aft_collision(CS,DM_mx,Sigma_SI_Default,V_Aft_Collision_REACTOR_WATER[0],6);
                     cout << "V_Aft_Collision_SHIELDING : " << V_Aft_Collision_SHIELDING[0] << endl;

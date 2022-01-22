@@ -11,8 +11,8 @@ void run_single_sigma_ks_v15_minprint(double mx=2.0)
     gROOT->ProcessLine(".L Hist_SetLimit_Plot_v2_Possion_KS_Run.C");
     
     //string Mass_Point[12]={"20","19","17","15","13","11","9","7","5","4","3","2P35"};
-    string Mass_Point[1]={"2"};
-    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,100,8e-29)",Event_Number));
+    string Mass_Point[1]={"10"};
+    gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,100,2e-30)",Event_Number));
     /*
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,2,1e-37)",Event_Number));
     gROOT->ProcessLine(Form("Hist_SetLimit_Plot_v2_Possion_KS_Run(0,%i,3,1e-36)",Event_Number));

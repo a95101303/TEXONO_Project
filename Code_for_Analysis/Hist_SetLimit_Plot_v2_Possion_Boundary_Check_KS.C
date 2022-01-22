@@ -38,9 +38,10 @@ void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
     const int Event_Number=1;
     double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
       */
+    /*
     const int Event_Number=1;
     double WIMP_Mass_Array[Event_Number]={2};//17 for CDEX
-
+     */
     /*
     const int Event_Number=15;
     //double WIMP_Mass_Array[Event_Number]={2,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.09,0.08,0.07,0.06,0.05,0.048};//17 for TEXONO
@@ -50,6 +51,11 @@ void Hist_SetLimit_Plot_v2_Possion_Boundary_Check_KS()
     const int Event_Number=12;
     double WIMP_Mass_Array[Event_Number]={2.35,3,4,5,7,9,11,13,15,17,19,20};//12 for TEXONO
      */
+    
+    const int Event_Number=1;
+    double WIMP_Mass_Array[Event_Number]={10};//12 for TEXONO
+     
+
     double Critical_Point[12] = {779.135000,750,700,650,600,550,500,450,400,350,278.036};
     double Sigma_SI_Array[Event_Number];
     //Check
@@ -71,10 +77,10 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                 int Count=0;
                 cout << "Sigma_SI_Array[WIMP_Event]: " << Sigma_SI_Array[WIMP_Event] << endl;
                 if(Sigma_SI_Array[WIMP_Event]>1e-45) continue;
-                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-28) * TMath::Power(10,lll);
+                double Sigma_SI_Default=  ((ppp)+(0.1*zzz)) * (1e-30) * TMath::Power(10,lll);
                 cout << "Sigma_SI_Default: " << Sigma_SI_Default << endl;
                 
-                int Simulated_Event_Number=50;
+                int Simulated_Event_Number=5;
                 double Velocity[Simulated_Event_Number];double Velocity_Z[Simulated_Event_Number];
                 double Velocity_X[Simulated_Event_Number];double Velocity_Y[Simulated_Event_Number];
                 double Collision_Expectation_ATM[Simulated_Event_Number];double Collision_Expectation_EARTH[Simulated_Event_Number];
@@ -88,18 +94,22 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     cout << "//Event: " << kkk;
                     gRandom = new TRandom3(0);
                     gRandom->SetSeed(0);
-                    //Velocity[kkk]=779.135;//Max
-                    Velocity[kkk]=300.135;//Max
+                    Velocity[kkk]=779.135;//Max
+                    //Velocity[kkk]=300.135;//Max
+                    Velocity_X[kkk]= 0;
+                    Velocity_Z[kkk]= 0.4;
+                    Velocity_Y[kkk]= -(1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Z[kkk]*Velocity_Z[kkk]);
+
                     /*
                     Velocity_X[kkk]= 0.510533;
                     Velocity_Y[kkk]= -0.458848;
                     Velocity_Z[kkk]= 1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk];
-                     */
-                    
+                    */
+                    /*
                     Velocity_X[kkk] = 0.49;
                     Velocity_Y[kkk] = -0.80;
                     Velocity_Z[kkk] = sqrt(1-Velocity_X[kkk]*Velocity_X[kkk]-Velocity_Y[kkk]*Velocity_Y[kkk]);
-                    
+                     */
                     /*
                     Velocity_Z[kkk]=1;//
                     Velocity_X[kkk]=0;
@@ -120,13 +130,15 @@ for(int WIMP_Event=0; WIMP_Event<Event_Number; WIMP_Event++)
                     double Cement_Length = KS_Cement_Path_Length( Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
                     double Reactor_Length_Total = KS_Reactor_Path_Length(27.5, Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
                     double Reactor_Length_Water = KS_Reactor_Path_Length(26.5, Velocity_X[kkk],  Velocity_Y[kkk],  Velocity_Z[kkk]);
+                    cout << "Reactor_Length_Total: " << Reactor_Length_Total << endl;
+                    cout << "Reactor_Length_Water: " << Reactor_Length_Water << endl;
                     //cout << "=============Reactor_Length_Water=============: " << Reactor_Length_Water << endl;
             double Path_Length_For_Three_Components[4]={Bool_If_Earth_Check,Cement_Length,Reactor_Length_Total,Reactor_Length_Water};//1 for Air check, 2 for the Cement, 3 for the Reactor
                     double *A=KS_Collision_Time_EARTH(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],WIMP_Mass,Path_Length_For_Three_Components);
                     Collision_Expectation_EARTH[kkk]=A[1];Collision_Expectation_Cement[kkk]=A[2];
                     Collision_Expectation_Reactor_Wall[kkk]=A[3];Collision_Expectation_Reactor_Water[kkk]=A[4];Collision_Expectation_Shielding[kkk]=A[5];
-                    Collision_Expectation_ATM[kkk] = KS_Collision_Time_ATM(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],WIMP_Mass,Path_Length_For_Three_Components,A[0]);
-
+                    double *Collision_Expectation_ATM_D = KS_Collision_Time_ATM(Sigma_SI_Default, Velocity_Y[kkk], Velocity_Z[kkk],Velocity[kkk],WIMP_Mass,Path_Length_For_Three_Components,A[0]);
+                    Collision_Expectation_ATM[kkk] = Collision_Expectation_ATM_D[0];
                 }
                 cout << "4: " << endl;
 
