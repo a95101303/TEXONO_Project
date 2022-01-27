@@ -473,8 +473,32 @@ double DCS_H_c1_0P05GeV_300kms(double ER)//ER(eV)
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
-    dE_dX_from_others(1e-19,0.7,800);
+    /*
+    double Mx = 0.5;
+    double Cross_section  = 1.3E-19;
+     */
+    double Mx = 0.1;
+    double Cross_section  = 3E-20;
+    double Max_V          = 800;
+
+    double Time = dE_dX_from_others(0,Cross_section,Mx,Max_V,2*1e3*1e2);
+
+    double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
     
+    /*
+    cout << "Time: " << Time << endl;
+    cout << "Energy_DM(0.5,800*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
+    
+    for(int KKK=0; KKK<Time; KKK++)
+    {
+        double Loss = dE_dX_from_others(1,Cross_section,Mx,Max_V,1);
+        Energy_Initial = Energy_Initial - Loss;
+        cout << "Loss: " << Loss << endl;
+        Max_V     = Velocity_DM(Mx,Energy_Initial*1E-3);//km/s
+        cout << "V_aft: " << Max_V << endl;
+        cout << "Energy_DM(Mx,Max_V*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
+    }
+    */
     
     DCS_H_c1_1GeV_300kms(1.);
     const int    velocity_N=13;

@@ -172,13 +172,10 @@ double F_DM(int Option, double q, double mMediator)//
 double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV (Not totally right)
 {
     double Delta_Ee = Ee;// eV (Free-electron Energy + Binding Energy)
-    double v_min_beta = (Delta_Ee/(q)) + (q/(2*Mx));//All in GeV
-    double v_min      = v_min_beta*(3e8/1e3);
+    double v_min_beta = (Delta_Ee/(q)) + (q/(2*Mx));//All in eV
+    //cout << "v_min_beta: " << v_min_beta << endl;
     //cout << "v_min: " << v_min << endl;
-    double Bool_for_truncate = 0;
-    if(v_int>v_min) Bool_for_truncate=1;
-    else Bool_for_truncate=0;
-    return Bool_for_truncate;
+    return v_min_beta;
 }
 //
 /*
@@ -280,7 +277,7 @@ static vector<double> aux_list;
 static int aux_list_Filled=0;
 static vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
 static vector<double> Ee_List(500,0);static vector<double> q_List(900,0);
-double dE_dX_from_others(double Cross_Section, double mx, double velocity)
+double dE_dX_from_others(int Case, double Cross_Section, double mx, double velocity, double Length)
 {
     const int Ei_Number=500;
     const int qi_Number=900;
@@ -319,36 +316,63 @@ double dE_dX_from_others(double Cross_Section, double mx, double velocity)
     //==============End getting the form factor of the crystal===========//
     double dv_now        = velocity*(V_to_C);
 
-    double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (GeV/c^2)
-    double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (GeV/c^2)
-    double v_rel                 = 1.;
+    double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (eV/c^2)
+    double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (eV/c^2)
+    double v_rel                 = (4.*1e3)/(reduce_mass_Si_e);
     const double N_Avo = 6.02e23;            //N_avo
     double rho =2.7;        //g cm-3
     double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
-    double n_cell = (rho/m_cell);
-
-    double Prefactor   = (Cross_Section*n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
-    double Prefactor_1 = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);
-    
+    //double n_cell = (rho/m_cell);
+    double n_cell        = 8./pow(8.54*1E-8,3);
+    double Prefactor     = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);//With the n_cell
+    double Prefactor_1   = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);//Without the n_cel
     double sum           = 0;
     
+    // /int T*dT*dsigma/dT
+    double Energy_Loss_numerator=0;
+    double sum_L_1=0;double sum_L_2=0;
     for(int i=0;i<Ei_Number;i++)//Energy of electrons
     {
         for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
         {
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
-                double sum_L = ( (dE*Ee_List[i])* ( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
+                double sum_L = ( (Ee_List[i]*dE)* ( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
                 if(sum_L!=0 and Prefactor!=0)
                 {
-                    sum = sum + (Prefactor*sum_L);
-                    //cout << "form_factor_table[qi][i]: " << form_factor_table[qi][i] << endl;
-                    //cout << "sum: " << sum << endl;
+                    Energy_Loss_numerator = Energy_Loss_numerator + (Prefactor_1)*(sum_L);
+                    sum_L_1 = sum_L_1 + sum_L;
                 }
             }
         }
     }
-    return 0;
+    
+    // /int dT*dsigma/dT
+    double Energy_Loss_denominator=0;//==total cross section
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            {
+                double sum_L = ( dE*( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(sum_L!=0 and Prefactor!=0)
+                {
+                    Energy_Loss_denominator = Energy_Loss_denominator + (Prefactor_1)*(sum_L);
+                    sum_L_2 = sum_L_2 + sum_L;
+                }
+            }
+        }
+    }
+
+    double Collision_Time = n_cell*Length*Energy_Loss_denominator;
+    double Energy_Loss    = (Energy_Loss_numerator)/(Energy_Loss_denominator);
+    if(Case==0)cout << "Collision_Time: " << Collision_Time << endl;
+    if(Case==1)cout << "Energy_Loss: " << Energy_Loss << endl;
+    cout << "v_rel: " << v_rel << endl;
+    if(Case==0){return Collision_Time;}
+    if(Case==1){return Energy_Loss;}
 }
  
 //=====================================================//
