@@ -278,8 +278,8 @@ static vector<double> aux_list;
 static int aux_list_Filled=0;
 static vector<vector<double>> form_factor_table(900, vector<double>(500, 0.0));
 static vector<double> Ee_List(500,0);static vector<double> q_List(900,0);
-double dE_dX_from_others(int Case, double Cross_Section, double mx, double velocity, double Length)
-{
+double dE_dX_from_others(int Case, double Cross_Section, double mx, double velocity, double Length, int F_DM_Case)
+{//F_DM_Case==0,(F_DM=1), F_DM_Case==1,(F_DM=(alpha*me/q)^2)
     const int Ei_Number=500;
     const int qi_Number=900;
     //==============Get the form factor of the crystal===========//
@@ -325,12 +325,14 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
     const double N_Avo = 6.02e23;            //N_avo
     double rho =2.7;        //g cm-3
     double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
-    double n_cell = (rho/m_cell);
-    //double n_cell        = 8./pow(8.54*1E-8,3);
+    //double n_cell = (rho/m_cell);
+    double n_cell        = 8./pow(8.54*1E-8,3);
     double Prefactor     = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);//With the n_cell
     double Prefactor_1   = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);//Without the n_cel
     double sum           = 0;
 
+    
+    
     // /int T*dT*dsigma/dT
     double Energy_Loss_numerator=0;
     double sum_L_1=0;double sum_L_2=0;
@@ -341,7 +343,9 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
                 //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
-                double sum_L = ( (Ee_List[i]*(dE*1e9))* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                double sum_L =0;
+                if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9) )* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9) )*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
                 if(sum_L!=0 and Prefactor!=0)
                 {
                     Energy_Loss_numerator = Energy_Loss_numerator + (Prefactor_1)*(sum_L);
@@ -359,7 +363,9 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
         {
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
-                double sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
+                double sum_L =0;
+                if(F_DM_Case==0)sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
+                if(F_DM_Case==1)sum_L = ( (dE*1e9)*( (0.02*dq)*pow(dq/q_List[qi],2)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//
                 if(sum_L!=0 and Prefactor!=0)
                 {
                     Energy_Loss_denominator = Energy_Loss_denominator + (Prefactor_1)*(sum_L);
@@ -379,7 +385,9 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
         {
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
-                double sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                double sum_L =0;
+                if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9))* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9))*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
                 if(sum_L!=0 and Prefactor!=0)
                 {
                     dEdX_for_without_Vchi = dEdX_for_without_Vchi + (Prefactor_2)*(sum_L);

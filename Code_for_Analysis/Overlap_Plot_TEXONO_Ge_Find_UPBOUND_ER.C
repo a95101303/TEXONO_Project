@@ -477,11 +477,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     double Mx = 0.5;
     double Cross_section  = 1.3E-19;
      */
-    double Mx = 1e-2;
-    double Cross_section  = 1;
+    double Mx = 0.001;
+    double Cross_section  = 0.1;
     double Max_V          = 784;
 
-    double Time = dE_dX_from_others(0,Cross_section,Mx,Max_V,2*1e3*1e2);
     double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
     
     
@@ -503,7 +502,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     //cout << "Energy_Loss_1: " << dE_dX_from_others(1,Cross_section,Mx,Max_V,1) << endl;;
     //cout << "Energy_Loss_2: " << dE_dX_from_others(1,Cross_section,1.,Max_V,1) << endl;;
 
-    const int Bin_Number = 1000;
+    const int Bin_Number = 200;
     double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
     double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
     double dv_c      = (1e3/3e8)*dv;
@@ -515,10 +514,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         double v    = (v_L+v_R)*0.5;
         double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
 
-        double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,1.);
-        if(dE_dX_without_velocity>0)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
-        //cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
-        //cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
+        double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,1.,1);
+        if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1E-2)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
+        cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
+        cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
         cout << "Length_Total: " << Length_Total << endl;
         v_L = v_R;
         v_R = v_L + dv;
