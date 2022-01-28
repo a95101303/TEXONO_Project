@@ -477,18 +477,17 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     double Mx = 0.5;
     double Cross_section  = 1.3E-19;
      */
-    double Mx = 0.1;
-    double Cross_section  = 3E-20;
-    double Max_V          = 800;
+    double Mx = 1e-2;
+    double Cross_section  = 1;
+    double Max_V          = 784;
 
     double Time = dE_dX_from_others(0,Cross_section,Mx,Max_V,2*1e3*1e2);
-
     double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
     
-    /*
-    cout << "Time: " << Time << endl;
-    cout << "Energy_DM(0.5,800*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
     
+    //cout << "Time: " << Time << endl;
+    //cout << "Energy_DM(0.5,800*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
+    /*
     for(int KKK=0; KKK<Time; KKK++)
     {
         double Loss = dE_dX_from_others(1,Cross_section,Mx,Max_V,1);
@@ -498,6 +497,57 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         cout << "V_aft: " << Max_V << endl;
         cout << "Energy_DM(Mx,Max_V*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
     }
+    */
+    //cout << "Collision_1: " << dE_dX_from_others(0,Cross_section,Mx,Max_V,2*1e3*1e2) << endl;
+    //cout << "Collision_2: " << dE_dX_from_others(0,Cross_section,1.,Max_V,2*1e3*1e2) << endl;
+    //cout << "Energy_Loss_1: " << dE_dX_from_others(1,Cross_section,Mx,Max_V,1) << endl;;
+    //cout << "Energy_Loss_2: " << dE_dX_from_others(1,Cross_section,1.,Max_V,1) << endl;;
+
+    const int Bin_Number = 1000;
+    double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+    double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+    double dv_c      = (1e3/3e8)*dv;
+    double Length_Total=0;
+    double v_L       = velocity_Final;
+    double v_R       = velocity_Final + dv;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double v    = (v_L+v_R)*0.5;
+        double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+
+        double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,1.);
+        if(dE_dX_without_velocity>0)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
+        //cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
+        //cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
+        cout << "Length_Total: " << Length_Total << endl;
+        v_L = v_R;
+        v_R = v_L + dv;
+    }
+    cout << "Length_Total: " << Length_Total/(2e5) << endl;
+
+    /*
+    const int Bin_Number = 1000;
+    double Energy_Final  = Energy_DM(Mx,800*1e3/3e8)*1e3;//eV
+    double Bin_Size      = (Energy_Final-1.1)/(double)Bin_Number;
+    double Length_Total=0;
+    double Left_edge        = 1.1;
+    double Right_edge       = 1.1 + Bin_Size;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double Recoil_Energy    = (Left_edge+Right_edge)*0.5;
+        double V      = Velocity_DM(Mx,Recoil_Energy*1E-3);
+        double dE_dX_individual = dE_dX_from_others(2,Cross_section,Mx,V,1.);
+        if(dE_dX_individual>0)Length_Total = Length_Total + Bin_Size*(1./dE_dX_individual);
+        //cout << "V: " << V << endl;
+        //cout << "Bin_Size*(1./dE_dX_individual): " << Bin_Size*(1./dE_dX_individual) << endl;
+        //cout << "Bin_Size: " << Bin_Size << endl;
+        //cout << "Bin: " << KKK << endl;
+        //cout << "dE_dX_individual: " << dE_dX_individual << endl;
+        cout << "Length_Total: " << Length_Total << endl;
+        Left_edge = Right_edge;
+        Right_edge = Left_edge + Bin_Size;
+    }
+    cout << "Length_Total: " << Length_Total << endl;
     */
     
     DCS_H_c1_1GeV_300kms(1.);

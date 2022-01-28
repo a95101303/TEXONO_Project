@@ -173,6 +173,7 @@ double v_min_DM(double Ee, double q, double Mx, double v_int)//All in GeV (Not t
 {
     double Delta_Ee = Ee;// eV (Free-electron Energy + Binding Energy)
     double v_min_beta = (Delta_Ee/(q)) + (q/(2*Mx));//All in eV
+    //cout << "Mx: " << Mx << endl;
     //cout << "v_min_beta: " << v_min_beta << endl;
     //cout << "v_min: " << v_min << endl;
     return v_min_beta;
@@ -307,7 +308,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
             form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
             double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
             double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
-            double q  = (Unit_Y+0.5) * dq;// momentum transfer(GeV/c)
+            double q  = (Unit_Y) * dq;// momentum transfer(eV/c)
             Ee_List[Ei] = (Ee);//eV
             q_List[qi]  = q ;
         }
@@ -318,16 +319,18 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
 
     double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (eV/c^2)
     double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (eV/c^2)
-    double v_rel                 = (4.*1e3)/(reduce_mass_Si_e);
+    //double v_rel            = (4.*1e3)/(reduce_mass_Si_e);
+    double v_rel            = 1.;
+
     const double N_Avo = 6.02e23;            //N_avo
     double rho =2.7;        //g cm-3
     double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
-    //double n_cell = (rho/m_cell);
-    double n_cell        = 8./pow(8.54*1E-8,3);
-    double Prefactor     = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);//With the n_cell
-    double Prefactor_1   = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);//Without the n_cel
+    double n_cell = (rho/m_cell);
+    //double n_cell        = 8./pow(8.54*1E-8,3);
+    double Prefactor     = (n_cell*Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);//With the n_cell
+    double Prefactor_1   = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);//Without the n_cel
     double sum           = 0;
-    
+
     // /int T*dT*dsigma/dT
     double Energy_Loss_numerator=0;
     double sum_L_1=0;double sum_L_2=0;
@@ -338,7 +341,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
                 //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
-                double sum_L = ( (Ee_List[i]*dE)* ( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                double sum_L = ( (Ee_List[i]*(dE*1e9))* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
                 if(sum_L!=0 and Prefactor!=0)
                 {
                     Energy_Loss_numerator = Energy_Loss_numerator + (Prefactor_1)*(sum_L);
@@ -356,7 +359,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
         {
             if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
             {
-                double sum_L = ( dE*( dq*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                double sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
                 if(sum_L!=0 and Prefactor!=0)
                 {
                     Energy_Loss_denominator = Energy_Loss_denominator + (Prefactor_1)*(sum_L);
@@ -366,13 +369,53 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
         }
     }
 
+    double Prefactor_2   = (n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel);//Without the n_cel
+
+    // Without velocity for calculating the dEdX
+    double dEdX_for_without_Vchi=0;//==total cross section
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            {
+                double sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                if(sum_L!=0 and Prefactor!=0)
+                {
+                    dEdX_for_without_Vchi = dEdX_for_without_Vchi + (Prefactor_2)*(sum_L);
+                }
+            }
+        }
+    }
+
+    //For test
+    /*
+    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    {
+        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        {
+            cout << "mx: " << mx << endl;
+            cout << "v_min_DM(Ee_List[i],q_List[qi],1.*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],1.*1e9,0)*3e8/1e3 << endl;
+            cout << "v_min_DM(Ee_List[i],q_List[qi],0.1*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],0.1*1e9,0)*3e8/1e3 << endl;
+
+        }
+    }
+    */
+    
     double Collision_Time = n_cell*Length*Energy_Loss_denominator;
     double Energy_Loss    = (Energy_Loss_numerator)/(Energy_Loss_denominator);
+    double dEdX           = n_cell*Energy_Loss_numerator;
+    //cout << "mx: " << mx << endl;
     if(Case==0)cout << "Collision_Time: " << Collision_Time << endl;
     if(Case==1)cout << "Energy_Loss: " << Energy_Loss << endl;
-    cout << "v_rel: " << v_rel << endl;
+    //cout << "reduce_mass_Si_e: " << reduce_mass_Si_e << endl;
+    //cout << "v_rel: " << v_rel << endl;
+    //cout << "sum_L_1: " << sum_L_1 << endl;
+    //cout << "sum_L_2: " << sum_L_2 << endl;
     if(Case==0){return Collision_Time;}
     if(Case==1){return Energy_Loss;}
+    if(Case==2){return dEdX;}
+    if(Case==3){return dEdX_for_without_Vchi;}
 }
  
 //=====================================================//
