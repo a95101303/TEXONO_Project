@@ -473,57 +473,101 @@ double DCS_H_c1_0P05GeV_300kms(double ER)//ER(eV)
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
-    /*
-    double Mx = 0.5;
-    double Cross_section  = 1.3E-19;
-     */
-    double Mx = 0.001;
-    double Cross_section  = 0.1;
-    double Max_V          = 784;
 
-    double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
-    
-    
-    //cout << "Time: " << Time << endl;
-    //cout << "Energy_DM(0.5,800*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
+    double Length_paper    = 2e5;//2km
+    double Max_V          = 784;
+    double Cross_section  = 2e-24;
+    double Mx             = 1.;
+    double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;
+    double Collision_Time_Paper         = dE_dX_from_others(0,Cross_section,Mx,Max_V,Length_paper,0);
+    cout << "Collision_Time_Paper: " << Collision_Time_Paper << endl;
     /*
-    for(int KKK=0; KKK<Time; KKK++)
+    for(int KKK=0; KKK<Collision_Time_Paper; KKK++)
     {
-        double Loss = dE_dX_from_others(1,Cross_section,Mx,Max_V,1);
+        double Loss = dE_dX_from_others(1,Cross_section,Mx,Max_V,Length_paper,0);
         Energy_Initial = Energy_Initial - Loss;
         cout << "Loss: " << Loss << endl;
         Max_V     = Velocity_DM(Mx,Energy_Initial*1E-3);//km/s
-        cout << "V_aft: " << Max_V << endl;
+        //cout << "V_aft: " << Max_V << endl;
         cout << "Energy_DM(Mx,Max_V*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
     }
-    */
-    //cout << "Collision_1: " << dE_dX_from_others(0,Cross_section,Mx,Max_V,2*1e3*1e2) << endl;
-    //cout << "Collision_2: " << dE_dX_from_others(0,Cross_section,1.,Max_V,2*1e3*1e2) << endl;
-    //cout << "Energy_Loss_1: " << dE_dX_from_others(1,Cross_section,Mx,Max_V,1) << endl;;
-    //cout << "Energy_Loss_2: " << dE_dX_from_others(1,Cross_section,1.,Max_V,1) << endl;;
+     */
+    Max_V          = 784;
+    cout << "dEdX: " << dE_dX_from_others(2,Cross_section,Mx,300,Length_paper,0)<< endl;
 
-    const int Bin_Number = 200;
-    double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
-    double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
-    double dv_c      = (1e3/3e8)*dv;
-    double Length_Total=0;
-    double v_L       = velocity_Final;
-    double v_R       = velocity_Final + dv;
-    for(int KKK=0; KKK<Bin_Number; KKK++)
+    /*
+    double Length_paper    = 2e5;//2km
+    double Max_V          = 300;
+    double Cross_section  = 1e-19;
+    double Mx             = 0.5;
+    
+    double Collision_Time_Paper         = dE_dX_from_others(0,Cross_section,Mx,Max_V,Length_paper,0);
+    double Energy_Loss_Paper            = dE_dX_from_others(1,Cross_section,Mx,Max_V,Length_paper,0);
+    double dEdX_Paper                   = dE_dX_from_others(2,Cross_section,Mx,Max_V,Length_paper,0);
+
+    cout << "Collision_Time_Paper: "      << Collision_Time_Paper << endl;
+    cout << "Energy_Loss_Paper: "         << Energy_Loss_Paper << endl;
+    cout << "dEdX_Paper: "                << dEdX_Paper << endl;
+     */
+    /*
+    const double SR_Array[4]={1E-3,1E-2,1E-1,5E-1};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
+    const int SR_Bin_Number[4] = {200,200,200,100};
+    cout << "=====================================" << endl;
+    for(int Mass_Index=0; Mass_Index<4; Mass_Index++)
     {
-        double v    = (v_L+v_R)*0.5;
-        double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+        double Mx = SR_Array[Mass_Index];
+        int    Bin_Number = SR_Bin_Number[Mass_Index];
+        double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+        double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+        double dv_c      = (1e3/3e8)*dv;
+        double Length_Total = 0;
+        double v_L       = velocity_Final;
+        double v_R       = velocity_Final + dv;
+        for(int KKK=0; KKK<Bin_Number; KKK++)
+        {
+            double v    = (v_L+v_R)*0.5;
+            double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
 
-        double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,1.,1);
-        if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1E-2)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
-        cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
-        cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
-        cout << "Length_Total: " << Length_Total << endl;
-        v_L = v_R;
-        v_R = v_L + dv;
+            double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,Length_paper,0);
+            if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1e-1)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
+            //cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
+            //cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
+            v_L = v_R;
+            v_R = v_L + dv;
+        }
+        cout << "Mx: " << Mx << endl;
+        cout << "Cross_Section: " << Length_Total/(Length_paper) << endl;
     }
-    cout << "Length_Total: " << Length_Total/(2e5) << endl;
+    cout << "=====================================" << endl;
+     
+    
+    for(int Mass_Index=0; Mass_Index<4; Mass_Index++)
+    {
+        double Mx = LR_Array[Mass_Index];
+        int    Bin_Number = 200;
+        double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+        double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+        double dv_c      = (1e3/3e8)*dv;
+        double Length_Total = 0;
+        double v_L       = velocity_Final;
+        double v_R       = velocity_Final + dv;
 
+        for(int KKK=0; KKK<Bin_Number; KKK++)
+        {
+            double v    = (v_L+v_R)*0.5;
+            double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+
+            double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,Length_paper,1);
+            if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1E-2)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
+            v_L = v_R;
+            v_R = v_L + dv;
+        }
+        cout << "Mx: " << Mx << endl;
+        cout << "Cross_Section: " << Length_Total/(Length_paper) << endl;
+    }
+    cout << "=====================================" << endl;
+     */
+    
     /*
     const int Bin_Number = 1000;
     double Energy_Final  = Energy_DM(Mx,800*1e3/3e8)*1e3;//eV
@@ -661,9 +705,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     
     //for(int kkk=File.size()-2; kkk<File.size()-1; kkk++)
     //for(int kkk=10; kkk<11; kkk++)
-    //for(int kkk=6; kkk<7; kkk++)
+    //for(int kkk=6; kkk<7; kkk++)//0.5GeV
     //for(int kkk=8; kkk<9; kkk++)//0.12GeV
-    for(int kkk=0; kkk<File.size()-1; kkk++)
+    //for(int kkk=0; kkk<File.size()-1; kkk++)
+    for(int kkk=1; kkk<2; kkk++)
     {
         
         TFile *fin   = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[kkk].c_str()));
@@ -715,8 +760,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         double Energy_Loss_HH_array[velocity_N];
         //Total_Cross_Section_Xe_array[0]=0;Total_Cross_Section_Xe_array[1]=0;
        // for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
-        for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
-        //for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
+        // for(int Applied_Hist=0; Applied_Hist<velocity_N; Applied_Hist++)
+        for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
         //for(int Applied_Hist=3; Applied_Hist<velocity_N; Applied_Hist++)
         {
             Energy_Loss_Xe_array[Applied_Hist]=0;
@@ -883,6 +928,83 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             */
             
             /*
+            double Scaling_A              = Cross_section/CS_Try(1.,0.5);
+            cout << "CS_Try: " << CS_Try(1.,0.5) << endl;
+            
+            Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
+            Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_Y2 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Maximum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
+            double Xe_X1 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Minimum_Bin_Xe);
+            double Xe_X2 = velocity_TH1F[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Xe);
+            double A_Slope_Xe = (Xe_Y2-Xe_Y1)/(Xe_X2-Xe_X1);
+            cout << "A_Slope_Xe: " << A_Slope_Xe << endl;
+            double B_Xe       =  Xe_Y1 - Xe_X1*A_Slope_Xe;
+            cout << "B_Xe: " << B_Xe << endl;
+
+            Int_t Maximum_Bin_Ge = velocity_TH1F_2[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
+            double Ge_Y1 = Xe_Y1;
+            double Ge_Y2 = TMath::Log10(velocity_TH1F_2[Applied_Hist]->GetBinContent(Maximum_Bin_Ge)*1e-15*TMath::Power(Scaling[Index],2));
+            double Ge_X1 = Xe_X1;
+            double Ge_X2 = velocity_TH1F_2[Applied_Hist]->GetXaxis()->GetBinCenter(Maximum_Bin_Ge);
+            double A_Slope_Ge = (Ge_Y2-Ge_Y1)/(Ge_X2-Ge_X1);
+            cout << "A_Slope_Ge: " << A_Slope_Ge << endl;
+            double B_Ge       =  Ge_Y1 - Ge_X1*A_Slope_Ge;
+            cout << "B_Ge: " << B_Ge << endl;
+            //cout << "TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)): " << TMath::Power(10, Linear_Line(12.,A_Slope_HH,B_HH)) << endl;
+            double Total_Xe_DCS=0;double Total_Ge_DCS=0;double Total_HH_DCS=0;
+            double Bin = (480.-12.)/10000;
+            
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  Scaling_A*TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  Scaling_A*TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                double DCS_HH     =  Scaling_A*DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.));
+                //cout << "DCS_HH: " << DCS_HH << endl;
+                Total_Xe_DCS = Total_Xe_DCS + DCS_Xe*Bin*1e-3;
+                Total_Ge_DCS = Total_Ge_DCS + DCS_Ge*Bin*1e-3;
+                Total_HH_DCS = Total_HH_DCS + DCS_HH*Bin*1e-3;
+            }
+            double CCC=0; double Energy_Loss_Ge_DCS=0;double Energy_Loss_HH_DCS=0;
+            for(int KKK=0; KKK<10000; KKK++)
+            {
+                double DCS_Xe     =  Scaling_A*TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
+                double DCS_Ge     =  Scaling_A*TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Ge,B_Ge));
+                CCC = CCC + (12.+Bin*(KKK+1.))*(DCS_Xe*Bin*1e-3/Total_Xe_DCS);
+                Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*(DCS_Ge*Bin*1e-3/Total_Ge_DCS);
+                Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (12.+Bin*(KKK+1.))*(Scaling_A*DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.))*Bin*1e-3/Total_HH_DCS);
+            }
+            double Energy_Loss_Xe_DCS=CCC;
+
+            Energy_Loss_Xe_array[Applied_Hist]=Energy_Loss_Xe_DCS;
+            Energy_Loss_Ge_array[Applied_Hist]=Energy_Loss_Ge_DCS;
+            Energy_Loss_HH_array[Applied_Hist]=Energy_Loss_HH_DCS;
+
+            cout << "Total_Xe_DCS: " << Total_Xe_DCS << endl;
+            cout << "Total_Ge_DCS: " << Total_Ge_DCS << endl;
+            cout << "Total_HH_DCS: " << Total_HH_DCS << endl;
+            
+            
+            cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
+            cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
+            cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
+
+            cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
+
+            double Atomic_Number_Array[2]={8.,14.};
+            double Atomic_Mass_Array[2]  ={16.,28.};
+
+            double Total_Cross_Section_O  = Total_HH_DCS*Atomic_Mass_Array[0];
+            double Total_Cross_Section_Si = Total_HH_DCS*Atomic_Mass_Array[1];
+            
+            double Energy_Loss_O          = 10.*sqrt(Atomic_Number_Array[0]);//eV
+            double Energy_Loss_Si         = 10.*sqrt(Atomic_Number_Array[1]);//eV
+
+            cout << "Total_Cross_Section_Si: " << Total_Cross_Section_Si << endl;
+            cout << "Energy_Loss_Si: " << Energy_Loss_Si << endl;
+            cout << "dEdX: " << Energy_Loss_Si*Total_Cross_Section_Si*5e22 << endl;
+            */
+            
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
@@ -935,7 +1057,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Total_Xe_DCS: " << Total_Xe_DCS << endl;
             cout << "Total_Ge_DCS: " << Total_Ge_DCS << endl;
             cout << "Total_HH_DCS: " << Total_HH_DCS << endl;
-
+            
+            
             cout << "Energy_Loss_Xe_DCS: " << Energy_Loss_Xe_DCS << endl;
             cout << "Energy_Loss_Ge_DCS: " << Energy_Loss_Ge_DCS << endl;
             cout << "Energy_Loss_HH_DCS: " << Energy_Loss_HH_DCS << endl;
@@ -963,18 +1086,18 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             int Count=0;
             for(int kkk=0; kkk<Collision_Time_Si; kkk++)
             {
-                //double Energy_Loss_Calculated = Energy_Loss(Energy_Loss_Constant,V_max);
-                double Energy_Loss_Calculated = Energy_Loss_Si;
+                double Energy_Loss_Calculated = Energy_Loss(Energy_Loss_Constant,V_max);
+                //double Energy_Loss_Calculated = Energy_Loss_Si;
                 Max_Energy = Max_Energy - Energy_Loss_Calculated;
                 //cout << "Max_Energy: " << Max_Energy << endl;
                 V_max      = Velocity_DM(1.,Max_Energy*1E-3);
-                if(Max_Energy>160.)Count = Count + 1;
-                //cout << "V_max: " << V_max << endl;
+                if(Max_Energy>1.1)Count = Count + 1;
+                cout << "V_max: " << V_max << endl;
             }
             cout << "Max_Energy: " << Max_Energy << endl;
             cout << "Count: " << Count << endl;
             cout << "(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))): " << (2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))) << endl;
-            */
+            
              
             //Find the relation between the total cross sections and the velocity
             /*
