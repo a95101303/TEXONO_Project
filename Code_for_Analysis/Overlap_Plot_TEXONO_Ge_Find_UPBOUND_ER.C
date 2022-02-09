@@ -476,7 +476,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
     double Length_paper   = 2e5;//2km
     double Max_V          = 784;
-    double Cross_section  = 1e-19;
+    double Cross_section  = 1e-27;
     double Mx             = 1;
     int    F_DM_Case      = 1;//F_DM_Case==1 F_DM==1, F_DM_Case==2 F_DM==(alpha_Me/q)^2
     
@@ -511,10 +511,13 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     cout << "Energy_Loss_Paper: "         << Energy_Loss_Paper << endl;
     cout << "dEdX_Paper: "                << dEdX_Paper << endl;
      */
+    
     /*
+    const int Bin_dEdX=200;
     const double SR_Array[5]={1E-3,1E-2,1E-1,5E-1,1E+0};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
     const int SR_Bin_Number[5] = {200,200,200,100,200};
-    
+    double dEdX_from_Paper_array[Bin_dEdX];
+
     cout << "=====================================" << endl;
     for(int Mass_Index=4; Mass_Index<5; Mass_Index++)
     {
@@ -530,13 +533,15 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         {
             double v    = (v_L+v_R)*0.5;
             double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
-
+            
             double dE_dX_without_velocity = dE_dX_from_others(3,Cross_section,Mx,v,Length_paper,0);
             if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1e-1)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
             //cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
             //cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
             cout << "v: " << v << endl;
             cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity) << endl;
+            
+            dEdX_from_Paper_array[KKK]=dE_dX_from_others(2,Cross_section,Mx,v,Length_paper,0);
             v_L = v_R;
             v_R = v_L + dv;
         }
@@ -574,7 +579,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     }
     cout << "=====================================" << endl;
      */
-        
+
     
     DCS_H_c1_1GeV_300kms(1.);
     const int    velocity_N=13;
@@ -990,11 +995,110 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Energy_Loss_Si: " << Energy_Loss_Si << endl;
             cout << "dEdX: " << Energy_Loss_Si*Total_Cross_Section_Si*5e22 << endl;
             
+            dEdX_total_part = Total_Cross_Section_Si*Energy_Loss_Si*(7.84/3.)*(7.84/3.);
             double ND = 2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]));
             cout << "dEdX_total_part: " << dEdX_total_part << endl;
-            double cross_section = (3555.)/(2e5*ND*dEdX_total_part);
+            double cross_section_c1_square = (3555.)/(2e5*ND*dEdX_total_part);
+            cout << "cross_Section: " << CS_Try(sqrt(cross_section_c1_square),1.) << endl;
+
+            double Cross_Section_from_c1 = CS_Try(sqrt(cross_section_c1_square),1.);
+            double dE_dX_without_velocity = dE_dX_from_others(2,Cross_Section_from_c1,Mx,Max_V,2e5,0);
+            cout << "dE_dX_without_velocity: " << dE_dX_without_velocity << endl;
+            cout << "ND*dEdX_total_part: " << ND*dEdX_total_part << endl;
             
-            cout << "cross_Section: " << CS_Try(sqrt(cross_section),1.) << endl;
+            //Find the difference between the dEdX from the paper and the dEdX from the Mukesh
+            const int Bin_dEdX=200;
+            const double SR_Array[5]={1E-3,1E-2,1E-1,5E-1,1E+0};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
+            const int SR_Bin_Number[5] = {200,200,200,100,200};
+            double dEdX_from_Paper_array[Bin_dEdX];
+            double dEdX_from_Paper_inverse_array[Bin_dEdX];
+            double dEdX_from_Mukesh_array[Bin_dEdX];
+            double dEdX_from_Mukesh_inverse_array[Bin_dEdX];
+            double dEdX_Ratio[Bin_dEdX];double v_array[Bin_dEdX];
+            cout << "=====================================" << endl;
+            for(int Mass_Index=4; Mass_Index<5; Mass_Index++)
+            {
+                double Mx = SR_Array[Mass_Index];
+                int    Bin_Number = SR_Bin_Number[Mass_Index];
+                double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+                double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+                double dv_c      = (1e3/3e8)*dv;
+                double Length_Total = 0;
+                double v_L       = velocity_Final;
+                double v_R       = velocity_Final + dv;
+                for(int KKK=0; KKK<Bin_Number; KKK++)
+                {
+                    double v    = (v_L+v_R)*0.5;
+                    double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+                                       
+                    v_array[KKK]=v;
+                    dEdX_from_Paper_array[KKK]=dE_dX_from_others(2,Cross_section,Mx,v,Length_paper,0);
+                    dEdX_from_Paper_inverse_array[KKK]=1./dEdX_from_Paper_array[KKK];
+                    double dEdX_total_part_1 = Total_Cross_Section_Si*Energy_Loss_Si*(v/300.)*(v/300.);
+                    dEdX_from_Mukesh_array[KKK]=1e8*ND*dEdX_total_part_1;//From 1e-35 to 1e-27;
+                    dEdX_from_Mukesh_inverse_array[KKK]=1./dEdX_from_Mukesh_array[KKK];
+                    dEdX_Ratio[KKK]=(dEdX_from_Mukesh_array[KKK])/(dEdX_from_Paper_array[KKK]);//Ratio
+                    cout << "v: " << v << endl;
+                    cout << "dEdX_from_Mukesh: " << dEdX_from_Mukesh_array[KKK] << endl;
+                    cout << "dEdX_from_paper: "  << dEdX_from_Paper_array[KKK] << endl;
+                    cout << "Ratio: " << dEdX_from_Mukesh_array[KKK]/dEdX_from_Paper_array[KKK] << endl;
+                    v_L = v_R;
+                    v_R = v_L + dv;
+                }
+            }
+            cout << "=====================================" << endl;
+            
+            TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+            gStyle->SetOptStat(0);
+            gStyle->SetTitleSize(0.04,"XY");
+            gStyle->SetTitleFont(62,"XY");
+            gStyle->SetLegendFont(62);
+
+            TGraph *TGraph_dEdX_Paper = new TGraph(200, v_array, dEdX_from_Paper_array);
+            TGraph_dEdX_Paper->SetMarkerStyle(0);
+            TGraph_dEdX_Paper->SetMarkerColor(0);
+            TGraph_dEdX_Paper->GetXaxis()->SetRangeUser(0,784);
+            TGraph_dEdX_Paper->GetYaxis()->SetRangeUser(1E-14,1E+14);
+            TGraph_dEdX_Paper->GetXaxis()->SetTitle("v[km/s]");
+            TGraph_dEdX_Paper->GetYaxis()->SetTitle("dEdX");
+            TGraph_dEdX_Paper->Draw("apl");
+
+            TGraph *TGraph_dEdX_Paper_inverse = new TGraph(200, v_array, dEdX_from_Paper_inverse_array);
+            TGraph_dEdX_Paper_inverse->SetMarkerStyle(20);
+            TGraph_dEdX_Paper_inverse->SetMarkerColor(5);
+            TGraph_dEdX_Paper_inverse->Draw("plsame");
+
+            TGraph *TGraph_dEdX_Mukesh = new TGraph(200, v_array, dEdX_from_Mukesh_array);
+            TGraph_dEdX_Mukesh->SetMarkerStyle(20);
+            TGraph_dEdX_Mukesh->SetMarkerColor(3);
+            TGraph_dEdX_Mukesh->Draw("plsame");
+
+            TGraph *TGraph_dEdX_Mukesh_inverse = new TGraph(200, v_array, dEdX_from_Mukesh_inverse_array);
+            TGraph_dEdX_Mukesh_inverse->SetMarkerStyle(20);
+            TGraph_dEdX_Mukesh_inverse->SetMarkerColor(3);
+            TGraph_dEdX_Mukesh_inverse->Draw("plsame");
+
+            TGraph *TGraph_dEdX_Ratio = new TGraph(200, v_array, dEdX_Ratio);
+            TGraph_dEdX_Ratio->SetMarkerStyle(20);
+            TGraph_dEdX_Ratio->SetMarkerColor(2);
+            TGraph_dEdX_Ratio->Draw("plsame");
+
+            TLegend *leg = new TLegend(0.5,0.1,0.7,0.3);
+            leg->SetFillColor(0);
+            leg->SetFillStyle(0);
+            leg->SetTextSize(0.04);
+            leg->SetBorderSize(0);
+            leg->SetTextFont(22);
+            leg->AddEntry(TGraph_dEdX_Paper,"Paper","lP");
+            leg->AddEntry(TGraph_dEdX_Paper_inverse,"1/Paper","lP");
+            leg->AddEntry(TGraph_dEdX_Mukesh,"Mukesh","lP");
+            leg->AddEntry(TGraph_dEdX_Mukesh_inverse,"1/Mukesh","lP");
+            leg->AddEntry(TGraph_dEdX_Ratio,"Ratio(Mukesh/Paper)","lP");
+            leg->Draw();
+
+            c1->SetLogy();
+            c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/dEdX_Comparison.pdf");
+            
             /*
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
@@ -1762,6 +1866,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             
         }//for(int Applied_Hist=5; Applied_Hist<6; Applied_Hist++)
+        
+        
         /*
         double Energy_Loss_divide_V_square_Xe[velocity_N];double Energy_Loss_divide_V_square_Ge[velocity_N];
         for(int VN=0; VN<velocity_N; VN++)
@@ -3166,4 +3272,48 @@ for(int KKK=0; KKK<Bin_Number; KKK++)
 cout << "Length_Total: " << Length_Total << endl;
 */
 
+/*
+double ND = 2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]));
+cout << "dEdX_total_part: " << dEdX_total_part << endl;
+double cross_section = (3555.)/(2e5*ND*dEdX_total_part);
 
+cout << "cross_Section: " << CS_Try(sqrt(cross_section),1.) << endl;
+
+const double SR_Array[5]={1E-3,1E-2,1E-1,5E-1,1E+0};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
+const int SR_Bin_Number[5] = {200,200,200,100,200};
+
+cout << "=====================================" << endl;
+for(int Mass_Index=4; Mass_Index<5; Mass_Index++)
+{
+    double Mx = SR_Array[Mass_Index];
+    int    Bin_Number = SR_Bin_Number[Mass_Index];
+    double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+    double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+    double dv_c      = (1e3/3e8)*dv;
+    double Length_Total = 0;
+    double v_L       = velocity_Final;
+    double v_R       = velocity_Final + dv;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double v    = (v_L+v_R)*0.5;
+        double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+        double Total_Cross_v = Total_Cross_Section_Si*v/(300.);
+        double energy_loss_v = Energy_Loss_Si*v/(300.);
+        double dEdX_total_part = Total_Cross_v*energy_loss_v;
+        cout << "dEdX_total_part: " << dEdX_total_part << endl;
+        double dE_dX_without_velocity = ND*dEdX_total_part*2e5;
+        if(dE_dX_without_velocity>0)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
+        cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
+        cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
+        cout << "v: " << v << endl;
+        cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity) << endl;
+        v_L = v_R;
+        v_R = v_L + dv;
+    }
+    cout << "Mx: " << Mx << endl;
+    cout << "Length_Total: " << Length_Total << endl;
+    //cout << "Cross_Section: " << Length_Total/(Length_paper) << endl;
+    cout << "cross_Section: " << CS_Try((Length_Total/(Length_paper)),1.) << endl;
+}
+cout << "=====================================" << endl;
+*/
