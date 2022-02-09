@@ -474,10 +474,12 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
 
-    double Length_paper    = 2e5;//2km
+    double Length_paper   = 2e5;//2km
     double Max_V          = 784;
-    double Cross_section  = 2e-24;
-    double Mx             = 1.;
+    double Cross_section  = 1e-19;
+    double Mx             = 1;
+    int    F_DM_Case      = 1;//F_DM_Case==1 F_DM==1, F_DM_Case==2 F_DM==(alpha_Me/q)^2
+    
     double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;
     double Collision_Time_Paper         = dE_dX_from_others(0,Cross_section,Mx,Max_V,Length_paper,0);
     cout << "Collision_Time_Paper: " << Collision_Time_Paper << endl;
@@ -510,10 +512,11 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     cout << "dEdX_Paper: "                << dEdX_Paper << endl;
      */
     /*
-    const double SR_Array[4]={1E-3,1E-2,1E-1,5E-1};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
-    const int SR_Bin_Number[4] = {200,200,200,100};
+    const double SR_Array[5]={1E-3,1E-2,1E-1,5E-1,1E+0};const double LR_Array[4]={1E-3,1E-2,1E-1,1.5E-1};
+    const int SR_Bin_Number[5] = {200,200,200,100,200};
+    
     cout << "=====================================" << endl;
-    for(int Mass_Index=0; Mass_Index<4; Mass_Index++)
+    for(int Mass_Index=4; Mass_Index<5; Mass_Index++)
     {
         double Mx = SR_Array[Mass_Index];
         int    Bin_Number = SR_Bin_Number[Mass_Index];
@@ -532,15 +535,19 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             if(dE_dX_without_velocity>0 and 1./dE_dX_without_velocity<1e-1)Length_Total = Length_Total + (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity);
             //cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c) << endl;
             //cout << "(1./dE_dX_without_velocity): " << (1./dE_dX_without_velocity) << endl;
+            cout << "v: " << v << endl;
+            cout << "(Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity): " << (Mx*1e9)*(v_c)*(v_c)*(dv_c)*(1./dE_dX_without_velocity) << endl;
             v_L = v_R;
             v_R = v_L + dv;
         }
         cout << "Mx: " << Mx << endl;
+        cout << "Length_Total: " << Length_Total << endl;
         cout << "Cross_Section: " << Length_Total/(Length_paper) << endl;
     }
     cout << "=====================================" << endl;
-     
+     */
     
+    /*
     for(int Mass_Index=0; Mass_Index<4; Mass_Index++)
     {
         double Mx = LR_Array[Mass_Index];
@@ -567,31 +574,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     }
     cout << "=====================================" << endl;
      */
-    
-    /*
-    const int Bin_Number = 1000;
-    double Energy_Final  = Energy_DM(Mx,800*1e3/3e8)*1e3;//eV
-    double Bin_Size      = (Energy_Final-1.1)/(double)Bin_Number;
-    double Length_Total=0;
-    double Left_edge        = 1.1;
-    double Right_edge       = 1.1 + Bin_Size;
-    for(int KKK=0; KKK<Bin_Number; KKK++)
-    {
-        double Recoil_Energy    = (Left_edge+Right_edge)*0.5;
-        double V      = Velocity_DM(Mx,Recoil_Energy*1E-3);
-        double dE_dX_individual = dE_dX_from_others(2,Cross_section,Mx,V,1.);
-        if(dE_dX_individual>0)Length_Total = Length_Total + Bin_Size*(1./dE_dX_individual);
-        //cout << "V: " << V << endl;
-        //cout << "Bin_Size*(1./dE_dX_individual): " << Bin_Size*(1./dE_dX_individual) << endl;
-        //cout << "Bin_Size: " << Bin_Size << endl;
-        //cout << "Bin: " << KKK << endl;
-        //cout << "dE_dX_individual: " << dE_dX_individual << endl;
-        cout << "Length_Total: " << Length_Total << endl;
-        Left_edge = Right_edge;
-        Right_edge = Left_edge + Bin_Size;
-    }
-    cout << "Length_Total: " << Length_Total << endl;
-    */
+        
     
     DCS_H_c1_1GeV_300kms(1.);
     const int    velocity_N=13;
@@ -927,8 +910,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             c1->Print(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Predict_DCS_ER/%s_DCS.pdf",velocity_s[Applied_Hist].c_str()));
             */
             
-            /*
-            double Scaling_A              = Cross_section/CS_Try(1.,0.5);
+            
+            double Scaling_A              = 1.;
             cout << "CS_Try: " << CS_Try(1.,0.5) << endl;
             
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
@@ -966,6 +949,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 Total_HH_DCS = Total_HH_DCS + DCS_HH*Bin*1e-3;
             }
             double CCC=0; double Energy_Loss_Ge_DCS=0;double Energy_Loss_HH_DCS=0;
+            double dEdX_total_part=0;
             for(int KKK=0; KKK<10000; KKK++)
             {
                 double DCS_Xe     =  Scaling_A*TMath::Power(10, Linear_Line(12.+Bin*(KKK+1.),A_Slope_Xe,B_Xe));
@@ -973,6 +957,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 CCC = CCC + (12.+Bin*(KKK+1.))*(DCS_Xe*Bin*1e-3/Total_Xe_DCS);
                 Energy_Loss_Ge_DCS = Energy_Loss_Ge_DCS + (12.+Bin*(KKK+1.))*(DCS_Ge*Bin*1e-3/Total_Ge_DCS);
                 Energy_Loss_HH_DCS = Energy_Loss_HH_DCS + (12.+Bin*(KKK+1.))*(Scaling_A*DCS_H_c1_1GeV_300kms(12.+Bin*(KKK+1.))*Bin*1e-3/Total_HH_DCS);
+                
+                dEdX_total_part = dEdX_total_part + (12.+Bin*(KKK+1.))*(DCS_Ge*Bin*1e-3);
             }
             double Energy_Loss_Xe_DCS=CCC;
 
@@ -1003,8 +989,13 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             cout << "Total_Cross_Section_Si: " << Total_Cross_Section_Si << endl;
             cout << "Energy_Loss_Si: " << Energy_Loss_Si << endl;
             cout << "dEdX: " << Energy_Loss_Si*Total_Cross_Section_Si*5e22 << endl;
-            */
             
+            double ND = 2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]));
+            cout << "dEdX_total_part: " << dEdX_total_part << endl;
+            double cross_section = (3555.)/(2e5*ND*dEdX_total_part);
+            
+            cout << "cross_Section: " << CS_Try(sqrt(cross_section),1.) << endl;
+            /*
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe
             Int_t Maximum_Bin_Xe = velocity_TH1F[Applied_Hist]->FindLastBinAbove();//Max_Recoil_Bin
             double Xe_Y1 = TMath::Log10(velocity_TH1F[Applied_Hist]->GetBinContent(Minimum_Bin_Xe)*1e-15*TMath::Power(Scaling[Index],2));
@@ -1071,13 +1062,13 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             
             double Energy_Loss_O          = 10.*sqrt(Atomic_Number_Array[0]);//eV
             double Energy_Loss_Si         = 10.*sqrt(Atomic_Number_Array[1]);//eV
-
+            cout << "Energy_Loss_Si: " << Energy_Loss_Si << endl;
             double Total_Cross_Si_Final = (Total_Cross_Section_Si/300.)*800.;
             double Max_Energy           = 1e3*Energy_DM(1,800.*1e3/3e8);//eV
             //cout << "Max_Energy: " << Max_Energy << endl;
             double Scaling_A              = TMath::Power(10000.,2);
-            int    Collision_Time_Si    = Scaling_A*1.4*1e3*1e2*(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])))*Total_Cross_Si_Final;//1.4km
-            cout << "Collision_Time_Si: " << Collision_Time_Si << endl;
+            int    Collision_Time_Si    = Scaling_A*2.*1e3*1e2*(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])))*Total_Cross_Si_Final;//1.4km
+            //cout << "Collision_Time_Si: " << Collision_Time_Si << endl;
             cout << "CS_Try: " << Scaling_A*CS_Try(1.,1.) << endl;
             //cout << "CS_Try: " << CS_Try(5.28e-4,0.5) << endl;
 
@@ -1089,15 +1080,15 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 double Energy_Loss_Calculated = Energy_Loss(Energy_Loss_Constant,V_max);
                 //double Energy_Loss_Calculated = Energy_Loss_Si;
                 Max_Energy = Max_Energy - Energy_Loss_Calculated;
-                //cout << "Max_Energy: " << Max_Energy << endl;
+                cout << "Max_Energy: " << Max_Energy << endl;
                 V_max      = Velocity_DM(1.,Max_Energy*1E-3);
                 if(Max_Energy>1.1)Count = Count + 1;
                 cout << "V_max: " << V_max << endl;
             }
-            cout << "Max_Energy: " << Max_Energy << endl;
-            cout << "Count: " << Count << endl;
-            cout << "(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))): " << (2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))) << endl;
-            
+            //cout << "Max_Energy: " << Max_Energy << endl;
+            //cout << "Count: " << Count << endl;
+            //cout << "(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))): " << (2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]))) << endl;
+            */
              
             //Find the relation between the total cross sections and the velocity
             /*
@@ -3146,5 +3137,33 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()
 }//End_Main
 */
      
+
+
+/*
+const int Bin_Number = 700;
+double Energy_Final  = Energy_DM(Mx,800*1e3/3e8)*1e3;//eV
+double Bin_Size      = (Energy_Final-1.1)/(double)Bin_Number;
+double Length_Total=0;
+double Left_edge        = 1.1;
+double Right_edge       = 1.1 + Bin_Size;
+for(int KKK=0; KKK<Bin_Number; KKK++)
+{
+    double Recoil_Energy    = (Left_edge+Right_edge)*0.5;
+    double V      = Velocity_DM(Mx,Recoil_Energy*1E-3);
+    double dE_dX_individual = dE_dX_from_others(2,Cross_section,Mx,V,0,F_DM_Case);
+    cout << "dE_dX_individual: " << dE_dX_individual << endl;
+    cout << "1./dE_dX_individual: " << 1./dE_dX_individual << endl;
+    if(dE_dX_individual>0)Length_Total = Length_Total + Bin_Size*(1./dE_dX_individual);
+    //cout << "V: " << V << endl;
+    //cout << "Bin_Size*(1./dE_dX_individual): " << Bin_Size*(1./dE_dX_individual) << endl;
+    //cout << "Bin_Size: " << Bin_Size << endl;
+    //cout << "Bin: " << KKK << endl;
+    //cout << "dE_dX_individual: " << dE_dX_individual << endl;
+    cout << "Length_Total: " << Length_Total << endl;
+    Left_edge = Right_edge;
+    Right_edge = Left_edge + Bin_Size;
+}
+cout << "Length_Total: " << Length_Total << endl;
+*/
 
 
