@@ -500,7 +500,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     input_file.close();
      */
      
-    
+    /*
     //E_{\chi} versus T_{d}
     const int Element_Number=1000;
     double DM_Energy_array[Element_Number];
@@ -527,7 +527,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         v_R = v_L + dv;
     }
     
-    /*
+    
     TGraph *TGaph_DM_Free_Energy_versus_DM_Energy = new TGraph(Element_Number,DM_Energy_array,Free_Energy);//Total Cross Section(TCS), Electron Number(EN)
     TGaph_DM_Free_Energy_versus_DM_Energy->SetMarkerStyle(20);
     TGaph_DM_Free_Energy_versus_DM_Energy->SetMarkerColor(3);
@@ -539,7 +539,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     TGaph_DM_Free_Energy_versus_DM_Energy->GetYaxis()->SetRangeUser(1e-45,1e-30);
     TGaph_DM_Free_Energy_versus_DM_Energy->Draw("apl");
      */
-    
+
     
     
     
@@ -550,9 +550,24 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     double Mx             = 1;
     int    F_DM_Case      = 1;//F_DM_Case==1 F_DM==1, F_DM_Case==2 F_DM==(alpha_Me/q)^2
     
+    double dEdX_total_part = dE_dX_from_others(4,1.,Mx,Max_V,Length_paper,0);
+    cout << "dEdX_total_part: " << dEdX_total_part << endl;
+    double ND = 14*2.33*1./(unified_atomic_mass_g*(14.));
+    double cross_section = (3555.)/(2e5*ND*dEdX_total_part);
+    cout << "cross_section: " << cross_section << endl;
+
+    /*
+    double ND = 2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]));
+    double Collision_Time_free_e = Total_Cross_Section_free*2e5*ND;
+    cout << "dEdX_total_part: " << Collision_Time_free_e << endl;
+    double cross_section_c1_square = (3555.)/(2e5*ND*dEdX_total_part);
+    cout << "ND*dEdX_total_part: " << ND*dEdX_total_part << endl;
+    cout << "cross_Section: " << CS_Try(sqrt(cross_section_c1_square),1.) << endl;
+
     double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;
     double Collision_Time_Paper         = dE_dX_from_others(0,Cross_section,Mx,Max_V,Length_paper,0);
     cout << "Collision_Time_Paper: " << Collision_Time_Paper << endl;
+     */
     /*
     for(int KKK=0; KKK<Collision_Time_Paper; KKK++)
     {

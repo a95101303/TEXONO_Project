@@ -425,21 +425,27 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
         
         int    Bin_Number_A = 200;
         double velocity_Final  = 0.;//km/s
-        double dv        = (Max_V)/(double)Bin_Number;
+        double dv        = (784.)/(double)Bin_Number_A;
         double dv_c      = (1e3/3e8)*dv;
         double v_L       = velocity_Final;
         double v_R       = velocity_Final + dv;
-        double Total_Cross_Section = 0 ;
-        for(int KKK=0; KKK<Bin_Number_A; KKK++)
+        double dEdXPart = 0 ;
+        double Max_ER = (0.51e6)*(dv_c*dv_c);//eV
+        double ER_Bin_Size = Max_ER/(double)Bin_Number_A;
+        for(int JJJ=0; JJJ<Bin_Number_A; JJJ++)
         {
-            double v    = (v_L+v_R)*0.5;
-            double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
-            Total_Cross_Section = Total_Cross_Section + Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*v_c*v_c);
-            v_L = v_R;
-            v_R = v_L + dv;
+            double Energy = Max_ER*(JJJ+1)/(Bin_Number_A);
+            for(int KKK=0; KKK<Bin_Number_A; KKK++)
+            {
+                double v    = (v_L+v_R)*0.5;
+                double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+                dEdXPart = dEdXPart + Energy*ER_Bin_Size*(2*0.511*1e6)*Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*v_c*v_c);
+                v_L = v_R;
+                v_R = v_L + dv;
+            }
         }
-        cout << "Total_Cross_Section: " << Total_Cross_Section << endl;
-        if(Case==4)return Total_Cross_Section;
+        cout << "dEdXPart: " << dEdXPart << endl;
+        if(Case==4)return dEdXPart;
     }
 }
  
