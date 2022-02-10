@@ -127,6 +127,10 @@ double CS_Try(double c_1, double mx)
 {
     return c_1*c_1*RMe(mx)*RMe(mx)*hbarC_divide_GeV_cm_Square/(PI);
 }
+double CS_Try_1(double c_1, double mx)
+{
+    return (RMe(mx)*RMe(mx))/(PI);
+}
 double DS_Try(double d_1, double mx)
 {
     return d_1*d_1*RMe(mx)*RMe(mx)*hbarC_divide_GeV_cm_Square*1e24/(PI*pow(Me_times_alpha,4));
@@ -338,80 +342,105 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
     double sum           = 0;
 
     
-    
-    // /int T*dT*dsigma/dT
-    double Energy_Loss_numerator=0;
-    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    if(Case<3)
     {
-        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        // /int T*dT*dsigma/dT
+        double Energy_Loss_numerator=0;
+        for(int i=0;i<Ei_Number;i++)//Energy of electrons
         {
-            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
             {
-                //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
-                double sum_L =0;
-                if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9) )* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
-                if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9) )*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
-                if(sum_L!=0 and Prefactor_1!=0)
+                if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
                 {
-                    Energy_Loss_numerator = Energy_Loss_numerator + (Prefactor_1)*(sum_L);
+                    //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
+                    double sum_L =0;
+                    if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9) )* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                    if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9) )*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                    if(sum_L!=0 and Prefactor_1!=0)
+                    {
+                        Energy_Loss_numerator = Energy_Loss_numerator + (Prefactor_1)*(sum_L);
+                    }
                 }
             }
         }
-    }
-    
-    // /int dT*dsigma/dT
-    double Energy_Loss_denominator=0;//==total cross section
-    for(int i=0;i<Ei_Number;i++)//Energy of electrons
-    {
-        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        
+        // /int dT*dsigma/dT
+        double Energy_Loss_denominator=0;//==total cross section
+        for(int i=0;i<Ei_Number;i++)//Energy of electrons
         {
-            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
             {
-                double sum_L =0;
-                if(F_DM_Case==0)sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
-                if(F_DM_Case==1)sum_L = ( (dE*1e9)*( (0.02*dq)*pow(dq/q_List[qi],2)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//
-                if(sum_L!=0 and Prefactor_1!=0)
+                if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
                 {
-                    Energy_Loss_denominator = Energy_Loss_denominator + (Prefactor_1)*(sum_L);
+                    double sum_L =0;
+                    if(F_DM_Case==0)sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
+                    if(F_DM_Case==1)sum_L = ( (dE*1e9)*( (0.02*dq)*pow(dq/q_List[qi],2)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//
+                    if(sum_L!=0 and Prefactor_1!=0)
+                    {
+                        Energy_Loss_denominator = Energy_Loss_denominator + (Prefactor_1)*(sum_L);
+                    }
                 }
             }
         }
+        //cout << "Energy_Loss_denominator: " << Energy_Loss_denominator << endl;
+        double Collision_Time = n_cell*Length*Energy_Loss_denominator;
+        double Energy_Loss    = (Energy_Loss_numerator)/(Energy_Loss_denominator);
+        double dEdX           = n_cell*Energy_Loss_numerator;
+
+        if(Case==0)cout << "Collision_Time: " << Collision_Time << endl;
+        if(Case==1)cout << "Energy_Loss: " << Energy_Loss << endl;
+
+        if(Case==0){return Collision_Time;}
+        if(Case==1){return Energy_Loss;}
+        if(Case==2){return dEdX;}
     }
-
-    //cout << "Energy_Loss_denominator: " << Energy_Loss_denominator << endl;
-    double Collision_Time = n_cell*Length*Energy_Loss_denominator;
-    double Energy_Loss    = (Energy_Loss_numerator)/(Energy_Loss_denominator);
-    double dEdX           = n_cell*Energy_Loss_numerator;
-
-    if(Case==0)cout << "Collision_Time: " << Collision_Time << endl;
-    if(Case==1)cout << "Energy_Loss: " << Energy_Loss << endl;
-
-    if(Case==0){return Collision_Time;}
-    if(Case==1){return Energy_Loss;}
-    if(Case==2){return dEdX;}
-
     //=================================Check the upper boundaries from the paper=================================
-    double Prefactor_2   = (n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel);//Without the dv_now
-    // Without velocity for calculating the dEdX
-    double dEdX_for_without_Vchi=0;//==total cross section
-    for(int i=0;i<Ei_Number;i++)//Energy of electrons
+    if(Case==3)
     {
-        for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+        double Prefactor_2   = (n_cell*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel);//Without the dv_now
+        // Without velocity for calculating the dEdX
+        double dEdX_for_without_Vchi=0;//==total cross section
+        for(int i=0;i<Ei_Number;i++)//Energy of electrons
         {
-            if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+            for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
             {
-                double sum_L =0;
-                if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9))* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
-                if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9))*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
-                if(sum_L!=0 and Prefactor_2!=0)
+                if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
                 {
-                    dEdX_for_without_Vchi = dEdX_for_without_Vchi + (Prefactor_2)*(sum_L);
+                    double sum_L =0;
+                    if(F_DM_Case==0)sum_L = ( (Ee_List[i]*(dE*1e9))* ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                    if(F_DM_Case==1)sum_L = ( (Ee_List[i]*(dE*1e9))*pow(dq/q_List[qi],2)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                    if(sum_L!=0 and Prefactor_2!=0)
+                    {
+                        dEdX_for_without_Vchi = dEdX_for_without_Vchi + (Prefactor_2)*(sum_L);
+                    }
                 }
             }
         }
-    }
 
-    if(Case==3){return dEdX_for_without_Vchi;}
+        if(Case==3){return dEdX_for_without_Vchi;}
+    }
+    if(Case==4)
+    {
+        double Prefactor_3   = Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);
+        
+        int    Bin_Number_A = 200;
+        double velocity_Final  = 0.;//km/s
+        double dv        = (Max_V)/(double)Bin_Number;
+        double dv_c      = (1e3/3e8)*dv;
+        double v_L       = velocity_Final;
+        double v_R       = velocity_Final + dv;
+        double Total_Cross_Section = 0 ;
+        for(int KKK=0; KKK<Bin_Number_A; KKK++)
+        {
+            double v    = (v_L+v_R)*0.5;
+            double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+            Total_Cross_Section = Total_Cross_Section + Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*v_c*v_c);
+            v_L = v_R;
+            v_R = v_L + dv;
+        }
+        cout << "Total_Cross_Section: " << Total_Cross_Section << endl;
+        if(Case==4)return Total_Cross_Section;
+    }
 }
  
 //=====================================================//
