@@ -500,6 +500,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     input_file.close();
      */
      
+    
     /*
     //E_{\chi} versus T_{d}
     const int Element_Number=1000;
@@ -514,11 +515,13 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     double v_L       = 0.;
     double v_R       = 0. + dv;
     
+    double Max_Energy = Energy_DM(Mx_1,Max_V_1*1e3/3e8)*1e3;//eV
     for(int KKK=0; KKK<Element_Number; KKK++)
     {
         double v    = (v_L+v_R)*0.5;
         double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
-        DM_Energy_array[KKK]=DM_Energy_eV(Mx_1,v);
+        DM_Energy_array[KKK]=v;
+        //DM_Energy_array[KKK]=DM_Energy_eV(Mx_1,v);
         Free_Energy[KKK]    =Electron_Energy_eV(2*v);
         Bound_Energy[KKK]   =DM_Energy_eV(Mx_1,v);
         cout << "DM_Energy_eV(Mx_1,v): " << DM_Energy_eV(Mx_1,v) << endl;
@@ -527,23 +530,37 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         v_R = v_L + dv;
     }
     
-    
-    TGraph *TGaph_DM_Free_Energy_versus_DM_Energy = new TGraph(Element_Number,DM_Energy_array,Free_Energy);//Total Cross Section(TCS), Electron Number(EN)
+    TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+    gStyle->SetOptStat(0);
+    gStyle->SetTitleSize(0.04,"XY");
+    gStyle->SetTitleFont(62,"XY");
+    gStyle->SetLegendFont(62);
+
+    TGraph *TGaph_DM_Free_Energy_versus_DM_Energy = new TGraph(Element_Number,DM_Energy_array,Bound_Energy);//Total Cross Section(TCS), Electron Number(EN)
     TGaph_DM_Free_Energy_versus_DM_Energy->SetMarkerStyle(20);
     TGaph_DM_Free_Energy_versus_DM_Energy->SetMarkerColor(3);
     TGaph_DM_Free_Energy_versus_DM_Energy->SetLineColor(3);
-    TGaph_DM_Free_Energy_versus_DM_Energy->SetLineWidth(5);
-    TGaph_DM_Free_Energy_versus_DM_Energy->GetXaxis()->SetTitle("eV");
-    TGaph_DM_Free_Energy_versus_DM_Energy->GetYaxis()->SetTitle("DCS");
-    TGaph_DM_Free_Energy_versus_DM_Energy>GetXaxis()->SetRangeUser(12.,Energy_DM(WIMP_mx_Array[kkk],velocitykm[Applied_Hist]*1e3/3e8)*1e3);
-    TGaph_DM_Free_Energy_versus_DM_Energy->GetYaxis()->SetRangeUser(1e-45,1e-30);
+    TGaph_DM_Free_Energy_versus_DM_Energy->GetYaxis()->SetTitle("T[eV]");
+    TGaph_DM_Free_Energy_versus_DM_Energy->GetXaxis()->SetTitle("V_{#chi}[km/s]");
+    //TGaph_DM_Free_Energy_versus_DM_Energy->GetXaxis()->SetTitle("E_{#chi}[eV]");
+    //TGaph_DM_Free_Energy_versus_DM_Energy->GetXaxis()->SetRangeUser(12.,Max_Energy);
+    TGaph_DM_Free_Energy_versus_DM_Energy->GetXaxis()->SetRangeUser(0,784.);
+    TGaph_DM_Free_Energy_versus_DM_Energy->GetYaxis()->SetLimits(1E-5,1e+3);
     TGaph_DM_Free_Energy_versus_DM_Energy->Draw("apl");
-     */
+     
+    TGraph *TGaph_DM_Bound_Energy_versus_DM_Energy = new TGraph(Element_Number,DM_Energy_array,Free_Energy);//Total Cross Section(TCS), Electron Number(EN)
+    TGaph_DM_Bound_Energy_versus_DM_Energy->SetMarkerStyle(20);
+    TGaph_DM_Bound_Energy_versus_DM_Energy->SetMarkerColor(4);
+    TGaph_DM_Bound_Energy_versus_DM_Energy->SetLineColor(4);
+    TGaph_DM_Bound_Energy_versus_DM_Energy->Draw("plsame");
 
+    c1->SetLogy();
+    c1->SetLogx();
+    c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/T_vs_V.pdf");
+     */
     
-    
-    
-    
+    /*
+    //For free electron
     double Max_V          = 784;
     double Length_paper   = 2e5;//2km
     double Cross_section  = 1e-27;
@@ -552,11 +569,52 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
     
     double dEdX_total_part = dE_dX_from_others(4,1.,Mx,Max_V,Length_paper,0);
     cout << "dEdX_total_part: " << dEdX_total_part << endl;
+    cout << "dEdX_total_part: " << dEdX_total_part*1e-27 << endl;
+
     double ND = 14*2.33*1./(unified_atomic_mass_g*(14.));
     double cross_section = (3555.)/(2e5*ND*dEdX_total_part);
     cout << "cross_section: " << cross_section << endl;
+    double total_cross_section = dE_dX_from_others(5,cross_section,Mx,Max_V,Length_paper,0);
+    cout << "total_cross_section: " << total_cross_section << endl;
+    cout << "collision_time: " << ND*2e5*total_cross_section << endl;
 
+    double Energy_Loss_Part   = dE_dX_from_others(6,cross_section,Mx,Max_V,Length_paper,0);
+    cout << "Energy_Loss: " << Energy_Loss_Part/total_cross_section << endl;
+    
+    int    Bin_Number = 200;
+    double velocity_Final  = Velocity_DM(Mx,1.1*1E-3);//km/s
+    double dv        = (Max_V-velocity_Final)/(double)Bin_Number;
+    double dv_c      = (1e3/3e8)*dv;
+    double Length_Total = 0;
+    double v_L       = velocity_Final;
+    double v_R       = velocity_Final + dv;
+    
+    double PAPER_d    = 0;
+    for(int KKK=0; KKK<Bin_Number; KKK++)
+    {
+        double v    = (v_L+v_R)*0.5;
+        double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+                                   
+        double dEdX_total_part_1 = dE_dX_from_others(7,1.,Mx,v,Length_paper,0);
+        if(dEdX_total_part_1>0 and 1./dEdX_total_part_1<1e100)  PAPER_d  = PAPER_d  + (Mx*1e9)*(v_c)*(v_c)*(v_c)*(dv_c)*(1./(ND*dEdX_total_part_1));
+        v_L = v_R;
+        v_R = v_L + dv;
+    }
+    cout << "Paper  Cross Section: " << PAPER_d/Length_paper << endl;
+     
+    double collision_time      = dE_dX_from_others(0,1e-27,Mx,Max_V,Length_paper,0);
+    double collision_time_free = ND*2e5*dE_dX_from_others(5,1e-27,Mx,Max_V,Length_paper,0);
+    cout << "collision_time : " << collision_time  << endl;
+    cout << "collision_time_free : " << collision_time_free  << endl;
+    */
+    
     /*
+     double Max_V          = 784;
+     double Length_paper   = 2e5;//2km
+     double Cross_section  = 1e-27;
+     double Mx             = 1;
+     int    F_DM_Case      = 1;//F_DM_Case==1 F_DM==1, F_DM_Case==2 F_DM==(alpha_Me/q)^2
+
     double ND = 2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1]));
     double Collision_Time_free_e = Total_Cross_Section_free*2e5*ND;
     cout << "dEdX_total_part: " << Collision_Time_free_e << endl;
@@ -579,8 +637,6 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         cout << "Energy_DM(Mx,Max_V*1e3/3e8): " << Energy_DM(Mx,Max_V*1e3/3e8)*1e3 << endl;//eV
     }
      */
-    Max_V          = 784;
-    cout << "dEdX: " << dE_dX_from_others(2,Cross_section,Mx,300,Length_paper,0)<< endl;
 
     /*
     double Length_paper    = 2e5;//2km

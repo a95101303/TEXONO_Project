@@ -373,7 +373,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
                 if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
                 {
                     double sum_L =0;
-                    if(F_DM_Case==0)sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
+                if(F_DM_Case==0)sum_L = ( (dE*1e9)*( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//dE*1e9 is in eV, 0.02*dq is the size of a bin of q
                     if(F_DM_Case==1)sum_L = ( (dE*1e9)*( (0.02*dq)*pow(dq/q_List[qi],2)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );//
                     if(sum_L!=0 and Prefactor_1!=0)
                     {
@@ -419,34 +419,56 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
 
         if(Case==3){return dEdX_for_without_Vchi;}
     }
-    if(Case==4)
+    if(Case>3)
     {
-        double Prefactor_3   = Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now);
-        
         int    Bin_Number_A = 200;
-        double velocity_Final  = 0.;//km/s
-        double dv        = (784.)/(double)Bin_Number_A;
-        double dv_c      = (1e3/3e8)*dv;
-        double v_L       = velocity_Final;
-        double v_R       = velocity_Final + dv;
-        double dEdXPart = 0 ;
-        double Max_ER = (0.51e6)*(dv_c*dv_c);//eV
-        double ER_Bin_Size = Max_ER/(double)Bin_Number_A;
+        double dEdXPart     = 0 ;
+        double Total_Cross_Section  = 0 ;
+        double Energy_Loss_Part     = 0 ;
+        double d_calculation        = 0 ;
+        
+        double Max_ER       = 0.5*(0.511e6)*(dv_now*dv_now);//eV
+        double Max_P        = sqrt(2*(0.511e6)*Max_ER);//eV/c
+        double dE  = Max_ER/(double)Bin_Number_A;
+        double dq   = Max_P/(double)Bin_Number_A;
+        
         for(int JJJ=0; JJJ<Bin_Number_A; JJJ++)
         {
-            double Energy = Max_ER*(JJJ+1)/(Bin_Number_A);
+            double E = Max_ER*(JJJ+1)/(Bin_Number_A);//eV
+            //cout << "Energy: " << Energy << endl;
             for(int KKK=0; KKK<Bin_Number_A; KKK++)
             {
-                double v    = (v_L+v_R)*0.5;
-                double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
-                dEdXPart = dEdXPart + Energy*ER_Bin_Size*(2*0.511*1e6)*Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*v_c*v_c);
-                v_L = v_R;
-                v_R = v_L + dv;
+                double q = Max_P*(KKK+1)/(Bin_Number_A);//eV/c
+                //cout << "Momentum: " << Momentum << endl;
+                double v_vut = (E)/(q)+(q)/(mx*1e9);//c
+                if(dv_now>v_vut)
+                {
+                    dEdXPart = dEdXPart + (2*0.511*1e6)/(4.*reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now)*E*dE*dq;
+                    Total_Cross_Section = Total_Cross_Section + Cross_Section*(2*0.511*1e6)/(4.*reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now)*dE*dq;
+                    Energy_Loss_Part    = Energy_Loss_Part    + Cross_Section*(2*0.511*1e6)/(4.*reduce_mass_Si_e*reduce_mass_Si_e*dv_now*dv_now)*E*dE*dq;
+                    d_calculation       = d_calculation       + (2*0.511*1e6)/(4.*reduce_mass_Si_e*reduce_mass_Si_e)*E*dE*dq;
+                }
             }
         }
-        cout << "dEdXPart: " << dEdXPart << endl;
+        //cout << "dEdXPart: " << dEdXPart << endl;
         if(Case==4)return dEdXPart;
+        if(Case==5)return Total_Cross_Section;
+        if(Case==6)return Energy_Loss_Part;
+        if(Case==7)return d_calculation;
     }
+    
+    /*
+     for(int KKK=0; KKK<Bin_Number_A; KKK++)
+     {
+         double v    = (v_L+v_R)*0.5;
+         double v_c  = (v_L+v_R)*0.5*(1e3/3e8);
+         double v_vut = (Energy)/()+()/();
+         dEdXPart = dEdXPart + Energy*ER_Bin_Size*(2*0.511*1e6)*Cross_Section/(4.*reduce_mass_Si_e*reduce_mass_Si_e*v_c*v_c);
+         v_L = v_R;
+         v_R = v_L + dv;
+     }
+
+     */
 }
  
 //=====================================================//
