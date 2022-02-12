@@ -1461,7 +1461,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             double Total_Cross_Si_Final = (Total_Cross_Section_Si/300.)*800.;
             double Max_Energy           = 1e3*Energy_DM(1,800.*1e3/3e8);//eV
             //cout << "Max_Energy: " << Max_Energy << endl;
-            double Scaling_A              = TMath::Power(10000.,2);
+            double Scaling_A              = 0.5*TMath::Power(10000.,2);
             int    Collision_Time_Si    = Scaling_A*2.*1e3*1e2*(2.33*1./(unified_atomic_mass_g*(Atomic_Mass_Array[1])))*Total_Cross_Si_Final;//1.4km
             //cout << "Collision_Time_Si: " << Collision_Time_Si << endl;
             cout << "CS_Try: " << Scaling_A*CS_Try(1.,1.) << endl;

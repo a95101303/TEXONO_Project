@@ -121,6 +121,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     
     double Collision_Air_Part_Long=0;double Collision_Air_Part_Smallest=0;
     double Previous_Total_Long=0;double Previous_Total_Smallest=0;
+    /*
     for(int kkk=0; kkk<19; kkk++)
     {
         Density_of_Atmosphere_Layer[kkk] = (atm_table[kkk][4]+atm_table[kkk+1][4])/2;
@@ -150,7 +151,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         cout << "V_Aft_Collision_Water_Long: " << V_Aft_Collision_Water_Long[0] << endl;
         cout << "Energy_DM: " << Energy_DM(WIMP_mx,V_Aft_Collision_Water_Long[0]*1e3/3e8);
     cout << "=========================================================================================================" << endl;
-     
+     */
     /*
        cout << "CS: " << CS << endl;
     cout << "==============================" << endl;
@@ -565,15 +566,19 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27,1e-26};
     //vector<double> Mass_Array      = {20,10,5,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2};
-    vector<double> Mass_Array      = {10,0.07};
+    //vector<double> Mass_Array      = {10,0.07};
     //vector<double> Mass_Array      = {0.1,0.09,0.08,0.07,0.06,0.05};
+    vector<double> Mass_Array      = {1E+1,1E+0,1E-1,6E-2};
+    //vector<double> Mass_Array      = {1E+1,0.8E+1,0.6E+1,0.4E+1};
+
     //vector<double> Sigma_Array     = {1e-32,2e-32,3e-32,4e-32,5e-32,6e-32,7e-32,8e-32,9e-32};
     //vector<double> Sigma_Array     = {1e-31,2e-31,3e-31,4e-31,5e-31,6e-31,7e-31,8e-31,9e-31};
     //vector<double> Sigma_Array     = {1e-28,2e-28,3e-28,4e-28,5e-28,6e-28,7e-28,8e-28,9e-28};
     //vector<double> Sigma_Array     = {1e-29,2e-29,3e-29,4e-29,5e-29,6e-29,7e-29,8e-29,9e-29};
 
     //vector<double> Sigma_Array     = {1e-27,2e-27,3e-27,4e-27,5e-27,6e-27,7e-27,8e-27,9e-27};
-    vector<double> Sigma_Array     = {1e-30,2e-30,3e-30,4e-30};
+    //vector<double> Sigma_Array     = {1e-30,2e-30,3e-30,4e-30};
+    vector<double> Sigma_Array     = {1e-34,1e-32,1e-30,1e-28};
 
     const int      Material_Number = 3;
     double Energy_Loss_per_collision_Array_Water[Mass_Array.size()][Sigma_Array.size()];
@@ -591,7 +596,7 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         Collision_Air_Part   = Collision_Air_Part + Length_Passed*Density*1./(unified_atomic_mass_g*(15.)) ;
     }
 */
-    for(int Mass=0; Mass<1; Mass++)//Every Mass I got three values for one Cross-section
+    for(int Mass=0; Mass<4; Mass++)//Every Mass I got three values for one Cross-section
     {
     
         double ELoss_Air_for_every_cross_section[Sigma_Array.size()];
@@ -600,9 +605,36 @@ void Hist_SetLimit_Plot_v2_Possion_KS_Run_NaI_Lead()
         double ELoss_Water_for_every_cross_section[Sigma_Array.size()];
         double No_ELoss_for_every_cross_section[Sigma_Array.size()];
         
-        cout << "============================Mass==============================: "      << Mass_Array[Mass] << endl;
+        //cout << "============================Mass==============================: "      << Mass_Array[Mass] << endl;
         double  Energy_Max      = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8);
         double  Final_cross_section =0;
+        
+        double Sun_Daimeter= 1.392e6*1e5;//cm
+        double Sun_density = 1.41*1./(unified_atomic_mass_g*(0.75*1+0.25*2));//count/cm3
+        double Energy_Initial = Energy_DM(Mass_Array[Mass],Max_V*1e3/3e8)*1e3;//eV
+        
+        //double Threshold = 1000.;//TEXONO(eV)
+        double Threshold = 200.;//TEXONO(eV)
+        double Energy_Loss_expected = Energy_Initial-Threshold;
+        cout << "====================================================================================================" << endl;
+        for(int Cross_Section_index=0; Cross_Section_index<1; Cross_Section_index++)
+        {
+            double CS = Sigma_Array[Cross_Section_index];
+            double Collision_Time_Sun       = Sun_Daimeter*Sun_density*MFP_from_DCS_Part(2,Max_V,1.,Mass_Array[Mass], 0.75*1+0.25*2);
+            double Averaged_Energy_Loss     = MFP_from_DCS_Part(0,Max_V,1.,Mass_Array[Mass], 0.75*1+0.25*2);
+            cout << "Energy_Loss_expected: " << Energy_Loss_expected << endl;
+            cout << "Mass_Array[Mass]: " << Mass_Array[Mass] << endl;
+            cout << "CS: " << CS << endl;
+            cout << "Cross_Section: " << (Energy_Loss_expected)/(Collision_Time_Sun*Averaged_Energy_Loss) << endl;
+            double cross_section = (Energy_Loss_expected)/(Collision_Time_Sun*Averaged_Energy_Loss);
+            Collision_Time_Sun       = Sun_Daimeter*Sun_density*MFP_from_DCS_Part(2,Max_V,cross_section,Mass_Array[Mass], 0.75*1+0.25*2);
+            Averaged_Energy_Loss     = MFP_from_DCS_Part(0,Max_V,cross_section,Mass_Array[Mass], 0.75*1+0.25*2);
+            cout << "Collision_Time_Sun: " << Collision_Time_Sun << endl;
+            cout << "Averaged_Energy_Loss: " << Averaged_Energy_Loss << endl;
+            
+        }
+        cout << "====================================================================================================" << endl;
+        
         /*
         for(int Scaling=0; Scaling<1; Scaling++)
         {
