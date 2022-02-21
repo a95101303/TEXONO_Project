@@ -392,7 +392,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
 
         if(Case==0){return Collision_Time;}
         if(Case==1){return Energy_Loss;}
-        if(Case==2){return dEdX;}
+        if(Case==2){return Energy_Loss_denominator;}
     }
     //=================================Check the upper boundaries from the paper=================================
     if(Case==3)
@@ -470,7 +470,108 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
 
      */
 }
- 
+ double *dsigma_dT_from_others(int Case, double Cross_Section, double mx, double velocity, double Length, int F_DM_Case)
+ {//F_DM_Case==0,(F_DM=1), F_DM_Case==1,(F_DM=(alpha*me/q)^2)
+     static double Return_Array_Ee[500];
+     static double Return_Array_dsigma_dT[500];
+
+     const int Ei_Number=500;
+     const int qi_Number=900;
+     //==============Get the form factor of the crystal===========//
+     std::ifstream input("C_Si137.txt");//Input the auxiliary file
+     int Element_Number=-1;double data;
+     while(Element_Number<Ei_Number*qi_Number and aux_list_Filled==0)//
+     {
+         Element_Number = Element_Number + 1;
+         input >> data;
+         aux_list.push_back(data);
+     }
+     //All the necessary parameters
+     double prefactor = 2.0 * eV;
+     double wk        = 2.0 / 137.0;
+     double dE        = 0.1 * eV;
+     unsigned int i = 0;
+
+     const double mElectron = 0.5109989461 * 1e6;//eV
+     const double aEM       = 1.0 / 137.035999139;
+     const double dq        = aEM * mElectron;
+
+     for(int Ei = 0; Ei < 500; Ei++)
+     {
+         for(int qi = 0; qi < 900; qi++)
+         {
+             form_factor_table[qi][Ei] = prefactor * (qi + 1) / dE * wk / 4.0 * aux_list[i++];
+             double Ee = (Ei + 1) * 1e-1;//The energy of electron recoil(eV)
+             double Unit_Y = 0.02 * (qi + 1) ;//?(Alpha*Me)
+             double q  = (Unit_Y) * dq;// momentum transfer(eV/c)
+             Ee_List[Ei] = (Ee);//eV
+             q_List[qi]  = q ;
+         }
+
+     }
+     
+     for(int Ei = 0; Ei < 500; Ei++)
+     {
+         Return_Array_Ee[Ei] = (Ei + 1) * 1e-1;
+     }
+     aux_list_Filled=1;
+     //==============End getting the form factor of the crystal===========//
+     double dv_now        = velocity*(V_to_C);
+
+     double reduce_mass_Si_N = (1e9*mx)*(1e6*unified_atomic_mass_MeV*28)/((1e9*mx)+(1e6*unified_atomic_mass_MeV*28));// (eV/c^2)
+     double reduce_mass_Si_e = (1e9*mx)*(1e6*0.511)/((1e9*mx)+(1e6*0.511)); // (eV/c^2)
+     //double v_rel            = (4.*1e3)/(reduce_mass_Si_e);
+     double v_rel            = 0.5;
+     //double v_rel              = v_n_electron(14,1)+dv_now;
+     
+     const double N_Avo = 6.02e23;            //N_avo
+     double rho =2.7;        //g cm-3
+     double m_cell = 4*72./N_Avo;    //each unit cell has 4 Fe and 4 O
+     //double n_cell = (rho/m_cell);
+     double n_cell        = 8./pow(8.54*1E-8,3);
+     double Prefactor_1   = (Cross_Section*aEM*mElectron*mElectron)/(reduce_mass_Si_e*reduce_mass_Si_e*v_rel*dv_now);//Without the n_cel
+     double sum           = 0;
+
+     double Energy_Loss_numerator=0;
+     
+     if(Case==1)
+     {
+         double Check_Total=0;
+         for(int i=0;i<Ei_Number;i++)//Energy of electrons
+         {
+             double Check_Total_q=0;double Check_Total_E=0;
+             for(int qi=0;qi<qi_Number;qi++)//Momentum transfer
+             {
+                 if( dv_now>v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0)  )
+                 {
+                     //cout << "v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0): " << v_min_DM(Ee_List[i],q_List[qi],mx*1e9,0) << endl;
+                     double sum_L =0;
+                     double sum_E =0;
+                     if(F_DM_Case==0)sum_L = ( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] ;
+                     if(F_DM_Case==0)sum_E = ( (Ee_List[i]*(dE*1e9))*(0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] ;
+                     
+                     if(F_DM_Case==1)sum_L = ( pow(dq/q_List[qi],2) *( (0.02*dq)*(1.0/(q_List[qi]*q_List[qi])) )*1*form_factor_table[qi][i] );
+                     if(sum_L!=0 and Prefactor_1!=0)
+                     {
+                         Check_Total_q = Check_Total_q + (Prefactor_1)*(sum_L) ;
+                         Check_Total_E = Check_Total_E + (Prefactor_1)*(sum_E) ;
+                         Check_Total = Check_Total     + (Prefactor_1)*(sum_L);
+                     }
+                 }
+             }
+             //cout << " Check_Total_q: " <<  Check_Total_q << endl;
+             //cout << " Check_Total_E: " <<  Check_Total_E << endl;
+             Return_Array_dsigma_dT[i] = Check_Total_q;
+         }
+         //cout << "Check_Total: " << Check_Total << endl;
+     }
+     if(Case==0) return Return_Array_Ee;
+     if(Case==1) return Return_Array_dsigma_dT;
+
+ }
+
+
+
 //=====================================================//
 double dE_dX_Crystal_GeV(double Cross_Section, double mx, double velocity)//velocity(km/s)
 {

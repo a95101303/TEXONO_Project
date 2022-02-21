@@ -845,6 +845,28 @@ double fdsigma_dT_keV(double mx=10, double sigma_SI=1e-40, double velocity=0, do
     return (1.0/1000.0)*fdsigma_dT(mx, sigma_SI, velocity, atomic_mass, (T/1000.0));
 }
 
+
+double Total_cross_section_to_sigma_SI(double mx, double sigma_SI, double velocity, double atomic_mass, double T)//All in MeV and c
+{
+    double reduce_mass_A = mx*1000.0*unified_atomic_mass_MeV*atomic_mass/((mx*1000.0)+(unified_atomic_mass_MeV*atomic_mass));//MeV
+    double reduce_mass_n = mx*1000.0*unified_atomic_mass_MeV/((mx*1000.0)+unified_atomic_mass_MeV);//MeV
+    
+    double Const1 = (unified_atomic_mass_MeV*atomic_mass*pow(atomic_mass,2.0))/(2.0*pow(reduce_mass_n,2.0)*velocity*velocity);
+    double Max_ER = max_recoil_A(mx, velocity, atomic_mass);
+    
+    const int Bin_Number=10000;
+    double dT= (Max_ER-0.)/(double)Bin_Number;
+    double F2_total=0;
+    for(int Bin_index=0; Bin_index<Bin_Number; Bin_index++)
+    {
+        double T = (Bin_index+1)*(dT);
+        F2_total = F2(atomic_mass, T)*dT;
+    }
+    
+    return Const1*F2_total;
+}
+
+
 double AAAA(double mx, double sigma_SI, double velocity, double atomic_mass, double T)//check for high-mass range above 10^10GeV
 {
     double reduce_mass_A = (unified_atomic_mass_MeV*atomic_mass)*atomic_mass;//muA ~ mN*A
