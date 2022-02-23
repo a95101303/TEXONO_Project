@@ -196,18 +196,12 @@ void Read_File()
                                   cout << "Second_Zero_Index: " << Line_Set[Second_Zero_Index+1] << endl;
                                   cout << "Third_Zero_Index: " << Line_Set[Third_Zero_Index+1] << endl;
 
-                                  for(int i=First_Minus_Index-5;i<First_Minus_Index;i++){Cooler_Power_Watts = Cooler_Power_Watts + Line_Set[i];}
+                                  for(int i=14;i<First_Minus_Index;i++){Cooler_Power_Watts = Cooler_Power_Watts + Line_Set[i];}
                                   for(int i=First_Minus_Index+1;i<Second_Minus_Index;i++){cout << Line_Set[i];Coldtip_Temp = Coldtip_Temp + Line_Set[i];}
                                   for(int i=Second_Minus_Index+1;i<First_Zero_Index+1;i++){cout << Line_Set[i];Coldtip_Setp = Coldtip_Setp + Line_Set[i];}
                                   for(int i=First_Zero_Index+1;i<Second_Zero_Index+1;i++){cout << Line_Set[i];Coldhead_Temp = Coldhead_Temp + Line_Set[i];}
                                   for(int i=Second_Zero_Index+1;i<Third_Zero_Index+1;i++){cout << Line_Set[i];Compressor_Temp = Compressor_Temp + Line_Set[i];}
                                   for(int i=Third_Zero_Index+1;i<Fourth_Zero_Index+1;i++){cout << Line_Set[i];Controller_Temp = Controller_Temp + Line_Set[i];}
-                                  cout << "Cooler_Power_Watts_: " << (Cooler_Power_Watts) << endl;
-                                  cout << "Coldtip_Temp_: " << (Coldtip_Temp) << endl;
-                                  cout << "Coldtip_Setp_: " << (Coldtip_Setp) << endl;
-                                  cout << "Coldhead_Temp_: " << (Coldhead_Temp) << endl;
-                                  cout << "Compressor_Temp_: " << (Compressor_Temp) << endl;
-                                  cout << "Controller_Temp_: " << (Controller_Temp) << endl;
 
                                   cout << "Cooler_Power_Watts: " << Number_Trans(Cooler_Power_Watts) << endl;
                                   cout << "Coldtip_Temp: " << Number_Trans(Coldtip_Temp) << endl;
@@ -259,8 +253,12 @@ void Read_File()
                 cout << "D_Compressor_Temp: " << D_Compressor_Temp[Index] << endl;
                 cout << "Controller_Temp: " << D_Controller_Temp[Index] << endl;
                  */
-                cout << "GetDate: " << Date_check[Index]->GetDate() << endl;
-                cout << "D_Coldtip_Setp: " << D_Coldtip_Setp[Index] << endl;
+                //cout << "GetDate: " << Date_check[Index]->GetDate() << endl;
+                if(D_Cooler_Power_Watts[Index]>300.)
+                {   cout << "GetDate: " << Date_check[Index]->GetDate() << endl;
+                    cout << "GetTime: " << Date_check[Index]->GetTime() << endl;
+                    cout << "D_Cooler_Power_Watts: " << D_Cooler_Power_Watts[Index] << endl;}
+                //cout << "D_Coldtip_Setp: " << D_Coldtip_Setp[Index] << endl;
                 /*
                 if(D_Cooler_Power_Watts[Index]>200. or D_Cooler_Power_Watts[Index]<100.) cout << "D_Cooler_Power_Watts[Index]: " << D_Cooler_Power_Watts[Index] << endl;
                 if(D_Coldtip_Temp[Index]<180. or D_Coldtip_Temp[Index]>210.) cout << "D_Coldtip_Temp[Index]: " << D_Coldtip_Temp[Index] << endl;

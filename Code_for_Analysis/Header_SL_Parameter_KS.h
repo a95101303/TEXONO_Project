@@ -555,7 +555,7 @@ double dE_dX_from_others(int Case, double Cross_Section, double mx, double veloc
                      {
                          Check_Total_q = Check_Total_q + (Prefactor_1)*(sum_L) ;
                          Check_Total_E = Check_Total_E + (Prefactor_1)*(sum_E) ;
-                         Check_Total = Check_Total     + (Prefactor_1)*(sum_L);
+                         Check_Total   = Check_Total   + (Prefactor_1)*(sum_L);
                      }
                  }
              }

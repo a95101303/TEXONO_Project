@@ -1124,10 +1124,10 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
                 //cout << "velocity_TH1F[Applied_Hist]->GetBinContent(T): " << velocity_TH1F[Applied_Hist]->GetBinContent(T) << endl;
                 double Xe_Bin_Content = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(T);//Min_Recoil_Bin_Xe
                 double dsigma_dT_Xe   = velocity_TH1F[Applied_Hist]->GetBinContent(Xe_Bin_Content)*1e-18*TMath::Power(Scaling[Index],2);
-                dsigma_dT_Mukesh[KKK] = dsigma_dT_Xe;
-                cout << "dsigma_dT_Xe: " << dsigma_dT_Xe << endl;
+                dsigma_dT_Mukesh[KKK] = dsigma_dT_Xe/5.;
+                cout << "dsigma_dT_Xe: " << dsigma_dT_Xe/5. << endl;
                 Total_cross_section   = Total_cross_section + dsigma_dT_Xe*(dT);
-                cout << "Total_cross_section: " << Total_cross_section << endl;
+                //cout << "Total_cross_section: " << Total_cross_section << endl;
             }
             cout << "Total(Paper):" << Total/CS_Try(1.,1.)  << endl;
             cout << "Total_cross_section(Mukesh): " << Total_cross_section/CS_Try(1.,1.)  << endl;
@@ -1161,7 +1161,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             leg->SetBorderSize(0);
             leg->SetTextFont(22);
             leg->AddEntry(TGraph_dsigma_dT_Paper,"Paper: #sigma_{Total}=2.E-36","lP");
-            leg->AddEntry(TGraph_dsigma_dT_Mukesh,"Mukesh : #sigma_{Total}=5.3E-34","lP");
+            leg->AddEntry(TGraph_dsigma_dT_Mukesh,"Mukesh : #sigma_{Total}=1.3E-34","lP");
             leg->Draw();
 
             c1->SetLogy();
