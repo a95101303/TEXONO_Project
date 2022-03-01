@@ -482,6 +482,94 @@ double DM_Energy_eV(double Mx, double v)//Mx(GeV),v(km/s)
 void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 //Test the fitting line
 {
+    
+    double Mx         = 2.; double Max_V          = 784.;double Cross_Section = 5e-26;
+    double Atomic_Mass= 14.99;double Atomic_Density= 1.34;
+    double ND = Atomic_Density/(unified_atomic_mass_g*Atomic_Mass);
+    double Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
+    double Energy_Loss = MFP_from_DCS_Part(0, Max_V, Cross_Section, Mx, Atomic_Mass);
+    vector<double> Energy_Loss_Array;//eV
+    vector<double> Velocity_Array;   //eV
+    double Collision_Time = 0.;
+    
+    double WIMP_max_T_eV = 1e6*max_recoil_A(Mx, Max_V*1000.0/2.99792458e8, Atomic_Mass); //eV
+    Energy_Loss_Array.push_back(WIMP_max_T_eV);
+    
+    while(Energy_Initial>20.)
+    {
+        double Loss = MFP_from_DCS_Part(0, Max_V, Cross_Section, Mx, Atomic_Mass);
+        Velocity_Array.push_back(Max_V);
+        Energy_Initial = Energy_Initial - Loss;
+        cout << "Energy_Initial: " << Energy_Initial << endl;
+        Energy_Loss_Array.push_back(Energy_Initial);//eV
+        Max_V     = Velocity_DM(Mx,Energy_Initial*1E-3);//km/s
+        Collision_Time = Collision_Time + 1;
+    }
+    cout << "========================================================" << endl;
+    //Total_Length_for_our_Method
+    
+    vector<double> Length_Array_M1_array;
+    for(int JJJ=0; JJJ<Energy_Loss_Array.size()+1; JJJ++)
+    {
+        double L_individual = 0;
+        double Total_Length_M1 = 0;
+        for(int K=0; K<JJJ; K++)
+        {
+            double Total_Cross_section_Seg = MFP_from_DCS_2(Energy_Loss_Array[K],Energy_Loss_Array[K+1],Velocity_Array[K],Cross_Section,Mx,Atomic_Mass);
+            cout << "Total_Cross_section_Seg: " << Total_Cross_section_Seg << endl;
+            L_individual = 1./(ND*Total_Cross_section_Seg);
+            if(L_individual<1e100)Total_Length_M1 = Total_Length_M1 + L_individual;
+        }
+        Length_Array_M1_array.push_back(Total_Length_M1);
+    }
+    for(int JJJ=0; JJJ<Length_Array_M1_array.size()-1; JJJ++)
+    {
+    cout << "Length_Array_M1_array: " << Length_Array_M1_array[JJJ] << endl;
+    }
+    
+    
+    
+    Max_V          = 784.;
+    Energy_Initial = Energy_DM(Mx,Max_V*1e3/3e8)*1e3;//eV
+    
+    cout << "WIMP_max_T_eV: " << WIMP_max_T_eV << endl;
+    for(int JJJ=10; JJJ<11; JJJ++)
+    {
+        //cout << "Energy_Loss_Array[JJJ]: " << Energy_Loss_Array[JJJ] << endl;
+        double Total_Cross_Section_for_all= MFP_from_DCS_2(WIMP_max_T_eV, Energy_Loss_Array[JJJ],Max_V,Cross_Section, Mx, Atomic_Mass);
+        //cout << "Total_Cross_Section_for_all: " << Total_Cross_Section_for_all << endl;
+        double Total_Length_M2= Collision_Time/(ND*Total_Cross_Section_for_all);
+        cout << "Total_Length_M2: " << Total_Length_M2 << endl;
+    }
+     
+    //Total_Length_for_other_Method
+    for(int K=0; K<Energy_Loss_Array.size();K++)
+    {
+        //cout << "Energy_Loss_Array[K]: " << Energy_Loss_Array[K] << endl;
+        //double Total_Cross_section_Seg = MFP_from_DCS_New(Energy_Loss_Array[K],Velocity_Array[K],Cross_Section,Mx,Atomic_Mass);
+        //cout << "Total_Cross_section_Seg: " << Total_Cross_section_Seg << endl;
+    }
+
+    /*
+    TCanvas * c1 = new TCanvas("c", "c", 0,0,1000,1000);
+    gStyle->SetOptStat(0);
+    gStyle->SetTitleSize(0.04,"XY");
+    gStyle->SetTitleFont(62,"XY");
+    gStyle->SetLegendFont(62);
+
+    TGraph *TGraph_M1 = new TGraph(Element_Number,&Energy_Loss_Array[0],Bound_Energy);//Total Cross Section(TCS), Electron Number(EN)
+    TGraph_M1->SetMarkerStyle(20);
+    TGraph_M1->SetMarkerColor(3);
+    TGraph_M1->SetLineColor(3);
+    TGraph_M1->GetYaxis()->SetTitle("T[eV]");
+    TGraph_M1->GetXaxis()->SetTitle("L[cm]");
+    //TGraph_M1->GetXaxis()->SetTitle("E_{#chi}[eV]");
+    //TGraph_M1->GetXaxis()->SetRangeUser(12.,Max_Energy);
+    TGraph_M1->GetXaxis()->SetRangeUser(0,784.);
+    TGraph_M1->GetYaxis()->SetLimits(1E-5,1e+3);
+    TGraph_M1->Draw("apl");
+     */
+    
     /*
     string filename("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/0P5GeV/1P000.txt");
     double number;
@@ -862,7 +950,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
         
         TFile *fin   = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[kkk].c_str()));
         TFile *fin_2 = TFile::Open(Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index+2].c_str(),File[kkk].c_str()));
-        cout << "File: " << Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[kkk].c_str()) << endl;
+        //cout << "File: " << Form("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/ER_cross_section/%s/%s/DCS.root",c1_d1_Xe_Ge_index[Index].c_str()  ,File[kkk].c_str()) << endl;
         TH1F*    velocity_TH1F[velocity_N];//Mass-based
         TH1F*    velocity_TH1F_2[velocity_N];//Mass-based
         int      Check_Coherent[velocity_N];
@@ -874,8 +962,8 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             TH1F *Velocity_TH1F_temp_2=(TH1F*)fin_2->Get(velocity_s[LLL].c_str());
             if(Velocity_TH1F_temp!=NULL)
             {
-                cout << "LLL: " << LLL << endl;
-                cout << "File_1: " << velocity_s[LLL].c_str() << endl;
+                //cout << "LLL: " << LLL << endl;
+                //cout << "File_1: " << velocity_s[LLL].c_str() << endl;
                 velocity_TH1F[LLL]=(Velocity_TH1F_temp);
             }
             if(Velocity_TH1F_temp_2!=NULL)
@@ -1083,7 +1171,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
             //double Check = Total_cross_section_to_sigma_SI(1.,1e-30,(784.*1e3/3e8),14,1.);
             //cout << "check: " << Check << endl;
             
-            
+            /*
              double Scaling_A              = 1.;
             
             
@@ -1166,7 +1254,7 @@ void Overlap_Plot_TEXONO_Ge_Find_UPBOUND_ER()//Test the fitting
 
             c1->SetLogy();
             c1->Print("/Users/yehchihhsiang/Desktop/GITHUB_TEXONO/Chi-e/dsigma_dT_comparison.pdf");
-             
+             */
             
             /*
             Int_t Minimum_Bin_Xe = velocity_TH1F[Applied_Hist]->GetXaxis()->FindBin(12);//Min_Recoil_Bin_Xe

@@ -823,6 +823,9 @@ double fdsigma_dT(double mx, double sigma_SI, double velocity, double atomic_mas
     double dsigma_dq2 = sigma_chiN0*F2(atomic_mass, T)/(4.0*pow(reduce_mass_A,2.0)*pow(velocity,2.0));
     double dsigma_dT_0;
 
+    //cout << "max_recoil_A(mx, velocity, atomic_mass): " << max_recoil_A(mx, velocity, atomic_mass) << endl;
+    //cout << "T: " << T << endl;
+
     if(max_recoil_A(mx, velocity, atomic_mass)>T)
     {
         dsigma_dT_0 = 2.0*unified_atomic_mass_MeV*atomic_mass*dsigma_dq2;
@@ -1623,8 +1626,8 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
      double Expectation_Value = (MFP/total_Cross_Section);//keV
      double Uncertainty       = 0;
 
-     cout << "Velocity: " << Velocity << "Sigma_SI: " << Sigma_SI << "WIMP_mx: " << WIMP_mx << "ATOM_KIND: " << A << endl;
-     cout << "Expectation_Value: " << Expectation_Value << endl;
+     //cout << "Velocity: " << Velocity << "Sigma_SI: " << Sigma_SI << "WIMP_mx: " << WIMP_mx << "ATOM_KIND: " << A << endl;
+     //cout << "Expectation_Value: " << Expectation_Value << endl;
      
      if(Option==0)return 1e3*(Expectation_Value);//(eV) averaged energy loss per collision
      if(Option==1)return 1e3*MFP;//The dE/dX(eV/cm) [Part of it! You should time with n)
@@ -1645,6 +1648,79 @@ double MFP_from_DCS_Part(int Option=0, double Velocity=0, double Sigma_SI=0, dou
      if(Option==3)return sqrt(Uncertainty);//
       */
 }
+
+double MFP_from_DCS_2(double E_2=0, double E_1=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s) E_2(Big) E_1(Small)
+ {
+    
+     E_1 = E_1*1e-3;//keV
+     E_2 = E_2*1e-3;//keV
+
+     int reso_T=1000;double T[reso_T];double MFP=0;double total_Cross_Section=0;
+     double Energy_Diff = (E_2-E_1)/(double)reso_T;//eV
+    //======
+     for(int i=0;i<reso_T;i++)
+     {
+         T[i] = (E_1+Energy_Diff*(double)i) ;
+         
+      }
+    //======
+    double dEx=0;
+    double pEx = T[0];
+    for(int i=0;i<reso_T;i++)
+    {
+        if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
+        if( (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx)>0 )
+        {
+            total_Cross_Section = total_Cross_Section + (fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*dEx);
+        }
+        pEx = T[i];
+    }
+    return total_Cross_Section;//
+}
+
+double MFP_from_DCS_New(double E_d=0, double Velocity=0, double Sigma_SI=0, double WIMP_mx =10, double A = AGe)//Velocity(m/s)
+ {
+    
+     int reso_T=1000;double E_DM_array[reso_T];double MFP=0;double total_Cross_Section=0;
+     //Upper and Lower boundaries
+     double E_d_keV = E_d*1e-3;//keV
+     double Max_keV = Energy_DM(WIMP_mx,779.*1e3/3e8);//keV
+     //Difference
+     double Energy_Diff = (Max_keV-E_d_keV)/(double)reso_T;
+    //======
+     //The interval of the E_DM_array
+     for(int i=0;i<reso_T;i++){E_DM_array[i] = (E_d_keV+Energy_Diff*(double)i);}
+     //===Start Looping
+     for(int E_DM=0; E_DM<reso_T; E_DM++)//The Energy of DM
+     {
+         //DM energy
+         double E_DM_loop = E_DM_array[E_DM];//keV
+         double Velocity  = Velocity_DM(WIMP_mx,E_DM_loop);//km/s
+         //======
+         double T[reso_T];for(int i=0;i<reso_T;i++){T[i] = 0.;}//keV
+         double WIMP_max_T = 1000.0*max_recoil_A(WIMP_mx, Velocity*1000.0/2.99792458e8, A); //keV
+         
+         for(int i=0;i<reso_T;i++){T[i] = ((double)i+0.5)*((WIMP_max_T)/(double)reso_T);} // keV
+         double dEx=0;double pEx = T[0];
+         for(int i=0;i<reso_T;i++)
+         {
+             if(i==0) { dEx = T[0]; } else { dEx = T[i] - pEx; }
+             cout << "T[i]: " << T[i] << endl;
+             double AAA = Energy_Diff/(fdsigma_dT_keV(WIMP_mx, Sigma_SI, (Velocity*1e3/3e8), A, T[i])*T[i]*dEx);
+             cout << "AAA: " << AAA << endl;
+             if(AAA>0 and AAA<1e100)total_Cross_Section = total_Cross_Section + AAA;
+             pEx = T[i];
+         }//for(int i=0;i<reso_T;i++)
+         //cout << "E_DM_loop: " << E_DM_loop << endl;
+         //cout << "total_Cross_Section: " << total_Cross_Section << endl;
+     }//for(int E_DM=0; E_DM<reso_T; E_DM++)
+     double Atomic_Mass= 14.99;double Atomic_Density= 1.34;
+     double ND = Atomic_Density/(unified_atomic_mass_g*Atomic_Mass);
+     //cout << "ND: " << ND << endl;
+     total_Cross_Section = total_Cross_Section/(ND);
+    return total_Cross_Section;
+}
+
 
 double *Velocity_Aft_collision_dEdX(int Collision_Time=0, double mx=10, double Sigma_SI_Default=1e-40, double Initial_Velocity=0, double ATOM_KIND=0)
 {
